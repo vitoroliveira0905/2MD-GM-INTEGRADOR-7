@@ -26,9 +26,19 @@ export default function Login() {
   return (
     <section className="vh-100 d-flex align-items-center">
       <div className="row w-100 h-100 m-0">
-      
-        <div className="col-md-6 d-flex flex-column justify-content-center align-items-center text-black px-4">
-            
+
+        <div className="col-md-6 order-md-2 d-flex flex-column justify-content-center align-items-center text-black px-4">
+          <div className="px-5 d-flex justify-content-center mb-4 p-5">
+
+            <Image
+              src="/img/gm.svg"
+              alt="Login image"
+              className="img-fluid"
+              width={100}
+              height={1}
+              style={{ objectFit: "cover", objectPosition: "start" }}
+            />
+          </div>
           <form
             style={{ width: "23rem" }}
             onSubmit={handleLogin}
@@ -92,17 +102,17 @@ export default function Login() {
           </form>
         </div>
 
-      
+
         <div
-          className="col-md-6 px-0 d-none d-md-flex align-items-center justify-content-center"
+          className="col-md-6 order-md-1 px-0 d-none d-md-flex align-items-center justify-content-center"
           style={{ backgroundColor: "var(--primary-color)" }}
         >
           <div style={{ width: "85%", maxWidth: "600px" }}>
             <Image
               src="/img/imagem-login.png"
               alt="Imagem de login"
-              width={1000}
-              height={1000}
+              width={20000}
+              height={20000}
               className="img-fluid "
               style={{
                 width: "100%",

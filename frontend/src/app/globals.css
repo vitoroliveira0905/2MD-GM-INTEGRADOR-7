@@ -8,7 +8,7 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-    
+
   }
 }
 
@@ -41,4 +41,77 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+
+
+/*CSS Suporte*/
+.chat-container {
+  width: 100%;
+  max-width: 450px;
+  margin: auto;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 150px;
+}
+
+.chat-box {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 15px;
+  overflow-y: auto;
+  background: white;
+}
+
+.mensagens {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.msg {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+.msg.usuario {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.msg.suporte {
+  align-self: flex-start;
+  background-color: #e9ecef;
+  color: black;
+  border-bottom-left-radius: 4px;
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.input-area button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
 }
