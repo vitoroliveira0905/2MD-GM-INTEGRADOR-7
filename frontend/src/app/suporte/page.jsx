@@ -30,25 +30,36 @@ export default function SuporteChat() {
     };
 
     return (
-        <div className="chat-container">
-            <div className="chat-box">
-                <div className="mensagens">
-                    {mensagens.map((msg, i) => (
-                        <div key={i} className={`msg ${msg.autor}`}>
-                            {msg.texto}
-                        </div>
-                    ))}
-                </div>
+        <div className="chat-wrapper">
+            <div className="chat-header">
+                <img
+                    src="/img/gm.svg"
+                    alt="Logo GM"
+                    className="chat-logo"
+                />
+                <h2>Suporte GM</h2>
             </div>
 
-            <div className="input-area">
-                <input
-                    type="text"
-                    placeholder="Digite sua mensagem..."
-                    value={texto}
-                    onChange={(e) => setTexto(e.target.value)}
-                />
-                <button onClick={enviarMensagem}>Enviar</button>
+            <div className="chat-container">
+                <div className="chat-box">
+                    <div className="mensagens">
+                        {mensagens.map((msg, i) => (
+                            <div key={i} className={`msg ${msg.autor}`}>
+                                {msg.texto}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="input-area">
+                    <input
+                        type="text"
+                        placeholder="Digite sua mensagem..."
+                        value={texto}
+                        onChange={(e) => setTexto(e.target.value)}
+                    />
+                    <button onClick={enviarMensagem}>Enviar</button>
+                </div>
             </div>
         </div>
     );
