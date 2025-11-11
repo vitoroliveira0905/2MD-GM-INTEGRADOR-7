@@ -2,20 +2,40 @@ import SolicitacaoModel from '../models/SolicitacaoModel.js';
 
 // Controller de Solicitações
 class SolicitacaoController {
-    // [GET] /solicitacoes?limite=10&pagina=1
+    // [GET] /solicitacoes
     static async listarTodos(req, res) {
         try {
             const limite = parseInt(req.query.limite) || 10;
             const pagina = parseInt(req.query.pagina) || 1;
             const offset = (pagina - 1) * limite;
 
-            const resultado = await SolicitacaoModel.listarTodos(limite, offset);
+            // Se não for admin, só retorna solicitações do próprio usuário
+            const usuarioId = req.usuario.id;
+            const tipoUsuario = req.usuario.tipo;
+
+            let resultado;
+
+            if (tipoUsuario === 'admin') {
+                resultado = await SolicitacaoModel.listarTodos(limite, offset);
+            } else {
+                const solicitacoes = await SolicitacaoModel.buscarPorUsuario(usuarioId);
+                const total = solicitacoes.length;
+                resultado = {
+                    solicitacoes,
+                    total,
+                    pagina: 1,
+                    limite,
+                    totalPaginas: 1
+                };
+            }
+
             res.status(200).json(resultado);
         } catch (error) {
             console.error('Erro no controller (listarTodos):', error);
             res.status(500).json({ erro: 'Erro ao listar solicitações' });
         }
     }
+
 
     // [GET] /solicitacoes/:id
     static async buscarPorId(req, res) {
@@ -27,12 +47,21 @@ class SolicitacaoController {
                 return res.status(404).json({ mensagem: 'Solicitação não encontrada' });
             }
 
+            // Se não for admin, só pode ver se for dele
+            if (req.usuario.tipo !== 'admin' && solicitacao.usuario_id !== req.usuario.id) {
+                return res.status(403).json({
+                    erro: 'Acesso negado',
+                    mensagem: 'Você não tem permissão para acessar esta solicitação'
+                });
+            }
+
             res.status(200).json(solicitacao);
         } catch (error) {
             console.error('Erro no controller (buscarPorId):', error);
             res.status(500).json({ erro: 'Erro ao buscar solicitação' });
         }
     }
+
 
     // [POST] /solicitacoes
     static async criar(req, res) {
@@ -108,6 +137,49 @@ class SolicitacaoController {
             res.status(500).json({ erro: 'Erro ao buscar solicitações do usuário' });
         }
     }
+
+    // Dentro do SolicitacaoController
+    static async cancelarSolicitacao(req, res) {
+        try {
+            const { id } = req.params;
+            const usuarioLogado = req.usuario;
+
+            const solicitacao = await SolicitacaoModel.buscarPorId(id);
+            if (!solicitacao) {
+                return res.status(404).json({ erro: 'Solicitação não encontrada' });
+            }
+
+            // Bloqueia se a solicitação não for do usuário logado
+            if (solicitacao.usuario_id !== usuarioLogado.id && usuarioLogado.tipo !== 'admin') {
+                return res.status(403).json({
+                    erro: 'Acesso negado',
+                    mensagem: 'Você só pode cancelar suas próprias solicitações'
+                });
+            }
+
+            // Só permite cancelar se ainda estiver pendente
+            if (solicitacao.status !== 'pendente') {
+                return res.status(400).json({
+                    erro: 'Cancelamento não permitido',
+                    mensagem: 'Apenas solicitações pendentes podem ser canceladas'
+                });
+            }
+
+            // Atualiza o status para “cancelado”
+            await SolicitacaoModel.atualizar(id, { status: 'cancelado' });
+
+            res.status(200).json({
+                mensagem: 'Solicitação cancelada com sucesso',
+                solicitacao_id: id
+            });
+        } catch (error) {
+            console.error('Erro no controller (cancelarSolicitacao):', error);
+            res.status(500).json({ erro: 'Erro ao cancelar solicitação' });
+        }
+    }
+
 }
+
+
 
 export default SolicitacaoController;

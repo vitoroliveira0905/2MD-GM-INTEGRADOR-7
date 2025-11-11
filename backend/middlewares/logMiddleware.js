@@ -10,7 +10,7 @@ export const logMiddleware = async (req, res, next) => {
         metodo: req.method,
         ip_address: req.ip || req.connection.remoteAddress || req.socket.remoteAddress,
         user_agent: req.get('User-Agent'),
-        dados_requisicao: {
+        dados_requisicao: JSON.stringify({
             headers: {
                 'content-type': req.get('Content-Type'),
                 'authorization': req.get('Authorization') ? 'Bearer [REDACTED]' : null,
@@ -18,7 +18,7 @@ export const logMiddleware = async (req, res, next) => {
             },
             body: req.method !== 'GET' ? sanitizeRequestBody(req.body) : null,
             query: Object.keys(req.query).length > 0 ? req.query : null
-        }
+        })
     };
 
     // Interceptar a resposta para capturar status code, tempo e usuário (após authMiddleware executar)
@@ -40,11 +40,11 @@ export const logMiddleware = async (req, res, next) => {
         
         // Capturar dados da resposta (limitado para evitar logs muito grandes)
         if (res.statusCode >= 400) {
-            finalLogData.dados_resposta = {
+            finalLogData.dados_resposta = JSON.stringify({
                 error: true,
                 status: res.statusCode,
                 message: typeof data === 'string' ? data.substring(0, 500) : data
-            };
+            });
         }
         
         // Salvar log de forma assíncrona (não bloquear a resposta)

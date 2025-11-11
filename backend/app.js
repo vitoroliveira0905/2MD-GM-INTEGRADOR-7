@@ -10,7 +10,7 @@ import produtoRotas from './routes/produtoRotas.js';
 import authRotas from './routes/authRotas.js';
 import criptografiaRotas from './routes/criptografiaRotas.js';
 import usuarioRotas from './routes/usuarioRotas.js';
-
+import solicitacaoRotas from './routes/solicitacaoRotas.js';
 // Importar middlewares
 import { logMiddleware } from './middlewares/logMiddleware.js';
 import { errorMiddleware } from './middlewares/errorMiddleware.js';
@@ -51,6 +51,7 @@ app.use('/api/auth', authRotas);
 app.use('/api/produtos', produtoRotas);
 app.use('/api/criptografia', criptografiaRotas);
 app.use('/api/usuarios', usuarioRotas);
+app.use('/api/solicitacoes', solicitacaoRotas);
 
 // Rota raiz
 app.get('/', (req, res) => {
