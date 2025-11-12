@@ -11,6 +11,9 @@ import authRotas from './routes/authRotas.js';
 import criptografiaRotas from './routes/criptografiaRotas.js';
 import usuarioRotas from './routes/usuarioRotas.js';
 import solicitacaoRotas from './routes/solicitacaoRotas.js';
+import chatRotas from "./routes/chatRotas.js";
+
+
 // Importar middlewares
 import { logMiddleware } from './middlewares/logMiddleware.js';
 import { errorMiddleware } from './middlewares/errorMiddleware.js';
@@ -23,7 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configurações do servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middlewares globais
 app.use(helmet()); // Segurança HTTP headers
@@ -52,6 +55,7 @@ app.use('/api/produtos', produtoRotas);
 app.use('/api/criptografia', criptografiaRotas);
 app.use('/api/usuarios', usuarioRotas);
 app.use('/api/solicitacoes', solicitacaoRotas);
+app.use("/suporte", chatRotas);
 
 // Rota raiz
 app.get('/', (req, res) => {

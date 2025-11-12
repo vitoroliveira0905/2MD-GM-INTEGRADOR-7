@@ -17,11 +17,12 @@ export default function SuporteChat() {
         setMensagens((msgs) => [...msgs, { autor: "usuario", texto: msgUsuario }]);
 
         // Envia para API IA
-        const res = await fetch("/api/chat", {
+        const res = await fetch("http://localhost:3001/suporte", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mensagem: msgUsuario }),
         });
+
 
         const data = await res.json();
 
