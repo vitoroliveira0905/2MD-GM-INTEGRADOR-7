@@ -12,16 +12,36 @@ export default function Login() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
 
-  const handleLogin = async (e) => {
+  async function realizarLogin(e) {
     e.preventDefault();
+    setErro(""); // limpa erro anterior
 
-    // Exemplo simples de validação local:
-    if (email === "admin@teste.com" && senha === "1234") {
-      router.push("/admin");
-    } else {
-      setErro("Email ou senha incorretos!");
+    try {
+      const response = await fetch("http://localhost:3001/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          senha: senha
+        })
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        localStorage.setItem("token", data.dados.token)
+        router.push("/")
+      }
+      else {
+        setErro("Email ou senha incorretos!");
+      }
+      
+    } catch (error) {
+      console.error(error);
+      setErro("Erro de conexão com o servidor.");
     }
-  };
+  }
 
   return (
     <section className="vh-100 d-flex align-items-center">
@@ -39,9 +59,9 @@ export default function Login() {
               style={{ objectFit: "cover", objectPosition: "start" }}
             />
           </div>
-          <form
+          <form onSubmit={realizarLogin}
             style={{ width: "23rem" }}
-            onSubmit={handleLogin}
+
             className="shadow-sm p-4 rounded bg-white"
           >
             <h3 className="fw-bold mb-3 text-center" style={{ letterSpacing: 1 }}>
@@ -69,6 +89,7 @@ export default function Login() {
                 required
               />
             </div>
+            
 
             {erro && <p className="text-danger mb-3 text-center">{erro}</p>}
 
