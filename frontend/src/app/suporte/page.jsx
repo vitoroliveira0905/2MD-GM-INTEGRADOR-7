@@ -32,8 +32,23 @@ export default function SuporteChat() {
         setMensagens((msgs) => [...msgs, { autor: "suporte", texto: data.resposta }]);
     };
 
+    const router = useRouter();
+
     return (
         <div className="d-flex flex-column align-items-center min-vh-100 bg-light py-4">
+
+            {/* Botão voltar */}
+            <div className="mb-4 d-flex justify-content-start">
+                <button
+                    className="btn btn-outline-dark fw-bold px-4 py-2 d-flex align-items-center gap-2"
+                    style={{ borderRadius: "10px", borderWidth: "2px" }}
+                    onClick={() => router.back()}
+                >
+                    <i className="bi bi-arrow-left"></i> Voltar
+                </button>
+            </div>
+
+
             {/* Cabeçalho */}
             <div
                 className="text-white d-flex align-items-center justify-content-center rounded-top shadow w-100"
@@ -61,8 +76,8 @@ export default function SuporteChat() {
                                 }`}
                             style={{
                                 background:
-                                    msg.autor === "usuario" ? "#007bff" : "#f3f3f3ff",
-                                maxWidth: "75%", // 🔹 Agora a largura é controlada
+                                    msg.autor === "usuario" ? "var(--primary-color)" : "var(--user-bubble)",
+                                maxWidth: "75%",
                                 wordWrap: "break-word",
                             }}
                         >
@@ -87,4 +102,4 @@ export default function SuporteChat() {
             </div>
         </div>
     );
-}
+};
