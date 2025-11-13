@@ -81,44 +81,43 @@ export default function DashboardCliente() {
             <button className="btn btn-link text-decoration-none text-dark">Ver todas</button>
           </div>
           <div className="card-body p-4">
-  <div className="table-responsive">
-    <table className="table align-middle">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Data</th>
-          <th>Material</th>
-          <th>Status</th>
-          <th>Descrição</th>
-        </tr>
-      </thead>
-      <tbody>
-        {solicitacoes.map((s, i) => (
-          <tr key={i}>
-            <td>{s.id}</td>
-            <td>{s.data}</td>
-            <td>{s.material}</td>
-            <td>
-              <span
-                className={`badge d-inline-flex justify-content-center align-items-center px-3 py-2 fs-6 ${
-                  s.status === "Aprovada"
-                    ? "bg-success"
-                    : s.status === "Negada"
-                    ? "bg-danger"
-                    : "bg-warning text-dark"
-                }`}
-                style={{ minWidth: "120px" }}
-              >
-                {s.status}
-              </span>
-            </td>
-            <td>{s.descricao}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+            <div className="table-responsive">
+              <table className="table align-middle">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Data</th>
+                    <th>Material</th>
+                    <th>Status</th>
+                    <th>Descrição</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {solicitacoes.map((s, i) => (
+                    <tr key={i}>
+                      <td>{s.id}</td>
+                      <td>{s.data}</td>
+                      <td>{s.material}</td>
+                      <td>
+                        <span
+                          className={`badge d-inline-flex justify-content-center align-items-center px-3 py-2 fs-6 ${s.status === "Aprovada"
+                              ? "bg-success"
+                              : s.status === "Negada"
+                                ? "bg-danger"
+                                : "bg-warning text-dark"
+                            }`}
+                          style={{ minWidth: "120px" }}
+                        >
+                          {s.status}
+                        </span>
+                      </td>
+                      <td>{s.descricao}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
         </div>
 
@@ -129,23 +128,44 @@ export default function DashboardCliente() {
               Ações Rápidas
             </h5>
           </div>
-          <div className="card-body d-grid gap-3 p-4">
-            <Link href="/solicitacao">
-              <button className="btn text-white fw-bold btn-lg rounded-pill" style={{ backgroundColor: "  var(--primary-color)" }}>
-                <i className="bi bi-plus-circle me-2"></i> Fazer Nova Solicitação
-              </button>
-            </Link>
-            <Link href="/historico">
-              <button className="btn btn-outline-dark btn-lg rounded-pill">
-                <i className="bi bi-clock-history me-2"></i> Ver Histórico Completo
-              </button>
-            </Link>
-            <Link href="/suporte">
-              <button className="btn btn-dark fw-bold btn-lg rounded-pill">
-                <i className="bi bi-headset me-2"></i> Falar com o Suporte
-              </button>
-            </Link>
-          </div>
+          
+          
+            <div className="card-body d-flex flex-column gap-3 p-3" style={{ maxWidth: "360px" }}>
+              <Link href="/solicitacao">
+                <button
+                  className="btn text-white fw-bold btn-lg rounded-pill"
+                  style={{ backgroundColor: "var(--primary-color)" }}
+                >
+                  <i className="bi bi-plus-circle me-2"></i> Fazer Nova Solicitação
+                </button>
+              </Link>
+
+              <Link href="/historico">
+                <button className="btn btn-outline-dark btn-lg rounded-pill">
+                  <i className="bi bi-clock-history me-2"></i> Ver Histórico Completo
+                </button>
+              </Link>
+
+              <Link href="/suporte">
+                <button className="btn btn-dark fw-bold btn-lg rounded-pill">
+                  <i className="bi bi-headset me-2"></i> Falar com o Suporte
+                </button>
+              </Link>
+
+              <Link href="/login">
+                <button className="btn btn-danger fw-bold btn-lg rounded-pill">
+                  <i className="bi bi-arrow-left me-2"></i> Sair
+                </button>
+              </Link>
+            </div>
+
+         
+       
+         
+
+
+
+
         </div>
       </div>
     </main>
