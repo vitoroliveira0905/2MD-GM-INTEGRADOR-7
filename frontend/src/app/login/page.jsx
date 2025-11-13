@@ -31,12 +31,20 @@ export default function Login() {
       if (response.status === 200) {
         const data = await response.json();
         localStorage.setItem("token", data.dados.token)
-        router.push("/")
+        if (data.dados.usuario.tipo === "admin") {
+          router.push("/admin")
+        }
+        else if (data.dados.usuario.tipo === "comum") {
+          router.push("/")
+        }
+        else {
+          setErro("Tipo de usuário inválido");
+        }
       }
       else {
         setErro("Email ou senha incorretos!");
       }
-      
+
     } catch (error) {
       console.error(error);
       setErro("Erro de conexão com o servidor.");
@@ -89,7 +97,7 @@ export default function Login() {
                 required
               />
             </div>
-            
+
 
             {erro && <p className="text-danger mb-3 text-center">{erro}</p>}
 

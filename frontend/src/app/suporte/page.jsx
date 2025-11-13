@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function SuporteChat() {
     const [mensagens, setMensagens] = useState([]);
     const [texto, setTexto] = useState("");
+    const router = useRouter();
 
     const enviarMensagem = async () => {
         if (!texto.trim()) return;
@@ -32,7 +33,13 @@ export default function SuporteChat() {
         setMensagens((msgs) => [...msgs, { autor: "suporte", texto: data.resposta }]);
     };
 
-    const router = useRouter();
+    function handleEnter(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            enviarMensagem();
+        }
+    }
+
 
     return (
         <div className="d-flex flex-column align-items-center min-vh-100 bg-light py-4">
@@ -94,6 +101,7 @@ export default function SuporteChat() {
                         placeholder="Digite sua mensagem..."
                         value={texto}
                         onChange={(e) => setTexto(e.target.value)}
+                        onKeyDown={handleEnter}
                     />
                     <button className="btn btn-primary" onClick={enviarMensagem}>
                         Enviar
