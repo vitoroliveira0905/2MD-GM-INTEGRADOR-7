@@ -30,7 +30,7 @@ export default function Login() {
 
       if (response.status === 200) {
         const data = await response.json();
-        localStorage.setItem("token", data.dados.token)
+        localStorage.setItem("dadosUsuario", JSON.stringify(data.dados))
         if (data.dados.usuario.tipo === "admin") {
           router.push("/admin")
         }
@@ -54,7 +54,7 @@ export default function Login() {
   return (
     <section className="vh-100 d-flex align-items-center">
       <div className="row w-100 h-100 m-0">
-
+    
         <div className="col-md-6 order-md-2 d-flex flex-column justify-content-center align-items-center text-black px-4">
           <div className="px-5 d-flex justify-content-center mb-4 p-5">
 

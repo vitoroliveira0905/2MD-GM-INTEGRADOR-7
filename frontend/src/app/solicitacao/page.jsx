@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -13,12 +13,24 @@ export default function Solicitacao() {
         quantidade: "",
         descricao: "",
         shop: "",
-        area: "",
-        prioridade: "",
+        area: ""
     });
 
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(false);
+    const [dadosUsuario, setDadosUsuario] = useState(null);
+
+    useEffect(() => {
+        const dados = localStorage.getItem("dadosUsuario");
+        if (dados) {
+            try {
+                setDadosUsuario(JSON.parse(dados));
+            } catch (e) {
+                console.error("Erro ao ler dadosUsuario do localStorage:", e);
+            }
+        }
+    }, []); 
+
 
     const adicionarSolicitacao = async (e) => {
         e.preventDefault();
@@ -30,15 +42,16 @@ export default function Solicitacao() {
 
         setCarregando(true);
         try {
-            const resposta = await fetch("http://localhost:3001/solicitacoes", {
+            const resposta = await fetch("http://localhost:3001/api/solicitacoes", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: "Admin@gmail.com",
+                    "Authorization": `Bearer ${dadosUsuario.token}`,
                 },
                 body: JSON.stringify({
                     ...solicitacao,
-                    data: new Date().toISOString(),
+                    usuario_id: dadosUsuario.usuario.id,
+
                 }),
             });
 
@@ -49,8 +62,7 @@ export default function Solicitacao() {
                     quantidade: "",
                     descricao: "",
                     shop: "",
-                    area: "",
-                    prioridade: "",
+                    area: ""
                 });
                 setTimeout(() => setMensagem(""), 4000);
             } else {
@@ -64,9 +76,12 @@ export default function Solicitacao() {
         }
     };
 
+    if (dadosUsuario === null) {
+        return <p>Carregando...</p>
+    }
+    
     return (
         <div className="container my-5">
-
             <div className="mb-4">
                 <button
                     className="btn btn-outline-dark fw-bold px-4 py-2 d-flex align-items-center gap-2"
@@ -181,10 +196,7 @@ export default function Solicitacao() {
                         </span>
                         <select
                             className="form-select"
-                            value={solicitacao.prioridade}
-                            onChange={(e) =>
-                                setSolicitacao({ ...solicitacao, prioridade: e.target.value })
-                            }
+
                             required
                         >
                             <option value="">Selecione a prioridade</option>
