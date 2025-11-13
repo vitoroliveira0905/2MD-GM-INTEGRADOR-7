@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-export default function AdminSolicitacoes() {
+export default function PainelSolicitacao() {
   const [abaAtiva, setAbaAtiva] = useState("pendentes");
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [selecionada, setSelecionada] = useState(null);
