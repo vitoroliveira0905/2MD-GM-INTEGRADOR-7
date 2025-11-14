@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Select from "react-select";
 import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -19,19 +20,30 @@ export default function Solicitacao() {
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(false);
     const [dadosUsuario, setDadosUsuario] = useState(null);
+    const [produtos, setProdutos] = useState([]);
 
+    // Carregar dados do usuário e produtos ao montar o componente
     useEffect(() => {
-        const dados = localStorage.getItem("dadosUsuario");
+        const dados = JSON.parse(localStorage.getItem("dadosUsuario"));
         if (dados) {
             try {
-                setDadosUsuario(JSON.parse(dados));
+                setDadosUsuario(dados);
+                fetch("http://localhost:3001/api/produtos", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${dados.token}`,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => setProdutos(data))
+                    .catch(error => console.error("Erro ao buscar produtos:", error));
             } catch (e) {
                 console.error("Erro ao ler dadosUsuario do localStorage:", e);
             }
         }
-    }, []); 
+    }, []);
 
-
+    // Função para adicionar uma nova solicitação
     const adicionarSolicitacao = async (e) => {
         e.preventDefault();
 
@@ -49,9 +61,12 @@ export default function Solicitacao() {
                     "Authorization": `Bearer ${dadosUsuario.token}`,
                 },
                 body: JSON.stringify({
-                    ...solicitacao,
                     usuario_id: dadosUsuario.usuario.id,
-
+                    produto_id: solicitacao.produto,
+                    quantidade: solicitacao.quantidade,
+                    shop: solicitacao.shop,
+                    area: solicitacao.area,
+                    descricao: solicitacao.descricao,
                 }),
             });
 
@@ -76,12 +91,13 @@ export default function Solicitacao() {
         }
     };
 
-    if (dadosUsuario === null) {
+    if (dadosUsuario === null || produtos.length === 0) {
         return <p>Carregando...</p>
     }
-    
+
     return (
         <div className="container my-5">
+
             <div className="mb-4">
                 <button
                     className="btn btn-outline-dark fw-bold px-4 py-2 d-flex align-items-center gap-2"
@@ -118,11 +134,11 @@ export default function Solicitacao() {
                 className="row g-3 mt-4 bg-light p-4 rounded shadow-sm"
             >
                 <div className="col-md-6">
-                    <div className="input-group input-group-lg">
+                    <div className="input-group input-group-lg" style={{padding: "0 !important"}}>
                         <span className="input-group-text">
                             <i className="bi bi-box-seam"></i>
                         </span>
-                        <input
+                        {/*<input
                             type="text"
                             className="form-control"
                             placeholder="Nome do produto"
@@ -131,6 +147,13 @@ export default function Solicitacao() {
                                 setSolicitacao({ ...solicitacao, produto: e.target.value })
                             }
                             required
+                        />*/}
+                        <Select
+                            className="form-control"
+                            options={produtos.dados.map(p => ({ value: p.id, label: p.nome }))}
+                            onChange={(item) =>
+                                setSolicitacao({ ...solicitacao, produto: item.value })
+                            }
                         />
                     </div>
                 </div>
@@ -146,7 +169,7 @@ export default function Solicitacao() {
                             placeholder="Quantidade"
                             value={solicitacao.quantidade}
                             onChange={(e) =>
-                                setSolicitacao({ ...solicitacao, quantidade: e.target.value })
+                                setSolicitacao({ ...solicitacao, quantidade: Number(e.target.value) })
                             }
                             required
                         />
