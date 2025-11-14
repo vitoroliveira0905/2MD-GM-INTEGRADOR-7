@@ -1,5 +1,5 @@
 import express from 'express';
-import SolicitacaoController from '../controllers/solicitacaoController.js';
+import SolicitacaoController from '../controllers/SolicitacaoController.js';
 import { authMiddleware, adminMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();

@@ -40,14 +40,13 @@ export default function SuporteChat() {
         }
     }
 
-
     return (
         <div className="d-flex flex-column align-items-center min-vh-100 bg-light py-4">
 
             {/* Botão voltar */}
-            <div className="mb-4 d-flex justify-content-start">
+            <div className="container-botao mb-4">
                 <button
-                    className="btn btn-outline-dark fw-bold px-4 py-2 d-flex align-items-center gap-2"
+                    className="btn btn-outline-dark fw-bold px-4 py-2 gap-2"
                     style={{ borderRadius: "10px", borderWidth: "2px" }}
                     onClick={() => router.back()}
                 >
