@@ -20,8 +20,8 @@ export default function Historico() {
     ]);
   }, []);
 
-  // Função para cor da badge (mais legível)
-  const getBadgeClass = (status) => {
+
+  const getBadgeClass = (status) => {  
     switch (status) {
       case "Aprovada":
         return "bg-success";

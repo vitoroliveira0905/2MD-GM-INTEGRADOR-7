@@ -11,7 +11,7 @@ export default function PainelSolicitacao() {
   const [selecionada, setSelecionada] = useState(null);
   const [mensagem, setMensagem] = useState("");
 
- 
+
   const [modalAberto, setModalAberto] = useState(false);
   const [observacao, setObservacao] = useState("");
 
@@ -56,7 +56,7 @@ export default function PainelSolicitacao() {
     ];
     setSolicitacoes(dadosFalsos);
   }, []);
-
+  const router = useRouter()
   const atualizarStatus = (id, novoStatus, obs = "") => {
     setSolicitacoes((prev) =>
       prev.map((item) =>
@@ -79,7 +79,7 @@ export default function PainelSolicitacao() {
     setAbaAtiva("pendentes");
   };
 
-  
+
   const abrirModal = (item) => {
     setSelecionada(item);
     setObservacao("");
@@ -99,6 +99,16 @@ export default function PainelSolicitacao() {
 
   return (
     <div className="container my-5">
+
+      <div className="mb-4">
+        <button
+          className="btn btn-outline-dark fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
+          style={{ borderRadius: "12px" }}
+          onClick={() => router.back()}
+        >
+          <i className="bi bi-arrow-left"></i> Voltar
+        </button>
+      </div>
       <h1
         className="text-center mb-4 fw-bold"
         style={{ color: "var(--primary-color)" }}
@@ -108,9 +118,8 @@ export default function PainelSolicitacao() {
 
       {mensagem && (
         <div
-          className={`alert ${
-            mensagem.includes("sucesso") ? "alert-success" : "alert-info"
-          } text-center`}
+          className={`alert ${mensagem.includes("sucesso") ? "alert-success" : "alert-info"
+            } text-center`}
         >
           {mensagem}
         </div>
@@ -119,9 +128,8 @@ export default function PainelSolicitacao() {
       <ul className="nav nav-tabs mb-4 justify-content-center">
         <li className="nav-item">
           <button
-            className={`nav-link ${
-              abaAtiva === "pendentes" ? "active fw-bold" : ""
-            }`}
+            className={`nav-link ${abaAtiva === "pendentes" ? "active fw-bold" : ""
+              }`}
             onClick={() => setAbaAtiva("pendentes")}
           >
             Pendentes
@@ -129,9 +137,8 @@ export default function PainelSolicitacao() {
         </li>
         <li className="nav-item">
           <button
-            className={`nav-link ${
-              abaAtiva === "historico" ? "active fw-bold" : ""
-            }`}
+            className={`nav-link ${abaAtiva === "historico" ? "active fw-bold" : ""
+              }`}
             onClick={() => setAbaAtiva("historico")}
           >
             Histórico
@@ -139,7 +146,7 @@ export default function PainelSolicitacao() {
         </li>
       </ul>
 
-    
+
       {abaAtiva === "pendentes" && (
         <div>
           {pendentes.length === 0 ? (
@@ -169,13 +176,12 @@ export default function PainelSolicitacao() {
                       <td>{item.solicitante}</td>
                       <td>
                         <span
-                          className={`badge ${
-                            item.prioridade === "Alta"
+                          className={`badge ${item.prioridade === "Alta"
                               ? "bg-danger"
                               : item.prioridade === "Média"
-                              ? "bg-warning text-dark"
-                              : "bg-success"
-                          }`}
+                                ? "bg-warning text-dark"
+                                : "bg-success"
+                            }`}
                         >
                           {item.prioridade}
                         </span>
@@ -184,28 +190,33 @@ export default function PainelSolicitacao() {
                         <span className="badge bg-secondary">{item.status}</span>
                       </td>
                       <td className="text-center">
-                        <button
-                          className="btn btn-success btn-sm me-2"
-                          title="Aprovar"
-                          onClick={() => atualizarStatus(item.id, "Aprovada")}
-                        >
-                          <i className="bi bi-check-lg"></i>
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm me-2"
-                          title="Recusar"
-                          onClick={() => abrirModal(item)}
-                        >
-                          <i className="bi bi-x-lg"></i>
-                        </button>
-                        <button
-                          className="btn btn-info btn-sm"
-                          title="Ver detalhes"
-                          onClick={() => verDetalhes(item)}
-                        >
-                          <i className="bi bi-eye"></i>
-                        </button>
-                      </td>
+  <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-2">
+    <button
+      className="btn btn-success btn-sm"
+      title="Aprovar"
+      onClick={() => atualizarStatus(item.id, "Aprovada")}
+    >
+      <i className="bi bi-check-lg"></i>
+    </button>
+
+    <button
+      className="btn btn-danger btn-sm"
+      title="Recusar"
+      onClick={() => abrirModal(item)}
+    >
+      <i className="bi bi-x-lg"></i>
+    </button>
+
+    <button
+      className="btn btn-info btn-sm"
+      title="Ver detalhes"
+      onClick={() => verDetalhes(item)}
+    >
+      <i className="bi bi-eye"></i>
+    </button>
+  </div>
+</td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -215,7 +226,7 @@ export default function PainelSolicitacao() {
         </div>
       )}
 
-   
+
       {modalAberto && (
         <div
           className="modal fade show d-block"
@@ -266,7 +277,7 @@ export default function PainelSolicitacao() {
         </div>
       )}
 
-  
+
       {abaAtiva === "historico" && (
         <div>
           {historico.length === 0 ? (
@@ -294,11 +305,10 @@ export default function PainelSolicitacao() {
                       <td>{item.data}</td>
                       <td>
                         <span
-                          className={`badge ${
-                            item.status === "Aprovada"
+                          className={`badge ${item.status === "Aprovada"
                               ? "bg-success"
                               : "bg-danger"
-                          }`}
+                            }`}
                         >
                           {item.status}
                         </span>

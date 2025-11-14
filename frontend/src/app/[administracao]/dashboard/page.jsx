@@ -25,8 +25,7 @@ export default function DashboardAdmin() {
           style={{
             width: "320px",
             borderRadius: "20px",
-            background:
-              "linear-gradient(145deg, #e8f1ff, #ffffff)",
+         
             transition: "all 0.3s ease",
           }}
         >
@@ -38,9 +37,9 @@ export default function DashboardAdmin() {
           <p className="text-secondary mb-4">
             Gerencie aprovações e recusas de pedidos.
           </p>
-          <Link href="/administracao/admin">
+          <Link href="/administracao/painelSolicitacao">
             <button
-              className="btn fw-bold rounded-pill px-4"
+              className="btn fw-bold rounded-pill px-4 mt-auto"
               style={{
                 backgroundColor: "#007bff",
                 color: "white",
@@ -57,8 +56,7 @@ export default function DashboardAdmin() {
           style={{
             width: "320px",
             borderRadius: "20px",
-            background:
-              "linear-gradient(145deg, #e8f1ff, #ffffff)",
+          
             transition: "all 0.3s ease",
           }}
         >
@@ -70,8 +68,9 @@ export default function DashboardAdmin() {
           <p className="text-secondary mb-4">
             Acompanhe o status e disponibilidade dos itens.
           </p>
+          <Link href="/administracao/estoque">
           <button
-            className="btn fw-bold rounded-pill px-4"
+            className="btn fw-bold rounded-pill px-4 mt-auto"
             style={{
               backgroundColor: "#0d6efd",
               color: "white",
@@ -80,6 +79,7 @@ export default function DashboardAdmin() {
           >
             Acessar Estoque
           </button>
+          </Link>
         </div>
 
      
@@ -88,8 +88,7 @@ export default function DashboardAdmin() {
           style={{
             width: "320px",
             borderRadius: "20px",
-            background:
-              "linear-gradient(145deg, #e8f1ff, #ffffff)",
+           
             transition: "all 0.3s ease",
           }}
         >
@@ -102,13 +101,13 @@ export default function DashboardAdmin() {
             Visualize métricas e dados do sistema.
           </p>
           <button
-            className="btn fw-bold rounded-pill px-4"
+            className="btn fw-bold rounded-pill px-4 mt-auto"
             style={{
               backgroundColor: "#6c757d",
               color: "white",
               width: "100%",
             }}
-            disabled
+         
           >
             Em breve
           </button>
@@ -120,8 +119,7 @@ export default function DashboardAdmin() {
           style={{
             width: "320px",
             borderRadius: "20px",
-            background:
-              "linear-gradient(145deg, #e8f1ff, #ffffff)",
+        
             transition: "all 0.3s ease",
           }}
         >
@@ -140,7 +138,7 @@ export default function DashboardAdmin() {
               color: "white",
               width: "100%",
             }}
-            disabled
+         
           >
             Em breve
           </button>
