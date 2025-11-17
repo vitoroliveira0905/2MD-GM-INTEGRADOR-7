@@ -98,19 +98,20 @@ export default function DashboardAdmin() {
           ></i>
           <h5 className="fw-bold mb-3">Relatórios</h5>
           <p className="text-secondary mb-4">
-            Visualize métricas e dados do sistema.
+            Visualize métricas e dados do sistema de requisições.
           </p>
+          <Link href="/administracao/relatorio">
           <button
             className="btn fw-bold rounded-pill px-4 mt-auto"
             style={{
-              backgroundColor: "#6c757d",
+              backgroundColor: "#0d6efd",
               color: "white",
               width: "100%",
             }}
-         
           >
-            Em breve
+            Acessar Relatório
           </button>
+          </Link>
         </div>
 
   
