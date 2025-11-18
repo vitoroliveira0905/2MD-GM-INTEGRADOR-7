@@ -5,10 +5,17 @@ class SolicitacaoModel {
     // Listar todas as solicitaões (com paginação)
     static async listarTodos(limite, offset) {
         try {
-
             const connection = await getConnection();
             try {
-                const sql = 'SELECT * FROM solicitacoes ORDER BY id DESC LIMIT ? OFFSET ?';
+                const sql = `
+                SELECT 
+                    s.*,
+                    p.nome as produto_nome
+                FROM solicitacoes s
+                INNER JOIN produtos p ON p.id = s.produto_id
+                ORDER BY s.id DESC
+                LIMIT ? OFFSET ?
+            `;
 
                 const [solicitacoes] = await connection.query(sql, [limite, offset]);
 
@@ -33,6 +40,7 @@ class SolicitacaoModel {
             throw error;
         }
     }
+
 
     // Buscar solicitacao por ID
     static async buscarPorId(id) {
@@ -78,12 +86,29 @@ class SolicitacaoModel {
     // Buscar solicitacoes por usuario
     static async buscarPorUsuario(usuario_id) {
         try {
-            return await read('solicitacoes', `usuario_id = '${usuario_id}'`);
+            const connection = await getConnection();
+            try {
+                const sql = `
+                SELECT 
+                    s.*,
+                    p.nome AS produto_nome
+                FROM solicitacoes s
+                INNER JOIN produtos p ON p.id = s.produto_id
+                WHERE s.usuario_id = ?
+                ORDER BY s.id DESC
+            `;
+
+                const [rows] = await connection.query(sql, [usuario_id]);
+                return rows;
+            } finally {
+                connection.release();
+            }
         } catch (error) {
             console.error('Erro ao buscar solicitacoes por usuário:', error);
             throw error;
         }
     }
+
 }
 
 export default SolicitacaoModel;

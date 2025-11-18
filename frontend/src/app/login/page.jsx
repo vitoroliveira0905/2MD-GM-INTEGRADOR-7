@@ -32,7 +32,7 @@ export default function Login() {
         const data = await response.json();
         localStorage.setItem("dadosUsuario", JSON.stringify(data.dados))
         if (data.dados.usuario.tipo === "admin") {
-          router.push("/admin")
+          router.push("/administracao/dashboard")
         }
         else if (data.dados.usuario.tipo === "comum") {
           router.push("/")
