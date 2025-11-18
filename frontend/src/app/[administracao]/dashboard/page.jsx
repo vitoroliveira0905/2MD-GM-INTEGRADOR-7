@@ -128,20 +128,20 @@ export default function DashboardAdmin() {
             className="bi bi-people mb-3"
             style={{ fontSize: "3rem", color: "#0d6efd" }}
           ></i>
-          <h5 className="fw-bold mb-3">Gerenciar Usuários</h5>
+          <h5 className="fw-bold mb-3">Acompanahar Solicitações</h5>
           <p className="text-secondary mb-4">
-            Controle permissões e cadastros de usuários.
+            Verificar andamento de solicitações e atividades dos usuários.
           </p>
           <button
             className="btn fw-bold rounded-pill px-4"
             style={{
-              backgroundColor: "#6c757d",
+              backgroundColor: "#0d6efd",
               color: "white",
               width: "100%",
             }}
          
           >
-            Em breve
+            Acessar Histórico
           </button>
         </div>
       </div>

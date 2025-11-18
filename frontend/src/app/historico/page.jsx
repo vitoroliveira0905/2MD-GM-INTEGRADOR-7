@@ -11,6 +11,31 @@ export default function Historico() {
   const [dadosSolicitacoes, setDadosSolicitacoes] = useState(null);
   const [dadosUsuario, setDadosUsuario] = useState(null);
 
+  const [modalDetalhes, setModalDetalhes] = useState(null);
+  const [modalCancelar, setModalCancelar] = useState(null);
+
+  function verDetalhes(item) {
+    setModalDetalhes(item);
+  }
+
+  function cancelarSolicitacao(item) {
+    setModalCancelar(item);
+  }
+
+  function confirmarCancelamento() {
+    setDadosSolicitacoes(prev => {
+      if (!prev) return null; 
+      return {
+        ...prev,
+        solicitacoes: prev.solicitacoes.map(s =>
+          s.id === modalCancelar.id ? { ...s, status: "cancelado" } : s 
+        )
+      };
+    });
+    setModalCancelar(null);
+  }
+
+
   useEffect(() => {
     const estaLogado = localStorage.getItem("dadosUsuario");
     if (!estaLogado) {
@@ -39,13 +64,13 @@ export default function Historico() {
   }, []);
 
   const getBadgeClass = (status) => {
-    switch (status) {
+
+    const lowerStatus = status.toLowerCase(); 
+    switch (lowerStatus) {
       case "atendido":
-        return "bg-success";
       case "aprovado":
         return "bg-success";
       case "negado":
-        return "bg-danger";
       case "cancelado":
         return "bg-danger";
       default:
@@ -94,6 +119,7 @@ export default function Historico() {
                       <th>Material</th>
                       <th className="text-center">Status</th>
                       <th>Descrição</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -101,10 +127,10 @@ export default function Historico() {
                       <tr key={s.id}>
 
                         <td>{new Date(s.data_solicitacao).toLocaleString("pt-BR", {
-                          dateStyle: "short",  
-                          timeStyle: "short"   
+                          dateStyle: "short",
+                          timeStyle: "short"
                         })
-                        .replace(",", "")}
+                          .replace(",", "")}
                         </td>
                         <td>{s.produto_nome}</td>
                         <td className="text-center">
@@ -116,6 +142,29 @@ export default function Historico() {
                           </span>
                         </td>
                         <td>{s.descricao}</td>
+                        <td>
+                       
+                          {s.status.toLowerCase() !== "cancelado" && s.status.toLowerCase() !== "negado" && (
+                            <button
+                              className="btn btn-danger btn-sm"
+                              title="Cancelar solicitação"
+                              onClick={() => cancelarSolicitacao(s)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          )}
+
+                        
+                          {s.status.toLowerCase() === "negado" && (
+                            <button
+                              className="btn btn-info btn-sm" 
+                              title="Ver motivo"
+                              onClick={() => verDetalhes(s)}
+                            >
+                              <i className="bi bi-eye"></i>
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -130,6 +179,72 @@ export default function Historico() {
           </div>
         </div>
       </div>
+
+
+    
+      {modalDetalhes && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+
+              <div className="modal-header">
+                <h5 className="modal-title">Detalhes da Solicitação</h5>
+                <button className="btn-close" onClick={() => setModalDetalhes(null)}></button>
+              </div>
+
+              <div className="modal-body">
+             
+                <p><strong>Material:</strong> {modalDetalhes.produto_nome}</p> 
+                <p><strong>Descrição:</strong> {modalDetalhes.descricao}</p>
+           
+                {modalDetalhes.motivo && <p><strong>Motivo da Negação:</strong> {modalDetalhes.motivo}</p>}
+                <p className="text-danger"><strong>Status:</strong> {modalDetalhes.status}</p>
+              </div>
+
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setModalDetalhes(null)}>
+                  Fechar
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+ 
+      {modalCancelar && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+
+              <div className="modal-header">
+                <h5 className="modal-title">Cancelar Solicitação</h5>
+                <button className="btn-close" onClick={() => setModalCancelar(null)}></button>
+              </div>
+
+              <div className="modal-body">
+                Tem certeza que deseja cancelar a solicitação do material:
+                <br /><br />
+          
+                <strong className="text-danger">{modalCancelar.produto_nome}</strong>?
+              </div>
+
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setModalCancelar(null)}>
+                  Fechar
+                </button>
+
+                <button className="btn btn-danger" onClick={confirmarCancelamento}>
+                  <i className="bi bi-trash me-2"></i> Cancelar Solicitação
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }
