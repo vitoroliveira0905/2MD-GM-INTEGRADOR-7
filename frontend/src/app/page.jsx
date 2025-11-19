@@ -1,28 +1,73 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function DashboardCliente() {
-  const [solicitacoes, setSolicitacoes] = useState([]);
-
+  const router = useRouter();
+  const [dadosUsuario, setDadosUsuario] = useState(null);
+  const [dadosSolicitacoes, setDadosSolicitacoes] = useState(null);
   const [modalDetalhes, setModalDetalhes] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(null);
 
   useEffect(() => {
-    setSolicitacoes([
-      { id: 1, data: "04/11/2025", material: "Luvas de proteção", status: "Aprovada", descricao: "Reposição para equipe de manutenção" },
-      { id: 2, data: "05/11/2025", material: "Cinto de segurança", status: "Pendente", descricao: "Uso em trabalho em altura" },
-      { id: 3, data: "06/11/2025", material: "Capacetes de obra", status: "Negada", descricao: "Solicitação duplicada" },
-      { id: 4, data: "06/11/2025", material: "Colete refletivo", status: "Pendente", descricao: "Equipe noturna", motivo: "Estoque insuficiente" },
-    ]);
+    const estaLogado = localStorage.getItem("dadosUsuario");
+    if (!estaLogado) {
+      router.push("/login")
+    }
+  }, [])
+
+  useEffect(() => {
+    const dados = JSON.parse(localStorage.getItem("dadosUsuario"));
+    if (dados) {
+      try {
+        setDadosUsuario(dados);
+        fetch("http://localhost:3001/api/solicitacoes", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${dados.token}`,
+          }
+        })
+          .then(response => response.json())
+          .then(data => setDadosSolicitacoes(data))
+          .catch(error => console.error("Erro ao buscar solicitações:", error));
+      } catch (e) {
+        console.error("Erro ao ler dadosUsuario do localStorage:", e);
+      }
+    }
   }, []);
 
-  const totalPendentes = solicitacoes.filter(s => s.status === "Pendente").length;
-  const totalAprovadas = solicitacoes.filter(s => s.status === "Aprovada").length;
-  const totalNegadas = solicitacoes.filter(s => s.status === "Negada").length;
+  if (dadosUsuario === null || dadosSolicitacoes === null) {
+    return <p>Carregando...</p>
+  }
+
+  const getBadgeClass = (status) => {
+
+    const lowerStatus = status.toLowerCase();
+    switch (lowerStatus) {
+      case "atendido":
+      case "aprovado":
+        return "bg-success";
+      case "negado":
+      case "cancelado":
+        return "bg-danger";
+      default:
+        return "bg-warning text-dark";
+    }
+  };
+
+  const totalPendentes =
+    dadosSolicitacoes?.solicitacoes?.filter(s => s.status === "pendente").length || 0;
+
+  const totalAprovadas =
+    dadosSolicitacoes?.solicitacoes?.filter(s => s.status === "aprovado").length || 0;
+
+  const totalNegadas =
+    dadosSolicitacoes?.solicitacoes?.filter(s => s.status === "negado").length || 0;
+
 
   function verDetalhes(item) {
     setModalDetalhes(item);
@@ -30,14 +75,19 @@ export default function DashboardCliente() {
 
   function cancelarSolicitacao(item) {
     setModalCancelar(item);
+    console.log(item)
   }
 
   function confirmarCancelamento() {
-    setSolicitacoes(prev =>
-      prev.map(s =>
-        s.id === modalCancelar.id ? { ...s, status: "Cancelada" } : s
-      )
-    );
+    setDadosSolicitacoes(prev => {
+      if (!prev?.solicitacoes) return prev;
+      return {
+        ...prev,
+        solicitacoes: prev.solicitacoes.map(s =>
+          s.id === modalCancelar.id ? { ...s, status: "cancelado" } : s
+        )
+      };
+    });
     setModalCancelar(null);
   }
 
@@ -90,7 +140,7 @@ export default function DashboardCliente() {
         <div className="card border-0 shadow-lg rounded-4 mb-5">
           <div className="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
             <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)" }}>Histórico de Solicitações</h5>
-            <button className="btn btn-link text-decoration-none text-dark">Ver todas</button>
+            <Link href="/historico"><button className="btn btn-link text-decoration-none text-dark">Ver todas</button></Link>
           </div>
 
           <div className="card-body p-4">
@@ -98,28 +148,27 @@ export default function DashboardCliente() {
               <table className="table align-middle">
                 <thead>
                   <tr>
-                    <th>#</th>
                     <th>Data</th>
                     <th>Material</th>
-                    <th>Status</th>
+                    <th className="text-center">Status</th>
                     <th>Descrição</th>
                     <th>Ações</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {solicitacoes.map((s, i) => (
+                  {dadosSolicitacoes.solicitacoes.map((s, i) => (
                     <tr key={i}>
-                      <td>{s.id}</td>
-                      <td>{s.data}</td>
-                      <td>{s.material}</td>
-                      <td>
+
+                      <td>{new Date(s.data_solicitacao).toLocaleString("pt-BR", {
+                        dateStyle: "short",
+                        timeStyle: "short"
+                      })
+                        .replace(",", "")}</td>
+                      <td>{s.produto_nome}</td>
+                      <td className="text-center">
                         <span
-                          className={`badge px-3 py-2 fs-6 ${s.status === "Aprovada" ? "bg-success" :
-                            s.status === "Negada" ? "bg-danger" :
-                              s.status === "Cancelada" ? "bg-secondary" :
-                                "bg-warning text-dark"
-                            }`}
+                          className={`badge px-3 py-2 fs-6 fw-semibold ${getBadgeClass(s.status)}`}
                           style={{ minWidth: "120px" }}
                         >
                           {s.status}
@@ -127,7 +176,7 @@ export default function DashboardCliente() {
                       </td>
                       <td>{s.descricao}</td>
                       <td>
-                        {s.status !== "Cancelada" && (
+                        {s.status === "pendente" && (
                           <button
                             className="btn btn-danger btn-sm"
                             title="Cancelar solicitação"
@@ -137,9 +186,9 @@ export default function DashboardCliente() {
                           </button>
                         )}
 
-                        {s.status === "Negada" && (
+                        {s.status === "negado" && (
                           <button
-                            className="btn btn-info btn-sm ms-2"
+                            className="btn btn-info btn-sm "
                             title="Ver motivo"
                             onClick={() => verDetalhes(s)}
                           >
@@ -181,11 +230,14 @@ export default function DashboardCliente() {
               </button>
             </Link>
 
-            <Link href="/login">
-              <button className="btn btn-danger fw-bold btn-lg rounded-pill">
-                <i className="bi bi-arrow-left me-2"></i> Sair
-              </button>
-            </Link>
+
+            <button className="btn btn-danger fw-bold btn-lg rounded-pill" style={{ maxWidth: "200px" }} onClick={() => {
+              localStorage.removeItem("dadosUsuario");
+              router.push("/login")
+            }}>
+              <i className="bi bi-arrow-left me-2"></i> Sair
+            </button>
+
           </div>
         </div>
 
@@ -231,7 +283,7 @@ export default function DashboardCliente() {
               <div className="modal-body">
                 Tem certeza que deseja cancelar:
                 <br /><br />
-                <strong>{modalCancelar.material}</strong>?
+                <strong>{modalCancelar.produto_nome}</strong>?
               </div>
 
               <div className="modal-footer">
