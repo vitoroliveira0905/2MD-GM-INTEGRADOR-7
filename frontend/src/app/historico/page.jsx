@@ -148,9 +148,10 @@ export default function Historico() {
             >
               <option value="todos">Todos os Status</option>
               <option value="aprovado">Aprovado</option>
-              <option value="atendido">Atendido</option>
+              <option value="atendido">Finalizado</option>
               <option value="negado">Negado</option>
               <option value="cancelado">Cancelado</option>
+              <option value="pendente">Pendente</option>
             </select>
           </div>
         </div>
