@@ -139,7 +139,7 @@ export default function DashboardCliente() {
 
         <div className="card border-0 shadow-lg rounded-4 mb-5">
           <div className="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
-            <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)" }}>Histórico de Solicitações</h5>
+            <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)" }}>Solicitações em andamento</h5>
             <Link href="/historico"><button className="btn btn-link text-decoration-none text-dark">Ver todas</button></Link>
           </div>
 
@@ -152,52 +152,56 @@ export default function DashboardCliente() {
                     <th>Material</th>
                     <th className="text-center">Status</th>
                     <th>Descrição</th>
-                    <th>Ações</th>
+                    <th></th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {dadosSolicitacoes.solicitacoes.map((s, i) => (
-                    <tr key={i}>
+                  {dadosSolicitacoes.solicitacoes.filter((material) => { return material.status === "pendente" || material.status === "aprovado" })
+                    .sort((a, b) => {
+                      return ["aprovado", "pendente"].indexOf(a.status) - ["aprovado", "pendente"].indexOf(b.status);
+                    })
+                    .map((s, i) => (
+                      <tr key={i}>
 
-                      <td>{new Date(s.data_solicitacao).toLocaleString("pt-BR", {
-                        dateStyle: "short",
-                        timeStyle: "short"
-                      })
-                        .replace(",", "")}</td>
-                      <td>{s.produto_nome}</td>
-                      <td className="text-center">
-                        <span
-                          className={`badge px-3 py-2 fs-6 fw-semibold ${getBadgeClass(s.status)}`}
-                          style={{ minWidth: "120px" }}
-                        >
-                          {s.status}
-                        </span>
-                      </td>
-                      <td>{s.descricao}</td>
-                      <td>
-                        {s.status === "pendente" && (
-                          <button
-                            className="btn btn-danger btn-sm"
-                            title="Cancelar solicitação"
-                            onClick={() => cancelarSolicitacao(s)}
+                        <td>{new Date(s.data_solicitacao).toLocaleString("pt-BR", {
+                          dateStyle: "short",
+                          timeStyle: "short"
+                        })
+                          .replace(",", "")}</td>
+                        <td>{s.produto_nome}</td>
+                        <td className="text-center">
+                          <span
+                            className={`badge px-3 py-2 fs-6 fw-semibold ${getBadgeClass(s.status)}`}
+                            style={{ minWidth: "120px" }}
                           >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        )}
+                            {s.status}
+                          </span>
+                        </td>
+                        <td>{s.descricao}</td>
+                        <td>
+                          {s.status === "pendente" && (
+                            <button
+                              className="btn btn-danger btn-sm"
+                              title="Cancelar solicitação"
+                              onClick={() => cancelarSolicitacao(s)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          )}
 
-                        {s.status === "negado" && (
-                          <button
-                            className="btn btn-info btn-sm "
-                            title="Ver motivo"
-                            onClick={() => verDetalhes(s)}
-                          >
-                            <i className="bi bi-eye"></i>
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                          {s.status === "negado" && (
+                            <button
+                              className="btn btn-info btn-sm "
+                              title="Ver motivo"
+                              onClick={() => verDetalhes(s)}
+                            >
+                              <i className="bi bi-eye"></i>
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
 
               </table>
