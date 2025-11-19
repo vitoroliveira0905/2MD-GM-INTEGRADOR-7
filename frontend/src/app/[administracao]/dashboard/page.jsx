@@ -115,35 +115,7 @@ export default function DashboardAdmin() {
         </div>
 
   
-        <div
-          className="card shadow-lg text-center p-4 border-0"
-          style={{
-            width: "320px",
-            borderRadius: "20px",
-        
-            transition: "all 0.3s ease",
-          }}
-        >
-          <i
-            className="bi bi-people mb-3"
-            style={{ fontSize: "3rem", color: "#0d6efd" }}
-          ></i>
-          <h5 className="fw-bold mb-3">Acompanahar Solicitações</h5>
-          <p className="text-secondary mb-4">
-            Verificar andamento de solicitações e atividades dos usuários.
-          </p>
-          <button
-            className="btn fw-bold rounded-pill px-4"
-            style={{
-              backgroundColor: "#0d6efd",
-              color: "white",
-              width: "100%",
-            }}
-         
-          >
-            Acessar Histórico
-          </button>
-        </div>
+       
       </div>
 
       <style jsx>{`
