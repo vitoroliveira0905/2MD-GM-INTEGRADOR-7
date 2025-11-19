@@ -10,11 +10,11 @@ export default function SuporteChat() {
     const [texto, setTexto] = useState("");
     const router = useRouter();
 
-    const enviarMensagem = async () => {
-        if (!texto.trim()) return;
+    const enviarMensagem = async (mensagemForcada = null) => {
+        const msgUsuario = mensagemForcada || texto;
 
-        const msgUsuario = texto;
-        setTexto("");
+        if (!msgUsuario.trim()) return;
+        if (!mensagemForcada) setTexto("");
 
         // Adiciona msg do usuário
         setMensagens((msgs) => [...msgs, { autor: "usuario", texto: msgUsuario }]);
@@ -26,19 +26,25 @@ export default function SuporteChat() {
             body: JSON.stringify({ mensagem: msgUsuario }),
         });
 
-
         const data = await res.json();
 
         // Adiciona resposta da IA
         setMensagens((msgs) => [...msgs, { autor: "suporte", texto: data.resposta }]);
     };
 
-    function handleEnter(event) {
+    const handleEnter = (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
             enviarMensagem();
         }
-    }
+    };
+
+    // 🔥 Perguntas rápidas
+    const perguntasRapidas = [
+        "Como faço uma nova solicitação?",
+        "Como vejo o status da minha solicitação?",
+        "Com quem falo quando demora para aprovar?"
+    ];
 
     return (
         <div className="d-flex flex-column align-items-center min-vh-100 bg-light py-4">
@@ -54,7 +60,6 @@ export default function SuporteChat() {
                 </button>
             </div>
 
-
             {/* Cabeçalho */}
             <div
                 className="text-white d-flex align-items-center justify-content-center rounded-top shadow w-100"
@@ -65,13 +70,30 @@ export default function SuporteChat() {
             </div>
 
             {/* Caixa do chat */}
-            <div
-                className="bg-white rounded-bottom shadow w-100"
-                style={{ maxWidth: "600px" }}
-            >
+            <div className="bg-white rounded-bottom shadow w-100" style={{ maxWidth: "600px" }}>
+                
+                {/* 🔥 🔥 Sugestões rápidas (aparecem como bolhas) */}
+                <div className="d-flex gap-2 flex-wrap p-2 border-bottom" style={{ background: "#f8f9fa" }}>
+                    {perguntasRapidas.map((p, i) => (
+                        <button
+                            key={i}
+                            onClick={() => enviarMensagem(p)}
+                            className="btn btn-sm text-dark"
+                            style={{
+                                background: "#e9ecef",
+                                borderRadius: "20px",
+                                padding: "6px 12px",
+                                border: "1px solid #ccc"
+                            }}
+                        >
+                            {p}
+                        </button>
+                    ))}
+                </div>
+
                 <div
                     className="overflow-auto p-3 d-flex flex-column"
-                    style={{ height: "60vh", background: "#ffffffff" }}
+                    style={{ height: "60vh", background: "#fff" }}
                 >
                     {mensagens.map((msg, i) => (
                         <div
@@ -102,11 +124,11 @@ export default function SuporteChat() {
                         onChange={(e) => setTexto(e.target.value)}
                         onKeyDown={handleEnter}
                     />
-                    <button className="btn btn-primary" onClick={enviarMensagem}>
+                    <button className="btn btn-primary" onClick={() => enviarMensagem()}>
                         Enviar
                     </button>
                 </div>
             </div>
         </div>
     );
-};
+}
