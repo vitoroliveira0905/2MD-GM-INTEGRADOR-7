@@ -100,7 +100,7 @@ export default function Solicitacao() {
         }
     };
 
-    if (dadosUsuario === null || produtos.length === 0) {
+    if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "comum" || produtos.length === 0) {
         return <p>Carregando...</p>
     }
 

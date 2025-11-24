@@ -6,48 +6,79 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useRouter } from "next/navigation";
 
 export default function Relatorios() {
+
   const router = useRouter();
 
-  const [tipo, setTipo] = useState("estoque"); // NOVO
+  const [tipo, setTipo] = useState("estoque");
 
   const [movimentacoes, setMovimentacoes] = useState(0);
   const [criticos, setCriticos] = useState(0);
+  const [esgotados, setEsgotados] = useState(0);
+  const [estoques, setEstoques] = useState(0);
+
   const [aprovadas, setAprovadas] = useState(0);
   const [recusadas, setRecusadas] = useState(0);
+  const [finalizadas, setFinalizadas] = useState(0);
+
+  const [dadosUsuario, setDadosUsuario] = useState(null);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("dadosUsuario"));
+    if (!user) return router.push("/login");
+    setDadosUsuario(user);
+
     async function carregarDados() {
       try {
+
       
-        const estRes = await fetch("http://localhost:3001/estoque");
-        const estoque = await estRes.json();
+        const estRes = await fetch("http://localhost:3001/api/estoque", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${user.token}`
+          }
+        });
+
+        const estoqueResp = await estRes.json();
+        const estoque = estoqueResp.dados || [];
 
         setMovimentacoes(estoque.length);
 
-        const qtdCriticos = estoque.filter(item => item.quantidade < item.minimo).length;
-        setCriticos(qtdCriticos);
+        setCriticos(estoque.filter(item => item.quantidade < item.minimo).length);
 
-        const solRes = await fetch("http://localhost:3001/solicitacoes");
-        const solicitacoes = await solRes.json();
+        setEsgotados(estoque.filter(item => item.quantidade === 0).length);
 
-        const qtdAprovadas = solicitacoes.filter(s => s.status === "Aprovada").length;
-        setAprovadas(qtdAprovadas);
+        setEstoques(estoque.filter(item => item.quantidade > item.minimo).length);
 
-        const qtdRecusadas = solicitacoes.filter(s => s.status === "Recusada").length;
-        setRecusadas(qtdRecusadas);
 
-      } catch (err) {
-        console.log("Erro ao carregar dados:", err);
+        
+        const solRes = await fetch("http://localhost:3001/api/solicitacoes", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${user.token}`
+          }
+        });
+
+        const solResp = await solRes.json();
+        const solicitacoes = solResp.dados || [];
+
+        setAprovadas(solicitacoes.filter(s => s.status === "Aprovada").length);
+        setRecusadas(solicitacoes.filter(s => s.status === "Recusada").length);
+        setFinalizadas(solicitacoes.filter(s => s.status === "Finalizada").length);
+
+
+      } catch (error) {
+        console.log("Erro ao carregar relatórios:", error);
       }
     }
 
     carregarDados();
   }, []);
 
+  if (!dadosUsuario) return <p>Carregando...</p>;
+
   return (
     <div className="container py-5">
-      
-    
+
       <div className="mb-4">
         <button
           className="btn btn-outline-dark fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
@@ -77,7 +108,6 @@ export default function Relatorios() {
         </select>
       </div>
 
-  
       <div className="card shadow-lg p-4" style={{ borderRadius: "20px" }}>
         <h4 className="fw-bold mb-4">
           <i className="bi bi-file-text me-2"></i>Resumo Rápido
@@ -85,7 +115,6 @@ export default function Relatorios() {
 
         <ul className="list-group mb-4">
 
- 
           {tipo === "estoque" && (
             <>
               <li className="list-group-item d-flex justify-content-between">
@@ -96,6 +125,16 @@ export default function Relatorios() {
               <li className="list-group-item d-flex justify-content-between">
                 <span>Itens em nível crítico:</span>
                 <strong>{criticos}</strong>
+              </li>
+
+              <li className="list-group-item d-flex justify-content-between">
+                <span>Itens sem estoque:</span>
+                <strong>{esgotados}</strong>
+              </li>
+
+              <li className="list-group-item d-flex justify-content-between">
+                <span>Itens em estoque:</span>
+                <strong>{estoques}</strong>
               </li>
             </>
           )}
@@ -110,6 +149,11 @@ export default function Relatorios() {
               <li className="list-group-item d-flex justify-content-between">
                 <span>Solicitações recusadas:</span>
                 <strong>{recusadas}</strong>
+              </li>
+
+              <li className="list-group-item d-flex justify-content-between">
+                <span>Solicitações finalizadas:</span>
+                <strong>{finalizadas}</strong>
               </li>
             </>
           )}
