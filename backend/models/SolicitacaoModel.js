@@ -10,16 +10,20 @@ class SolicitacaoModel {
                 const sql = `
                 SELECT 
                     s.*,
-                    p.nome as produto_nome
+                    p.nome AS produto_nome,
+                    u.nome AS usuario_nome
                 FROM solicitacoes s
                 INNER JOIN produtos p ON p.id = s.produto_id
+                INNER JOIN usuarios u ON u.id = s.usuario_id
                 ORDER BY s.id DESC
                 LIMIT ? OFFSET ?
             `;
 
                 const [solicitacoes] = await connection.query(sql, [limite, offset]);
 
-                const [totalResult] = await connection.execute('SELECT COUNT(*) as total FROM solicitacoes');
+                const [totalResult] = await connection.execute(
+                    'SELECT COUNT(*) AS total FROM solicitacoes'
+                );
                 const total = totalResult[0].total;
 
                 const paginaAtual = (offset / limite) + 1;
@@ -40,6 +44,7 @@ class SolicitacaoModel {
             throw error;
         }
     }
+
 
 
     // Buscar solicitacao por ID

@@ -13,7 +13,7 @@ export default function DashboardCliente() {
   const [modalDetalhes, setModalDetalhes] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(null);
 
-  
+
   useEffect(() => {
     const dadosString = localStorage.getItem("dadosUsuario");
     if (!dadosString) {
@@ -22,8 +22,8 @@ export default function DashboardCliente() {
     }
     try {
       const dados = JSON.parse(dadosString);
-      if (!dados?.usuario?.tipo || dados.usuario.tipo !== "comum") {
-        router.push(dados.usuario?.tipo === "comum" ? "/login" : "/administracao/dashboard");
+      if (dados.usuario.tipo === "admin") {
+        router.push("/administracao/dashboard");
         return;
       }
       setDadosUsuario(dados);
@@ -48,7 +48,7 @@ export default function DashboardCliente() {
     return <p>Carregando...</p>
   }
 
-  
+
   const getBadgeClass = (status) => {
     const s = status.toLowerCase();
     switch (s) {
@@ -63,12 +63,12 @@ export default function DashboardCliente() {
     }
   };
 
-  
+
   const totalPendentes = dadosSolicitacoes.solicitacoes.filter(s => s.status === "pendente").length;
   const totalAprovadas = dadosSolicitacoes.solicitacoes.filter(s => s.status === "aprovado").length;
   const totalNegadas = dadosSolicitacoes.solicitacoes.filter(s => s.status === "negado").length;
 
-  
+
   function verDetalhes(item) {
     setModalDetalhes(item);
   }
@@ -77,7 +77,7 @@ export default function DashboardCliente() {
     setModalCancelar(item);
   }
 
-  
+
   async function confirmarCancelamento() {
     try {
       const dados = JSON.parse(localStorage.getItem("dadosUsuario"));
@@ -99,7 +99,7 @@ export default function DashboardCliente() {
         return;
       }
 
-      
+
       setDadosSolicitacoes(prev => {
         const lista = prev.solicitacoes || [];
         return {
@@ -141,7 +141,7 @@ export default function DashboardCliente() {
           </div>
         </div>
 
-      
+
         <div className="row g-4 mb-5">
           {[
             { titulo: "Pendentes", valor: totalPendentes, icone: "bi-hourglass-split" },
@@ -237,7 +237,7 @@ export default function DashboardCliente() {
           </div>
         </div>
 
-      
+
         <div className="card border-0 shadow-lg rounded-4">
           <div className="card-header bg-white border-0 p-4">
             <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)" }}>
@@ -279,7 +279,7 @@ export default function DashboardCliente() {
 
       </div>
 
-     
+
       {modalDetalhes && (
         <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -307,7 +307,7 @@ export default function DashboardCliente() {
         </div>
       )}
 
-  
+
       {modalCancelar && (
         <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">

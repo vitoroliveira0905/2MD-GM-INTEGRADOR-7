@@ -43,8 +43,8 @@ export default function Historico() {
     }
     try {
       const dados = JSON.parse(dadosString);
-      if (!dados?.usuario?.tipo || dados.usuario.tipo !== "comum") {
-        router.push(dados.usuario?.tipo === "comum" ? "/login" : "/administracao/dashboard");
+      if (dados.usuario.tipo === "admin") {
+        router.push("/administracao/dashboard");
         return;
       }
       setDadosUsuario(dados);
@@ -70,7 +70,7 @@ export default function Historico() {
       case "atendido":
       case "aprovado":
         return "bg-success";
-      case "negado":
+      case "recusado":
         return "bg-danger";
       case "cancelado":
         return "bg-secondary";
@@ -152,7 +152,7 @@ export default function Historico() {
               <option value="todos">Todos os Status</option>
               <option value="aprovado">Aprovado</option>
               <option value="atendido">Finalizado</option>
-              <option value="negado">Negado</option>
+              <option value="recusado">Recusado</option>
               <option value="cancelado">Cancelado</option>
               <option value="pendente">Pendente</option>
             </select>
@@ -214,7 +214,7 @@ export default function Historico() {
                             </button>
                           )}
 
-                          {s.status.toLowerCase() === "negado" && (
+                          {s.status.toLowerCase() === "recusado" && (
                             <button
                               className="btn btn-info btn-sm"
                               title="Ver motivo"

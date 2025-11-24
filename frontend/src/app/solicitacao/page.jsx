@@ -31,8 +31,8 @@ export default function Solicitacao() {
         }
         try {
             const dados = JSON.parse(dadosString);
-            if (!dados?.usuario?.tipo || dados.usuario.tipo !== "comum") {
-                router.push(dados.usuario?.tipo === "comum" ? "/login" : "/administracao/dashboard");
+            if (dados.usuario.tipo === "admin") {
+                router.push("/administracao/dashboard");
                 return;
             }
             setDadosUsuario(dados);

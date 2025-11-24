@@ -6,161 +6,184 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useRouter } from "next/navigation";
 
 export default function Relatorios() {
+    const router = useRouter();
 
-  const router = useRouter();
+    const [tipo, setTipo] = useState("estoque");
 
-  const [tipo, setTipo] = useState("estoque");
-
-  const [movimentacoes, setMovimentacoes] = useState(0);
-  const [criticos, setCriticos] = useState(0);
-  const [esgotados, setEsgotados] = useState(0);
-  const [estoques, setEstoques] = useState(0);
-
-  const [aprovadas, setAprovadas] = useState(0);
-  const [recusadas, setRecusadas] = useState(0);
-  const [finalizadas, setFinalizadas] = useState(0);
-
-  const [dadosUsuario, setDadosUsuario] = useState(null);
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("dadosUsuario"));
-    if (!user) return router.push("/login");
-    setDadosUsuario(user);
-
-    async function carregarDados() {
-      try {
-
-      
-        const estRes = await fetch("http://localhost:3001/api/produtos", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${user.token}`
-          }
-        });
-
-        const estoqueResp = await estRes.json();
-        const estoque = estoqueResp.dados || [];
-
-        setMovimentacoes(estoque.length);
-
-        setCriticos(estoque.filter(item => item.quantidade < item.minimo).length);
-
-        setEsgotados(estoque.filter(item => item.quantidade === 0).length);
-
-        setEstoques(estoque.filter(item => item.quantidade > item.minimo).length);
+    const [movimentacoes, setMovimentacoes] = useState(0);
+    const [criticos, setCriticos] = useState(0);
+    const [esgotados, setEsgotados] = useState(0);
+    const [estoques, setEstoques] = useState(0);
 
 
-        
-        const solRes = await fetch("http://localhost:3001/api/solicitacoes", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${user.token}`
-          }
-        });
+    const [totalSolicitacoes, setTotalSolicitacoes] = useState(0);
+    const [pendentes, setPendentes] = useState(0);
 
-        const solResp = await solRes.json();
-        const solicitacoes = solResp.dados || [];
+    const [aprovadas, setAprovadas] = useState(0);
+    const [recusadas, setRecusadas] = useState(0);
+    const [finalizadas, setFinalizadas] = useState(0);
+    const [canceladas, setCanceladas] = useState(0);
 
-        setAprovadas(solicitacoes.filter(s => s.status === "Aprovada").length);
-        setRecusadas(solicitacoes.filter(s => s.status === "Recusada").length);
-        setFinalizadas(solicitacoes.filter(s => s.status === "Finalizada").length);
+    const [dadosUsuario, setDadosUsuario] = useState(null);
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("dadosUsuario"));
+
+        if (!user) return router.push("/login");
+
+        setDadosUsuario(user);
+
+        async function carregarDados() {
+            try {
+
+                const estRes = await fetch("http://localhost:3001/api/produtos", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
+
+                const estoqueResp = await estRes.json();
+                const estoque = estoqueResp.dados || [];
+
+                setMovimentacoes(estoque.length);
+                setCriticos(estoque.filter((item) => item.quantidade < item.minimo).length);
+                setEsgotados(estoque.filter((item) => item.quantidade === 0).length);
+                setEstoques(estoque.filter((item) => item.quantidade > item.minimo).length);
 
 
-      } catch (error) {
-        console.log("Erro ao carregar relatórios:", error);
-      }
-    }
+                const solRes = await fetch("http://localhost:3001/api/solicitacoes", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
 
-    carregarDados();
-  }, []);
+                const solResp = await solRes.json();
+                const solicitacoes = solResp.solicitacoes || [];
 
-  if (!dadosUsuario) return <p>Carregando...</p>;
 
-  return (
-    <div className="container py-5">
+                setTotalSolicitacoes(solicitacoes.length);
+                setPendentes(solicitacoes.filter((s) => s.status === "pendente").length);
+                setAprovadas(solicitacoes.filter((s) => s.status === "aprovado").length);
+                setRecusadas(solicitacoes.filter((s) => s.status === "negado").length);
+                setFinalizadas(solicitacoes.filter((s) => s.status === "atendido").length);
+                setCanceladas(solicitacoes.filter((s) => s.status === "cancelado").length);
 
-      <div className="mb-4">
-        <button
-          className="btn btn-outline-dark fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
-          style={{ borderRadius: "12px" }}
-          onClick={() => router.back()}
-        >
-          <i className="bi bi-arrow-left"></i> Voltar
-        </button>
-      </div>
+            } catch (error) {
+                console.log("Erro ao carregar relatórios:", error);
+            }
+        }
 
-      <h1 className="text-center mb-5 fw-bold" style={{ color: "var(--primary-color)" }}>
-        <i className="bi bi-graph-up-arrow me-2"></i> Relatórios
-      </h1>
+        carregarDados();
+    }, []);
 
-      <div className="card shadow-sm p-4 mb-4" style={{ borderRadius: "16px" }}>
-        <h5 className="fw-bold mb-3">
-          <i className="bi bi-funnel me-2"></i>Selecione o tipo de relatório
-        </h5>
+    if (!dadosUsuario) return <p>Carregando...</p>;
 
-        <select
-          className="form-select w-50"
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value)}
-        >
-          <option value="estoque">Movimentações do Estoque</option>
-          <option value="solicitacoes">Solicitações (Aprovadas / Recusadas)</option>
-        </select>
-      </div>
+    return (
+        <div className="container py-5">
+            <div className="mb-4">
+                <button
+                    className="btn btn-outline-dark fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
+                    style={{ borderRadius: "12px" }}
+                    onClick={() => router.back()}
+                >
+                    <i className="bi bi-arrow-left"></i> Voltar
+                </button>
+            </div>
 
-      <div className="card shadow-lg p-4" style={{ borderRadius: "20px" }}>
-        <h4 className="fw-bold mb-4">
-          <i className="bi bi-file-text me-2"></i>Resumo Rápido
-        </h4>
+            <h1
+                className="text-center mb-5 fw-bold"
+                style={{ color: "var(--primary-color)" }}
+            >
+                <i className="bi bi-graph-up-arrow me-2"></i> Relatórios
+            </h1>
 
-        <ul className="list-group mb-4">
+            <div className="card shadow-sm p-4 mb-4" style={{ borderRadius: "16px" }}>
+                <h5 className="fw-bold mb-3">
+                    <i className="bi bi-funnel me-2"></i>Selecione o tipo de relatório
+                </h5>
 
-          {tipo === "estoque" && (
-            <>
-              <li className="list-group-item d-flex justify-content-between">
-                <span>Total de movimentações:</span>
-                <strong>{movimentacoes}</strong>
-              </li>
+                <select
+                    className="form-select w-50"
+                    value={tipo}
+                    onChange={(e) => setTipo(e.target.value)}
+                >
+                    <option value="estoque">Movimentações do Estoque</option>
+                    <option value="solicitacoes">Solicitações (Aprovadas / Recusadas)</option>
+                </select>
+            </div>
 
-              <li className="list-group-item d-flex justify-content-between">
-                <span>Itens em nível crítico:</span>
-                <strong>{criticos}</strong>
-              </li>
+            <div className="card shadow-lg p-4" style={{ borderRadius: "20px" }}>
+                <h4 className="fw-bold mb-4">
+                    <i className="bi bi-file-text me-2"></i>Resumo Rápido
+                </h4>
 
-              <li className="list-group-item d-flex justify-content-between">
-                <span>Itens sem estoque:</span>
-                <strong>{esgotados}</strong>
-              </li>
+                <ul className="list-group mb-4">
 
-              <li className="list-group-item d-flex justify-content-between">
-                <span>Itens em estoque:</span>
-                <strong>{estoques}</strong>
-              </li>
-            </>
-          )}
+                    {tipo === "estoque" && (
+                        <>
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Total de movimentações:</span>
+                                <strong>{movimentacoes}</strong>
+                            </li>
 
-          {tipo === "solicitacoes" && (
-            <>
-              <li className="list-group-item d-flex justify-content-between">
-                <span>Solicitações aprovadas:</span>
-                <strong>{aprovadas}</strong>
-              </li>
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Itens em nível crítico:</span>
+                                <strong>{criticos}</strong>
+                            </li>
 
-              <li className="list-group-item d-flex justify-content-between">
-                <span>Solicitações recusadas:</span>
-                <strong>{recusadas}</strong>
-              </li>
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Itens sem estoque:</span>
+                                <strong>{esgotados}</strong>
+                            </li>
 
-              <li className="list-group-item d-flex justify-content-between">
-                <span>Solicitações finalizadas:</span>
-                <strong>{finalizadas}</strong>
-              </li>
-            </>
-          )}
-        </ul>
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Itens em estoque:</span>
+                                <strong>{estoques}</strong>
+                            </li>
+                        </>
+                    )}
 
-        <p className="text-secondary text-center">Resumo de dados atualizados.</p>
-      </div>
-    </div>
-  );
+                    {tipo === "solicitacoes" && (
+                        <>
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Total de solicitações:</span>
+                                <strong>{totalSolicitacoes}</strong>
+                            </li>
+
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Solicitações pendentes:</span>
+                                <strong>{pendentes}</strong>
+                            </li>
+
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Solicitações aprovadas:</span>
+                                <strong>{aprovadas}</strong>
+                            </li>
+
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Solicitações recusadas:</span>
+                                <strong>{recusadas}</strong>
+                            </li>
+
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Solicitações finalizadas:</span>
+                                <strong>{finalizadas}</strong>
+                            </li>
+
+
+                            <li className="list-group-item d-flex justify-content-between">
+                                <span>Solicitações canceladas:</span>
+                                <strong>{canceladas}</strong>
+                            </li>
+                        </>
+                    )}
+
+                </ul>
+
+                <p className="text-secondary text-center">Resumo de dados atualizados.</p>
+            </div>
+        </div>
+    );
 }
