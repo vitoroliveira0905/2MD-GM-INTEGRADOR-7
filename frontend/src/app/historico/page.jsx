@@ -71,8 +71,9 @@ export default function Historico() {
       case "aprovado":
         return "bg-success";
       case "negado":
-      case "cancelado":
         return "bg-danger";
+      case "cancelado":
+        return "bg-secondary";
       default:
         return "bg-warning text-dark";
     }

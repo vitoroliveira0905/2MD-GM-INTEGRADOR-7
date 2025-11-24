@@ -31,7 +31,7 @@ export default function Relatorios() {
       try {
 
       
-        const estRes = await fetch("http://localhost:3001/api/estoque", {
+        const estRes = await fetch("http://localhost:3001/api/produtos", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${user.token}`
