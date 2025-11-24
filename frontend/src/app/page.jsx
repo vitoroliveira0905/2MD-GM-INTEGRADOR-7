@@ -14,33 +14,36 @@ export default function DashboardCliente() {
   const [modalCancelar, setModalCancelar] = useState(null);
 
   useEffect(() => {
-    const estaLogado = localStorage.getItem("dadosUsuario");
-    if (!estaLogado) {
-      router.push("/login")
+    const dadosString = localStorage.getItem("dadosUsuario");
+    if (!dadosString) {
+      router.push("/login");
+      return;
+    }
+    try {
+      const dados = JSON.parse(dadosString);
+      if (!dados?.usuario?.tipo || dados.usuario.tipo !== "comum") {
+        router.push(dados.usuario?.tipo === "comum" ? "/login" : "/admin/dashboard");
+        return;
+      }
+      setDadosUsuario(dados);
+
+      fetch("http://localhost:3001/api/solicitacoes", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${dados.token}`,
+        }
+      })
+        .then(response => response.json())
+        .then(data => setDadosSolicitacoes(data))
+        .catch(error => console.error("Erro ao buscar solicitações:", error));
+    } catch (e) {
+      console.error("Erro ao parsear dadosUsuario do localStorage:", e);
+      router.push("/login");
     }
   }, [])
 
-  useEffect(() => {
-    const dados = JSON.parse(localStorage.getItem("dadosUsuario"));
-    if (dados) {
-      try {
-        setDadosUsuario(dados);
-        fetch("http://localhost:3001/api/solicitacoes", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${dados.token}`,
-          }
-        })
-          .then(response => response.json())
-          .then(data => setDadosSolicitacoes(data))
-          .catch(error => console.error("Erro ao buscar solicitações:", error));
-      } catch (e) {
-        console.error("Erro ao ler dadosUsuario do localStorage:", e);
-      }
-    }
-  }, []);
 
-  if (dadosUsuario === null || dadosSolicitacoes === null) {
+  if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "comum" || dadosSolicitacoes === null) {
     return <p>Carregando...</p>
   }
 
@@ -94,7 +97,6 @@ export default function DashboardCliente() {
   return (
     <main style={{ flex: "1", backgroundColor: "#f8f9fa" }}>
       <div className="container py-5">
-
 
         <div className="row align-items-center mb-5">
           <div className="col-md-8">
@@ -157,7 +159,8 @@ export default function DashboardCliente() {
                 </thead>
 
                 <tbody>
-                  {dadosSolicitacoes.solicitacoes.filter((material) => { return material.status === "pendente" || material.status === "aprovado" })
+                  {(dadosSolicitacoes?.solicitacoes || [])
+                    .filter((material) => material.status === "pendente" || material.status === "aprovado")
                     .sort((a, b) => {
                       return ["aprovado", "pendente"].indexOf(a.status) - ["aprovado", "pendente"].indexOf(b.status);
                     })

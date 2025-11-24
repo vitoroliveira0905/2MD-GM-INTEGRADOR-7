@@ -24,24 +24,33 @@ export default function Solicitacao() {
 
     // Carregar dados do usuário e produtos ao montar o componente
     useEffect(() => {
-        const dados = JSON.parse(localStorage.getItem("dadosUsuario"));
-        if (dados) {
-            try {
-                setDadosUsuario(dados);
-                fetch("http://localhost:3001/api/produtos", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${dados.token}`,
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => setProdutos(data))
-                    .catch(error => console.error("Erro ao buscar produtos:", error));
-            } catch (e) {
-                console.error("Erro ao ler dadosUsuario do localStorage:", e);
-            }
+        const dadosString = localStorage.getItem("dadosUsuario");
+        if (!dadosString) {
+            router.push("/login");
+            return;
         }
-    }, []);
+        try {
+            const dados = JSON.parse(dadosString);
+            if (!dados?.usuario?.tipo || dados.usuario.tipo !== "comum") {
+                router.push(dados.usuario?.tipo === "comum" ? "/login" : "/admin/dashboard");
+                return;
+            }
+            setDadosUsuario(dados);
+
+            fetch("http://localhost:3001/api/produtos", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${dados.token}`,
+                }
+            })
+                .then(response => response.json())
+                .then(data => setProdutos(data))
+                .catch(error => console.error("Erro ao buscar produtos:", error));
+        } catch (e) {
+            console.error("Erro ao parsear dadosUsuario do localStorage:", e);
+            router.push("/login");
+        }
+    }, [])
 
     // Função para adicionar uma nova solicitação
     const adicionarSolicitacao = async (e) => {
@@ -134,7 +143,7 @@ export default function Solicitacao() {
                 className="row g-3 mt-4 bg-light p-4 rounded shadow-sm"
             >
                 <div className="col-md-6">
-                    <div className="input-group input-group-lg" style={{padding: "0 !important"}}>
+                    <div className="input-group input-group-lg" style={{ padding: "0 !important" }}>
                         <span className="input-group-text">
                             <i className="bi bi-box-seam"></i>
                         </span>

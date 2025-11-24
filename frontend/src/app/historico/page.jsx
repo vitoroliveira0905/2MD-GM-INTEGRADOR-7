@@ -24,11 +24,11 @@ export default function Historico() {
 
   function confirmarCancelamento() {
     setDadosSolicitacoes(prev => {
-      if (!prev) return null; 
+      if (!prev) return null;
       return {
         ...prev,
         solicitacoes: prev.solicitacoes.map(s =>
-          s.id === modalCancelar.id ? { ...s, status: "cancelado" } : s 
+          s.id === modalCancelar.id ? { ...s, status: "cancelado" } : s
         )
       };
     });
@@ -36,31 +36,33 @@ export default function Historico() {
   }
 
   useEffect(() => {
-    const estaLogado = localStorage.getItem("dadosUsuario");
-    if (!estaLogado) {
-      router.push("/login")
+    const dadosString = localStorage.getItem("dadosUsuario");
+    if (!dadosString) {
+      router.push("/login");
+      return;
+    }
+    try {
+      const dados = JSON.parse(dadosString);
+      if (!dados?.usuario?.tipo || dados.usuario.tipo !== "comum") {
+        router.push(dados.usuario?.tipo === "comum" ? "/login" : "/admin/dashboard");
+        return;
+      }
+      setDadosUsuario(dados);
+
+      fetch("http://localhost:3001/api/solicitacoes", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${dados.token}`,
+        }
+      })
+        .then(response => response.json())
+        .then(data => setDadosSolicitacoes(data))
+        .catch(error => console.error("Erro ao buscar solicitações:", error));
+    } catch (e) {
+      console.error("Erro ao parsear dadosUsuario do localStorage:", e);
+      router.push("/login");
     }
   }, [])
-
-  useEffect(() => {
-    const dados = JSON.parse(localStorage.getItem("dadosUsuario"));
-    if (dados) {
-      try {
-        setDadosUsuario(dados);
-        fetch("http://localhost:3001/api/solicitacoes", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${dados.token}`,
-          }
-        })
-          .then(response => response.json())
-          .then(data => setDadosSolicitacoes(data))
-          .catch(error => console.error("Erro ao buscar solicitações:", error));
-      } catch (e) {
-        console.error("Erro ao ler dadosUsuario do localStorage:", e);
-      }
-    }
-  }, []);
 
   const getBadgeClass = (status) => {
     const lowerStatus = status.toLowerCase();
@@ -76,13 +78,13 @@ export default function Historico() {
     }
   };
 
- 
+
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
-  
 
 
- 
+
+
   const solicitacoesFiltradas =
     dadosSolicitacoes?.solicitacoes.filter((s) => {
       const txt = busca.toLowerCase();
@@ -100,7 +102,7 @@ export default function Historico() {
     }) || [];
 
 
-  if (dadosUsuario === null || dadosSolicitacoes === null) {
+  if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "comum" || dadosSolicitacoes === null) {
     return <p>Carregando...</p>
   }
 
@@ -128,7 +130,7 @@ export default function Historico() {
         </div>
 
 
-      
+
         <div className="row mb-4">
           <div className="col-md-6">
             <input
@@ -155,7 +157,7 @@ export default function Historico() {
             </select>
           </div>
         </div>
-       
+
 
 
         <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
@@ -175,9 +177,9 @@ export default function Historico() {
                   </thead>
                   <tbody>
 
-                
+
                     {solicitacoesFiltradas.map((s) => (
-                  
+
 
                       <tr key={s.id}>
                         <td>
@@ -201,15 +203,15 @@ export default function Historico() {
                         <td>{s.descricao}</td>
 
                         <td>
-                          {s.status.toLowerCase() === "pendente" &&(
-                              <button
-                                className="btn btn-danger btn-sm"
-                                title="Cancelar solicitação"
-                                onClick={() => cancelarSolicitacao(s)}
-                              >
-                                <i className="bi bi-trash"></i>
-                              </button>
-                            )}
+                          {s.status.toLowerCase() === "pendente" && (
+                            <button
+                              className="btn btn-danger btn-sm"
+                              title="Cancelar solicitação"
+                              onClick={() => cancelarSolicitacao(s)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          )}
 
                           {s.status.toLowerCase() === "negado" && (
                             <button
@@ -238,7 +240,7 @@ export default function Historico() {
         </div>
       </div>
 
-      
+
       {modalDetalhes && (
         <div className="modal fade show d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
