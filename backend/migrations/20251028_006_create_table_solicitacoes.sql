@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS solicitacoes (
     quantidade INT NOT NULL CHECK (quantidade > 0),
     shop varchar(50) not null,
     area varchar(50) not null,
-    status ENUM('pendente', 'aprovado', 'negado', 'atendido', 'cancelado') DEFAULT 'pendente',
+    status ENUM('pendente', 'aprovado', 'negado', 'finalizado', 'cancelado') DEFAULT 'pendente',
     descricao TEXT,
     data_solicitacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
