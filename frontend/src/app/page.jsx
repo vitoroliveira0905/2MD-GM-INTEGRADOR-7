@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import dynamic from "next/dynamic";
+
+const ChatWidget = dynamic(() => import("@/components/ChatWidget"), { ssr: false });
+
+
 
 export default function DashboardCliente() {
   const router = useRouter();
@@ -12,6 +17,7 @@ export default function DashboardCliente() {
   const [dadosSolicitacoes, setDadosSolicitacoes] = useState(null);
   const [modalDetalhes, setModalDetalhes] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(null);
+  const [openChat, setOpenChat] = useState(false);
 
 
   useEffect(() => {
@@ -260,19 +266,17 @@ export default function DashboardCliente() {
               </button>
             </Link>
 
-            <Link href="/suporte">
-              <button className="btn btn-dark fw-bold btn-lg rounded-pill">
-                <i className="bi bi-headset me-2"></i> Falar com o Suporte
-              </button>
-            </Link>
+   
 
+
+<Link href="/login">
             <button className="btn btn-danger fw-bold btn-lg rounded-pill"
               onClick={() => {
                 localStorage.removeItem("dadosUsuario");
                 router.push("/login");
               }}>
               <i className="bi bi-arrow-left me-2"></i> Sair
-            </button>
+            </button></Link>
 
           </div>
         </div>
@@ -338,6 +342,101 @@ export default function DashboardCliente() {
           </div>
         </div>
       )}
+
+      {/* 🔵 Bolha flutuante */}
+      <button
+        onClick={() => setOpenChat(!openChat)}
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          width: "65px",
+          height: "65px",
+          borderRadius: "50%",
+          backgroundColor: "var(--primary-color)",
+          color: "white",
+          fontSize: "28px",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+          zIndex: 9999,
+          animation: openChat ? "none" : "floatButton 2.4s ease-in-out infinite" // anima o BOTÃO
+        }}
+      >
+        {openChat ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="white" className="bi bi-x-lg" viewBox="0 0 16 16">
+            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+          </svg>
+        ) : (
+          <svg
+            width="34"
+            height="34"
+            viewBox="0 0 24 24"
+            fill="white"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <style>{`
+          @keyframes blink { 
+            0%, 20%, 60%, 100% { transform: scaleY(1); }
+            40% { transform: scaleY(0.12); } 
+          }
+          @keyframes floatButton {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+          }
+        `}</style>
+            </defs>
+
+            {/* Corpo do robô */}
+            <path d="M12 2C7.031 2 3 5.589 3 10c0 1.863.709 3.581 1.887 4.938-.223 1.042-.72 2.547-1.782 3.867a.75.75 0 0 0 .79 1.187c2.18-.52 4.042-1.348 5.21-2.013A11.98 11.98 0 0 0 12 18c4.969 0 9-3.589 9-8s-4.031-8-9-8Z" />
+
+            {/* Olho esquerdo */}
+            <ellipse
+              cx="9"
+              cy="10"
+              rx="1"
+              ry="1.2"
+              style={{ transformOrigin: "9px 10px", animation: "blink 3s infinite" }}
+            />
+
+            {/* Olho direito */}
+            <ellipse
+              cx="15"
+              cy="10"
+              rx="1"
+              ry="1.2"
+              style={{ transformOrigin: "15px 10px", animation: "blink 3s infinite 0.12s" }}
+            />
+
+            {/* Boca */}
+            <path d="M8.692 13.5c1.87.25 3.746.25 5.616 0a.75.75 0 1 1 .184 1.487 14.68 14.68 0 0 1-5.984 0 .75.75 0 0 1 .184-1.487Z" />
+          </svg>
+        )}
+      </button>
+
+
+      {/* 🟦 Caixa do Chat */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: openChat ? "100px" : "-520px", // -520 garante escondimento em telas menores/maiores
+          right: "20px",
+          width: "360px",
+          height: "500px",
+          background: "white",
+          borderRadius: "15px",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
+          overflow: "hidden",
+          zIndex: 9999,
+          transition: "bottom 0.3s ease"
+        }}
+      >
+        <ChatWidget />
+      </div>
 
     </main>
   );
