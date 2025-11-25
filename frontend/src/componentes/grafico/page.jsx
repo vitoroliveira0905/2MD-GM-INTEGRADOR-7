@@ -16,16 +16,7 @@ export default function GraficoPro({
   const chartRef = useRef(null);
 
 
-  const coresPadrao = [
-    "rgba(74, 144, 226, 0.65)",
-    "rgba(255, 99, 132, 0.65)",
-    "rgba(255, 206, 86, 0.65)",
-    "rgba(46, 204, 113, 0.65)",
-    "rgba(155, 89, 182, 0.65)",
-    "rgba(241, 196, 15, 0.65)"
-  ];
 
-  const coresHover = coresPadrao.map(c => c.replace("0.65", "0.9"));
 
   useEffect(() => {
     if (!canvasRef.current) return;

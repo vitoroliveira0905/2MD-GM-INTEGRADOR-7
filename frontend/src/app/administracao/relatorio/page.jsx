@@ -185,39 +185,54 @@ export default function Relatorios() {
                 <p className="text-secondary text-center">Resumo de dados atualizados.</p>
             </div>
             <div className="mt-5">
-  {["estoque", "solicitacoes"].map((graficoTipo) => {
-    if (tipo !== graficoTipo) return null;
+                {["estoque", "solicitacoes"].map((graficoTipo) => {
+                    if (tipo !== graficoTipo) return null;
 
-    const config = {
-      estoque: {
-        titulo: "Situação do Estoque",
-        labels: ["Movimentações", "Críticos", "Esgotados", "Estoque OK"],
-        valores: [movimentacoes, criticos, esgotados, estoques],
-      },
-      solicitacoes: {
-        titulo: "Status das Solicitações",
-        labels: ["Total", "Pendentes", "Aprovadas", "Recusadas", "Finalizadas", "Canceladas"],
-        valores: [totalSolicitacoes, pendentes, aprovadas, recusadas, finalizadas, canceladas],
-      },
-    };
+                    const config = {
+                        estoque: {
+                            titulo: "Situação do Estoque",
+                            labels: ["Movimentações", "Críticos", "Esgotados", "Estoque OK"],
+                            valores: [movimentacoes, criticos, esgotados, estoques],
+                            cores: [
+                                "rgba(54, 162, 235, 0.65)",
+                                "rgba(255, 206, 86, 0.65)",
+                                "rgba(255, 99, 132, 0.65)",
+                                "rgba(46, 204, 113, 0.65)"
+                            ]
+                        },
+                        solicitacoes: {
+                            titulo: "Status das Solicitações",
+                            labels: ["Total", "Pendentes", "Aprovadas", "Recusadas", "Finalizadas", "Canceladas"],
+                            valores: [totalSolicitacoes, pendentes, aprovadas, recusadas, finalizadas, canceladas],
+                            cores: [
+                                "rgba(155, 89, 182, 0.65)"
+                                ,
+                                "rgba(255, 206, 86, 0.65)",
+                                "rgba(46, 204, 113, 0.65)",
+                                "rgba(255, 99, 132, 0.65)",
+                                "rgba(54, 162, 235, 0.65)"
+                                 , "rgba(149, 165, 166, 0.65)"]
+                        },
+                    };
 
-    return (
-      <div key={graficoTipo} className="mb-4" style={{ transition: "all 0.5s ease" }}>
-        <GraficoPro
-          titulo={config[graficoTipo].titulo}
-          tipo="bar"
-          labels={config[graficoTipo].labels}
-          valores={config[graficoTipo].valores}
-        />
-      </div>
-    );
-  })}
-</div>
-
-
+                    return (
+                        <div key={graficoTipo} className="mb-4" style={{ transition: "all 0.5s ease" }}>
+                            <GraficoPro
+                                titulo={config[graficoTipo].titulo}
+                                tipo="bar"
+                                labels={config[graficoTipo].labels}
+                                valores={config[graficoTipo].valores}
+                                cores={config[graficoTipo].cores}
+                            />
+                        </div>
+                    );
+                })}
             </div>
-            
-      
-        
+
+
+        </div>
+
+
+
     );
 }
