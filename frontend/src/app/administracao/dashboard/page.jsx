@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-
 export default function DashboardAdmin() {
 	const router = useRouter();
 	const [dadosUsuario, setDadosUsuario] = useState(null);
@@ -24,30 +23,43 @@ export default function DashboardAdmin() {
 				return;
 			}
 			setDadosUsuario(dados);
-
 		} catch (e) {
 			console.error("Erro ao parsear dadosUsuario do localStorage:", e);
 			router.push("/login");
 		}
-	}, [])
+	}, []);
 
+	const handleLogout = () => {
+		localStorage.removeItem("dadosUsuario");
+		router.push("/login");
+	};
 
 	if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "admin") {
-		return <p>Carregando...</p>
+		return <p>Carregando...</p>;
 	}
 
 	return (
-
 		<div className="container py-5">
-			<h1
-				className="text-center mb-5 fw-bold"
-				style={{
-					color: "var(--primary-color)",
-					letterSpacing: "1px",
-				}}
-			>
-				<i className="bi bi-speedometer2 me-2"></i> Painel do Administrador
-			</h1>
+		
+			<div className="d-flex justify-content-between align-items-center mb-5">
+				<h1
+					className="text-center fw-bold mb-0"
+					style={{
+						color: "var(--primary-color)",
+						letterSpacing: "1px",
+						flex: 1,
+					}}
+				>
+					<i className="bi bi-speedometer2 me-2"></i> Painel do Administrador
+				</h1>
+				<button
+					onClick={handleLogout}
+					className="btn btn-outline-danger fw-bold ms-3"
+					style={{ whiteSpace: "nowrap" }}
+				>
+					<i className="bi bi-box-arrow-right me-1"></i> Logout
+				</button>
+			</div>
 
 			<div className="d-flex justify-content-center flex-wrap gap-4">
 
@@ -56,7 +68,6 @@ export default function DashboardAdmin() {
 					style={{
 						width: "320px",
 						borderRadius: "20px",
-
 						transition: "all 0.3s ease",
 					}}
 				>
@@ -87,7 +98,6 @@ export default function DashboardAdmin() {
 					style={{
 						width: "320px",
 						borderRadius: "20px",
-
 						transition: "all 0.3s ease",
 					}}
 				>
@@ -113,13 +123,11 @@ export default function DashboardAdmin() {
 					</Link>
 				</div>
 
-
 				<div
 					className="card shadow-lg text-center p-4 border-0"
 					style={{
 						width: "320px",
 						borderRadius: "20px",
-
 						transition: "all 0.3s ease",
 					}}
 				>
@@ -144,8 +152,6 @@ export default function DashboardAdmin() {
 						</button>
 					</Link>
 				</div>
-
-
 
 			</div>
 

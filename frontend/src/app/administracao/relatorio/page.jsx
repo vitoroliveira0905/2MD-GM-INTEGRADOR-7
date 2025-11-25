@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useRouter } from "next/navigation";
-
+import GraficoPro from "@/componentes/grafico/page";
 export default function Relatorios() {
     const router = useRouter();
 
@@ -66,8 +66,8 @@ export default function Relatorios() {
                 setTotalSolicitacoes(solicitacoes.length);
                 setPendentes(solicitacoes.filter((s) => s.status === "pendente").length);
                 setAprovadas(solicitacoes.filter((s) => s.status === "aprovado").length);
-                setRecusadas(solicitacoes.filter((s) => s.status === "negado").length);
-                setFinalizadas(solicitacoes.filter((s) => s.status === "atendido").length);
+                setRecusadas(solicitacoes.filter((s) => s.status === "recusado").length);
+                setFinalizadas(solicitacoes.filter((s) => s.status === "finalizado").length);
                 setCanceladas(solicitacoes.filter((s) => s.status === "cancelado").length);
 
             } catch (error) {
@@ -81,7 +81,7 @@ export default function Relatorios() {
     if (!dadosUsuario) return <p>Carregando...</p>;
 
     return (
-        <div className="container py-5">
+        <div className="container py-5 ">
             <div className="mb-4">
                 <button
                     className="btn btn-outline-dark fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
@@ -184,6 +184,40 @@ export default function Relatorios() {
 
                 <p className="text-secondary text-center">Resumo de dados atualizados.</p>
             </div>
-        </div>
+            <div className="mt-5">
+  {["estoque", "solicitacoes"].map((graficoTipo) => {
+    if (tipo !== graficoTipo) return null;
+
+    const config = {
+      estoque: {
+        titulo: "Situação do Estoque",
+        labels: ["Movimentações", "Críticos", "Esgotados", "Estoque OK"],
+        valores: [movimentacoes, criticos, esgotados, estoques],
+      },
+      solicitacoes: {
+        titulo: "Status das Solicitações",
+        labels: ["Total", "Pendentes", "Aprovadas", "Recusadas", "Finalizadas", "Canceladas"],
+        valores: [totalSolicitacoes, pendentes, aprovadas, recusadas, finalizadas, canceladas],
+      },
+    };
+
+    return (
+      <div key={graficoTipo} className="mb-4" style={{ transition: "all 0.5s ease" }}>
+        <GraficoPro
+          titulo={config[graficoTipo].titulo}
+          tipo="bar"
+          labels={config[graficoTipo].labels}
+          valores={config[graficoTipo].valores}
+        />
+      </div>
+    );
+  })}
+</div>
+
+
+            </div>
+            
+      
+        
     );
 }
