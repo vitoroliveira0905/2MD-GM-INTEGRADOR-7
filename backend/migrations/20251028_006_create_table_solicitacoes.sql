@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS solicitacoes (
     area varchar(50) not null,
     status ENUM('pendente', 'aprovado', 'recusado', 'finalizado', 'cancelado') DEFAULT 'pendente',
     descricao TEXT,
+    observacao TEXT,
     data_solicitacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     

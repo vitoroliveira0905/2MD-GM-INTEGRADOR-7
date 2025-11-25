@@ -46,11 +46,11 @@ export default function PainelSolicitacao() {
 						const statusOriginal = (s.status || "").toLowerCase();
 						// Mapeia para nomes usados internamente (capitalizados)
 						const statusMap = {
-							pendente: "Pendente",
-							aprovado: "Aprovado",
-							recusado: "Recusado",
-							atendido: "Atendido",
-							cancelado: "Cancelado",
+							pendente: "pendente",
+							aprovado: "aprovado",
+							recusado: "recusado",
+							finalizado: "finalizado",
+							cancelado: "cancelado",
 						};
 						return {
 							id: s.id,
@@ -73,17 +73,50 @@ export default function PainelSolicitacao() {
 		}
 	}, []);
 
-	const atualizarStatus = (id, novoStatus, obs = "") => {
+	if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "admin" || solicitacoes === null) {
+        return <p>Carregando...</p>
+    }
+	
+	const atualizarStatus = async (id, novoStatus, obs = "") => {
+		const backup = solicitacoes;
+		
 		setSolicitacoes((prev) =>
 			prev.map((item) =>
-				item.id === id
-					? { ...item, status: novoStatus, observacao: obs }
-					: item
+				item.id === id ? { ...item, status: novoStatus, observacao: obs } : item
 			)
 		);
-		setMensagem(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
-		setTimeout(() => setMensagem(""), 3000);
-	};
+
+		if (!dadosUsuario?.token) {
+			setMensagem("Usuário não autenticado.");
+			setTimeout(() => setMensagem(""), 3000);
+			return;
+		}
+
+		try {
+			const res = await fetch(`http://localhost:3001/api/solicitacoes/${id}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${dadosUsuario.token}`,
+				},
+				body: JSON.stringify({ status: novoStatus, observacao: obs }),
+			});
+
+			if (!res.ok) {
+				const errorText = await res.text();
+				throw new Error(errorText || "Erro ao atualizar solicitação.");
+			}
+
+			setMensagem(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
+			setTimeout(() => setMensagem(""), 3000);
+		} catch (error) {
+			console.error("Falha ao atualizar status:", error);
+			// reverte para o estado anterior em caso de erro
+			setSolicitacoes(backup);
+			setMensagem("Erro ao atualizar solicitação.");
+			setTimeout(() => setMensagem(""), 3000);
+		}
+	}
 
 	const verDetalhes = (item) => {
 		setSelecionada(item);
@@ -103,7 +136,7 @@ export default function PainelSolicitacao() {
 
 	const confirmarRecusa = () => {
 		if (selecionada) {
-			atualizarStatus(selecionada.id, "Recusada", observacao);
+			atualizarStatus(selecionada.id, "recusado", observacao);
 		}
 		setModalAberto(false);
 	};
@@ -115,7 +148,7 @@ export default function PainelSolicitacao() {
 			s.produto.toLowerCase().includes(txt) ||
 			s.usuario_nome.toLowerCase().includes(txt);
 
-		return s.status === "Pendente" && matchBusca;
+		return s.status === "pendente" && matchBusca;
 	});
 
 
@@ -124,7 +157,7 @@ export default function PainelSolicitacao() {
 		const matchBusca =
 			s.produto.toLowerCase().includes(txt) ||
 			s.usuario_nome.toLowerCase().includes(txt);
-		const statusLower = s.status.toLowerCase(); // Pendente, Aprovado, Recusado, Atendido, Cancelado
+		const statusLower = s.status.toLowerCase(); // Pendente, Aprovado, Recusado, Finalizado, Cancelado
 		const matchStatus =
 			filtroStatus === "todos" || filtroStatus === statusLower;
 		return statusLower !== "pendente" && matchBusca && matchStatus;
@@ -177,7 +210,7 @@ export default function PainelSolicitacao() {
 					<input
 						type="text"
 						className="form-control"
-						placeholder="Buscar por produto ou usuario_nome..."
+						placeholder="Buscar por produto ou solicitante..."
 						value={busca}
 						onChange={(e) => setBusca(e.target.value)}
 					/>
@@ -194,7 +227,7 @@ export default function PainelSolicitacao() {
 							<option value="todos">Todos os Status</option>
 							<option value="aprovado">Aprovados</option>
 							<option value="recusado">Recusados</option>
-							<option value="atendido">Atendidos</option>
+							<option value="finalizado">Finalizados</option>
 							<option value="cancelado">Cancelados</option>
 						</select>
 					</div>
@@ -247,7 +280,7 @@ export default function PainelSolicitacao() {
 
 													<button
 														className="btn btn-success btn-sm"
-														onClick={() => atualizarStatus(item.id, "Aprovada")}
+														onClick={() => atualizarStatus(item.id, "aprovado")}
 													>
 														<i className="bi bi-check-lg"></i>
 													</button>
@@ -336,7 +369,7 @@ export default function PainelSolicitacao() {
 								<thead className="table-dark">
 									<tr>
 										<th>Data</th>
-										<th>Produto</th>
+										<th>Material</th>
 										<th>Qtd</th>
 										<th>Solicitante</th>
 										<th>Data</th>
@@ -361,15 +394,15 @@ export default function PainelSolicitacao() {
 											}).replace(",", "")}</td>
 											<td>
 												<span
-													className={`badge ${item.status === "Aprovado"
-															? "bg-success"
-															: item.status === "Recusado"
-																? "bg-danger"
-																: item.status === "Atendido"
-																	? "bg-primary"
-																	: item.status === "Cancelado"
-																		? "bg-secondary"
-																		: "bg-warning text-dark"}`}
+													className={`badge ${item.status === "aprovado"
+														? "bg-success"
+														: item.status === "recusado"
+															? "bg-danger"
+															: item.status === "finalizado"
+																? "bg-primary"
+																: item.status === "cancelado"
+																	? "bg-secondary"
+																	: "bg-warning text-dark"}`}
 												>
 													{item.status}
 												</span>
@@ -379,10 +412,10 @@ export default function PainelSolicitacao() {
 												<div className="d-flex gap-2 justify-content-center">
 
 
-													{item.status === "Aprovado" && (
+													{item.status === "aprovado" && (
 														<button
 															className="btn btn-secondary btn-sm"
-															onClick={() => atualizarStatus(item.id, "Atendido")}
+															onClick={() => atualizarStatus(item.id, "finalizado")}
 														>
 															<i className="bi bi-box-seam"></i>
 														</button>

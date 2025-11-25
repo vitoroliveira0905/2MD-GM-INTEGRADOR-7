@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+
 export default function PainelEstoque() {
-    const [materiais, setMateriais] = useState([
-        { id: 1, nome: "Cabo UTP", quantidade: 30, minimo: 10 },
-        { id: 2, nome: "Conector RJ-45", quantidade: 5, minimo: 20 },
-        { id: 3, nome: "Switch 8 portas", quantidade: 0, minimo: 2 },
-    ]);
+    /*const [produtos, setProdutos] = useState([
+        { id: 1, nome: "Cabo UTP", quantidade: 30, minimo_estoque: 10 },
+        { id: 2, nome: "Conector RJ-45", quantidade: 5, minimo_estoque: 20 },
+        { id: 3, nome: "Switch 8 portas", quantidade: 0, minimo_estoque: 2 },
+    ]);*/
+    
+    
     const router = useRouter()
     const [busca, setBusca] = useState("");
 
@@ -25,50 +28,83 @@ export default function PainelEstoque() {
     const [qtdNovoItem, setQtdNovoItem] = useState("");
     const [minNovoItem, setMinNovoItem] = useState("");
 
+    const [dadosUsuario, setDadosUsuario] = useState(null);
+    // garantir que produtos tenha a forma { dados: [] } para evitar erros ao acessar produtos.dados
+    const [produtos, setProdutos] = useState({ dados: [] });
+
+    useEffect(() => {
+        const dadosString = localStorage.getItem("dadosUsuario");
+        if (!dadosString) {
+            router.push("/login");
+            return;
+        }
+        try {
+            const dados = JSON.parse(dadosString);
+            if (dados.usuario.tipo === "comum") {
+                router.push("/");
+                return;
+            }
+            setDadosUsuario(dados);
+
+            fetch("http://localhost:3001/api/produtos", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${dados.token}`,
+                }
+            })
+                .then(response => response.json())
+                .then(data => setProdutos(data))
+                .catch(error => console.error("Erro ao buscar produtos:", error));
+        } catch (e) {
+            console.error("Erro ao parsear dadosUsuario do localStorage:", e);
+            router.push("/login");
+        }
+    }, [])
+
 
     const abrirEdicao = (item) => {
         setEditando(item.id);
         setNovoNome(item.nome);
         setNovoQtd(item.quantidade);
-        setNovoMin(item.minimo);
+        setNovoMin(item.minimo_estoque);
     };
 
 
     const salvarEdicao = () => {
-        setMateriais((materiais) =>
-            materiais.map((m) =>
-                m.id === editando
-                    ? { ...m, nome: novoNome, quantidade: Number(novoQtd), minimo: Number(novoMin) }
-                    : m
-            )
-        );
+        setProdutos((prev) => ({
+            ...prev,
+            dados: prev.dados.map((m) =>
+                m.id === editando ? { ...m, nome: novoNome, quantidade: Number(novoQtd), minimo_estoque: Number(novoMin) } : m
+            ),
+        }));
         setEditando(null);
     };
-
-
+    
+    
     const excluirMaterial = (id) => {
         if (confirm("Tem certeza que deseja excluir?")) {
-            setMateriais((materiais) => materiais.filter((m) => m.id !== id));
+            setProdutos((prev) => ({ ...prev, dados: prev.dados.filter((m) => m.id !== id) }));
         }
     };
-
+    
     const criarMaterial = () => {
         const novo = {
-            id: materiais.length + 1,
+            id: produtos.dados.length + 1,
             nome: nomeNovoItem,
             quantidade: Number(qtdNovoItem),
-            minimo: Number(minNovoItem),
+            minimo_estoque: Number(minNovoItem),
         };
-
-        setMateriais([...materiais, novo]);
-
+-
+-        setProdutos([...produtos, novo]);
++        setProdutos((prev) => ({ ...prev, dados: [...prev.dados, novo] }));
+ 
         setCriando(false);
         setNomeNovoItem("");
         setQtdNovoItem("");
         setMinNovoItem("");
     };
-
-    const filtrar = materiais.filter((m) =>
+    
+    const filtrar = produtos.dados.filter((m) =>
         m.nome.toLowerCase().includes(busca.toLowerCase())
     );
 
@@ -85,7 +121,7 @@ export default function PainelEstoque() {
                 </button>
             </div>
             <h1 className="text-center mb-4 fw-bold" style={{ color: "var(--primary-color)" }}>
-                <i className="bi bi-box me-2"></i> Estoque De Materiais
+                <i className="bi bi-box me-2"></i> Estoque de Materiais
             </h1>
 
 
@@ -94,7 +130,7 @@ export default function PainelEstoque() {
                     <div className="p-3 rounded shadow-sm bg-light">
                         <i className="bi bi-box-seam fs-2"></i>
                         <h5 className="mt-2">Total de Itens</h5>
-                        <span className="fs-4 fw-bold">{materiais.length}</span>
+                        <span className="fs-4 fw-bold">{produtos.dados.length}</span>
                     </div>
                 </div>
 
@@ -103,7 +139,7 @@ export default function PainelEstoque() {
                         <i className="bi bi-exclamation-triangle text-warning fs-2"></i>
                         <h5 className="mt-2">Baixo Estoque</h5>
                         <span className="fs-4 fw-bold">
-                            {materiais.filter((m) => m.quantidade <= m.minimo && m.quantidade > 0).length}
+                            {produtos.dados.filter((m) => m.quantidade <= m.minimo_estoque && m.quantidade > 0).length}
                         </span>
                     </div>
                 </div>
@@ -113,7 +149,7 @@ export default function PainelEstoque() {
                         <i className="bi bi-x-circle text-danger fs-2"></i>
                         <h5 className="mt-2">Esgotado</h5>
                         <span className="fs-4 fw-bold">
-                            {materiais.filter((m) => m.quantidade === 0).length}
+                            {produtos.dados.filter((m) => m.quantidade === 0).length}
                         </span>
                     </div>
                 </div>
@@ -152,7 +188,7 @@ export default function PainelEstoque() {
                         {filtrar.map((item) => {
                             let status = "";
                             if (item.quantidade === 0) status = "Zerado";
-                            else if (item.quantidade <= item.minimo) status = "Baixo";
+                            else if (item.quantidade <= item.minimo_estoque) status = "Baixo";
                             else status = "OK";
 
                             return (
