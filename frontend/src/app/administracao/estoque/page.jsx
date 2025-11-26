@@ -61,6 +61,9 @@ export default function PainelEstoque() {
         }
     }, [])
 
+    if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "admin" || produtos === null) {
+        return <p>Carregando...</p>
+    }
 
     const abrirEdicao = (item) => {
         setEditando(item.id);
