@@ -12,8 +12,8 @@ export default function PainelEstoque() {
         { id: 2, nome: "Conector RJ-45", quantidade: 5, minimo_estoque: 20 },
         { id: 3, nome: "Switch 8 portas", quantidade: 0, minimo_estoque: 2 },
     ]);*/
-    
-    
+
+
     const router = useRouter()
     const [busca, setBusca] = useState("");
 
@@ -70,40 +70,125 @@ export default function PainelEstoque() {
     };
 
 
-    const salvarEdicao = () => {
-        setProdutos((prev) => ({
-            ...prev,
-            dados: prev.dados.map((m) =>
-                m.id === editando ? { ...m, nome: novoNome, quantidade: Number(novoQtd), minimo_estoque: Number(novoMin) } : m
-            ),
-        }));
-        setEditando(null);
-    };
-    
-    
-    const excluirMaterial = (id) => {
-        if (confirm("Tem certeza que deseja excluir?")) {
-            setProdutos((prev) => ({ ...prev, dados: prev.dados.filter((m) => m.id !== id) }));
+    const salvarEdicao = async () => {
+        if (!editando) return;
+        const payload = {
+            nome: novoNome,
+            quantidade: Number(novoQtd),
+            minimo_estoque: Number(novoMin),
+        };
+
+        try {
+            const resp = await fetch(`http://localhost:3001/api/produtos/${editando}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${dadosUsuario?.token}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!resp.ok) {
+                console.error("Falha ao atualizar produto", await resp.text());
+                return;
+            }
+
+            const atualizado = await resp.json();
+            const prod = atualizado?.produto || atualizado;
+
+            setProdutos((prev) => ({
+                ...prev,
+                dados: prev.dados.map((m) =>
+                    m.id === editando
+                        ? {
+                            ...m,
+                            nome: prod.nome ?? payload.nome,
+                            quantidade: prod.quantidade ?? payload.quantidade,
+                            minimo_estoque: prod.minimo_estoque ?? payload.minimo_estoque,
+                        }
+                        : m
+                ),
+            }));
+            setEditando(null);
+        } catch (e) {
+            console.error("Erro ao enviar atualização de produto:", e);
         }
     };
-    
-    const criarMaterial = () => {
-        const novo = {
-            id: produtos.dados.length + 1,
+
+
+    const excluirMaterial = async (id) => {
+        if (!confirm("Tem certeza que deseja excluir?")) return;
+        try {
+            const resp = await fetch(`http://localhost:3001/api/produtos/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${dadosUsuario?.token}`,
+                },
+            });
+
+            if (!resp.ok) {
+                if (resp.status === 409) {
+                    const msg = await resp.json().catch(() => null);
+                    alert(msg?.mensagem || "Não é possível excluir: produto possui solicitações vinculadas.");
+                    return;
+                }
+                console.error("Falha ao excluir produto:", await resp.text());
+                return;
+            }
+
+            setProdutos((prev) => ({ ...prev, dados: prev.dados.filter((m) => m.id !== id) }));
+        } catch (e) {
+            console.error("Erro na requisição de exclusão:", e);
+        }
+    };
+
+    const criarMaterial = async () => {
+        const payload = {
             nome: nomeNovoItem,
             quantidade: Number(qtdNovoItem),
             minimo_estoque: Number(minNovoItem),
+            preco: 1,
+            categoria: 'Geral',
         };
--
--        setProdutos([...produtos, novo]);
-+        setProdutos((prev) => ({ ...prev, dados: [...prev.dados, novo] }));
- 
-        setCriando(false);
-        setNomeNovoItem("");
-        setQtdNovoItem("");
-        setMinNovoItem("");
+
+        try {
+            const resp = await fetch('http://localhost:3001/api/produtos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${dadosUsuario?.token}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!resp.ok) {
+                const texto = await resp.text();
+                console.error('Falha ao criar produto:', texto);
+                alert('Não foi possível criar o produto. Verifique os dados.');
+                return;
+            }
+
+            const resultado = await resp.json();
+            const criado = resultado?.dados || resultado;
+            const novo = {
+                id: criado.id,
+                nome: payload.nome,
+                quantidade: payload.quantidade,
+                minimo_estoque: payload.minimo_estoque,
+            };
+
+            setProdutos((prev) => ({ ...prev, dados: [...prev.dados, novo] }));
+
+            setCriando(false);
+            setNomeNovoItem('');
+            setQtdNovoItem('');
+            setMinNovoItem('');
+        } catch (e) {
+            console.error('Erro na requisição de criação:', e);
+            alert('Erro ao conectar com a API.');
+        }
     };
-    
+
     const filtrar = produtos.dados.filter((m) =>
         m.nome.toLowerCase().includes(busca.toLowerCase())
     );

@@ -105,7 +105,7 @@ class ProdutoController {
     // POST /produtos - Criar novo produto
     static async criar(req, res) {
         try {
-            const { nome, descricao, preco, categoria } = req.body;
+            const { nome, descricao, preco, categoria, quantidade, minimo_estoque } = req.body;
 
             // Validações manuais - coletar todos os erros
             const erros = [];
@@ -140,6 +140,22 @@ class ProdutoController {
                 });
             }
 
+            // Validar quantidade (permitir zero)
+            if (!quantidade || isNaN(quantidade) || quantidade < 0) {
+                erros.push({
+                    campo: 'quantidade',
+                    mensagem: 'Quantidade deve ser um número positivo ou zero'
+                });
+            }
+
+            // Validar minimo_estoque
+            if (!minimo_estoque || isNaN(minimo_estoque) || minimo_estoque <= 0) {
+                erros.push({
+                    campo: 'minimo_estoque',
+                    mensagem: 'Quantidade mínima em estoque deve ser um número positivo'
+                });
+            }
+
             // Se houver erros, retornar todos de uma vez
             if (erros.length > 0) {
                 return res.status(400).json({
@@ -154,7 +170,9 @@ class ProdutoController {
                 nome: nome.trim(),
                 descricao: descricao ? descricao.trim() : null,
                 preco: parseFloat(preco),
-                categoria: categoria ? categoria.trim() : 'Geral'
+                categoria: categoria ? categoria.trim() : 'Geral',
+                quantidade: parseInt(quantidade, 10),
+                minimo_estoque: parseInt(minimo_estoque, 10)
             };
 
             // Adicionar imagem se foi enviada
@@ -186,7 +204,7 @@ class ProdutoController {
     static async atualizar(req, res) {
         try {
             const { id } = req.params;
-            const { nome, descricao, preco, categoria } = req.body;
+            const { nome, descricao, preco, categoria, quantidade, minimo_estoque } = req.body;
 
             // Validação do ID
             if (!id || isNaN(id)) {
@@ -230,6 +248,28 @@ class ProdutoController {
                     });
                 }
                 dadosAtualizacao.preco = parseFloat(preco);
+            }
+
+            if (quantidade !== undefined) {
+                if (isNaN(quantidade) || quantidade < 0) {
+                    return res.status(400).json({
+                        sucesso: false,
+                        erro: 'Quantidade inválido',
+                        mensagem: 'A quantidade deve ser um número positivo ou zero'
+                    });
+                }
+                dadosAtualizacao.quantidade = parseFloat(quantidade);
+            }
+
+            if (minimo_estoque !== undefined) {
+                if (isNaN(minimo_estoque) || minimo_estoque <= 0) {
+                    return res.status(400).json({
+                        sucesso: false,
+                        erro: 'Preço inválido',
+                        mensagem: 'O preço deve ser um número maior que zero'
+                    });
+                }
+                dadosAtualizacao.minimo_estoque = parseFloat(minimo_estoque);
             }
 
             if (descricao !== undefined) {
@@ -316,6 +356,17 @@ class ProdutoController {
                 }
             });
         } catch (error) {
+            // Tratamento específico para erros de restrição de chave estrangeira (FK)
+            // MySQL geralmente usa errno 1451 (ER_ROW_IS_REFERENCED) ao tentar deletar registros referenciados
+            const isFKConstraint = error?.errno === 1451 || error?.code === 'ER_ROW_IS_REFERENCED' || error?.code === 'ER_ROW_IS_REFERENCED_2';
+            if (isFKConstraint) {
+                return res.status(409).json({
+                    sucesso: false,
+                    erro: 'Conflito de referência',
+                    mensagem: 'Não é possível excluir: existem solicitações vinculadas a este produto.'
+                });
+            }
+
             console.error('Erro ao excluir produto:', error);
             res.status(500).json({
                 sucesso: false,
