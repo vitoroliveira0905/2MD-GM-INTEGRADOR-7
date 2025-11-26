@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from "next/image";
 import "bootstrap/dist/css/bootstrap.min.css"
+import "./styles.css"
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
@@ -29,13 +30,7 @@ export default function Navbar() {
     };
 
     return (
-        <header 
-            className="shadow-sm" 
-            style={{
-                background: "linear-gradient(135deg, #247add 0%, #0033a0 100%)",
-                padding: "1rem 0"
-            }}
-        >
+        <header className="shadow-sm">
             <div className="container">
                 <div className="d-flex flex-wrap align-items-center justify-content-between">
                     {/* Logo e Título */}
@@ -81,12 +76,8 @@ export default function Navbar() {
                                 <span className="d-none d-sm-inline">Menu</span>
                             </button>
                             <ul 
-                                className="dropdown-menu shadow-lg border-0" 
+                                className="dropdown-menu dropdown-menu-gradient shadow-lg border-0" 
                                 aria-labelledby="dropdownNavegacao"
-                                style={{
-                                    background: "linear-gradient(135deg, #247add 0%, #0033a0 100%)",
-                                    minWidth: "220px"
-                                }}
                             >
                                 <li>
                                     <Link href="/" className="dropdown-item text-white menu-item-hover">
@@ -127,16 +118,14 @@ export default function Navbar() {
                                         </small>
                                     </div>
                                     <div 
-                                        className="rounded-circle bg-white d-flex align-items-center justify-content-center"
-                                        style={{ width: "40px", height: "40px" }}
+                                        className="rounded-circle bg-white d-flex align-items-center justify-content-center user-avatar"
                                     >
-                                        <i className="bi bi-person-fill" style={{ fontSize: "24px", color: "#247add" }}></i>
+                                        <i className="bi bi-person-fill" style={{ fontSize: "24px" }}></i>
                                     </div>
                                 </a>
                                 <ul
-                                    className="dropdown-menu dropdown-menu-end shadow"
+                                    className="dropdown-menu dropdown-menu-end shadow user-dropdown-menu"
                                     aria-labelledby="dropdownUser1"
-                                    style={{ minWidth: "280px" }}
                                 >
                                     <li className="px-3 py-2 border-bottom">
                                         <div className="text-muted small mb-1">Informações do Usuário</div>
@@ -160,21 +149,6 @@ export default function Navbar() {
                     </div>
                 </div>
             </div>
-
-            <style jsx>{`
-                .hover-link {
-                    transition: opacity 0.2s ease;
-                }
-                .hover-link:hover {
-                    opacity: 0.8;
-                }
-                .menu-item-hover {
-                    transition: background-color 0.2s ease;
-                }
-                .menu-item-hover:hover {
-                    background-color: rgba(255, 255, 255, 0.2) !important;
-                }
-            `}</style>
         </header>
     );
 }
