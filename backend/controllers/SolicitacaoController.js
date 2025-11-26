@@ -1,4 +1,5 @@
 import SolicitacaoModel from '../models/SolicitacaoModel.js';
+import ProdutoModel from '../models/ProdutoModel.js';
 
 // Controller de Solicitações
 class SolicitacaoController {
@@ -95,8 +96,35 @@ class SolicitacaoController {
                 return res.status(404).json({ erro: 'Solicitação não encontrada' });
             }
 
+            // Verificar se o status está sendo alterado para "finalizado"
+            if (dados.status === 'finalizado') {
+                const produtoId = solicitacaoExistente.produto_id;
+                const quantidadeSolicitada = solicitacaoExistente.quantidade;
+
+                // Buscar o produto no estoque
+                const produto = await ProdutoModel.buscarPorId(produtoId);
+                if (!produto) {
+                    return res.status(404).json({ erro: 'Produto não encontrado no estoque' });
+                }
+
+                // Verificar se há estoque suficiente
+                if (produto.quantidade < quantidadeSolicitada) {
+                    return res.status(400).json({
+                        erro: 'Estoque insuficiente',
+                        mensagem: `O estoque atual (${produto.quantidade}) é insuficiente para atender à solicitação (${quantidadeSolicitada}).`
+                    });
+                }
+
+                // Subtrair a quantidade do estoque
+                await ProdutoModel.atualizar(produtoId, {
+                    quantidade: produto.quantidade - quantidadeSolicitada
+                });
+            }
+
+            // Atualizar a solicitação
             await SolicitacaoModel.atualizar(id, dados);
             res.status(200).json({ mensagem: 'Solicitação atualizada com sucesso' });
+
         } catch (error) {
             console.error('Erro no controller (atualizar):', error);
             res.status(500).json({ erro: 'Erro ao atualizar solicitação' });
