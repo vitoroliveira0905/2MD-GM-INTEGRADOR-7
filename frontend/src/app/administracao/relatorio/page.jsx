@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useRouter } from "next/navigation";
-import GraficoPro from "@/componentes/GraficoPro/page";
+import GraficoPro from "@/components/GraficoPro/page";
 export default function Relatorios() {
     const router = useRouter();
 
