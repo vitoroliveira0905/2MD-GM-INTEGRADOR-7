@@ -117,7 +117,17 @@ export default function PainelSolicitacao() {
 			console.error("Falha ao atualizar status:", error);
 			// Reverte para o estado anterior em caso de erro
 			setSolicitacoes(backup);
-			setMensagemErro(error.message || "Erro ao atualizar solicitação.");
+			
+			// Trata mensagens de erro que vêm como JSON stringificado
+			let mensagemAmigavel = "Erro ao atualizar solicitação.";
+			try {
+				const errorObj = JSON.parse(error.message);
+				mensagemAmigavel = errorObj.mensagem || errorObj.erro || mensagemAmigavel;
+			} catch {
+				mensagemAmigavel = error.message || mensagemAmigavel;
+			}
+			
+			setMensagemErro(mensagemAmigavel);
 			setTimeout(() => setMensagemErro(""), 3000);
 		}
 	};
@@ -155,6 +165,15 @@ export default function PainelSolicitacao() {
 		return s.status === "pendente" && matchBusca;
 	});
 
+	const aprovados = solicitacoes.filter((s) => {
+		const txt = busca.toLowerCase();
+		const matchBusca =
+			s.produto.toLowerCase().includes(txt) ||
+			s.usuario_nome.toLowerCase().includes(txt);
+
+		return s.status === "aprovado" && matchBusca;
+	});
+
 
 	const historico = solicitacoes.filter((s) => {
 		const txt = busca.toLowerCase();
@@ -164,7 +183,7 @@ export default function PainelSolicitacao() {
 		const statusLower = s.status.toLowerCase(); // Pendente, Aprovado, Recusado, Finalizado, Cancelado
 		const matchStatus =
 			filtroStatus === "todos" || filtroStatus === statusLower;
-		return statusLower !== "pendente" && matchBusca && matchStatus;
+		return statusLower !== "pendente" && statusLower !== "aprovado" && matchBusca && matchStatus;
 	});
 
 	return (
@@ -203,6 +222,14 @@ export default function PainelSolicitacao() {
 				</li>
 				<li className="nav-item">
 					<button
+						className={`nav-link ${abaAtiva === "aprovados" ? "active fw-bold" : ""}`}
+						onClick={() => setAbaAtiva("aprovados")}
+					>
+						Aprovados
+					</button>
+				</li>
+				<li className="nav-item">
+					<button
 						className={`nav-link ${abaAtiva === "historico" ? "active fw-bold" : ""}`}
 						onClick={() => setAbaAtiva("historico")}
 					>
@@ -232,7 +259,6 @@ export default function PainelSolicitacao() {
 							onChange={(e) => setFiltroStatus(e.target.value)}
 						>
 							<option value="todos">Todos os Status</option>
-							<option value="aprovado">Aprovados</option>
 							<option value="recusado">Recusados</option>
 							<option value="finalizado">Finalizados</option>
 							<option value="cancelado">Cancelados</option>
@@ -320,6 +346,83 @@ export default function PainelSolicitacao() {
 				</div>
 			)}
 
+			{abaAtiva === "aprovados" && (
+				<div>
+					{aprovados.length === 0 ? (
+						<div className="alert alert-secondary text-center">
+							Nenhuma solicitação pendente.
+						</div>
+					) : (
+						<div className="table-responsive shadow-sm rounded">
+							<table className="table table-hover align-middle">
+								<thead className="table-dark">
+									<tr>
+										<th>Data</th>
+										<th>Material</th>
+										<th>Qtd</th>
+										<th>Área</th>
+										<th>Solicitante</th>
+
+										<th>Status</th>
+										<th className="text-center">Ações</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									{aprovados.map((item) => (
+										<tr key={item.id}>
+											<td>{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
+												dateStyle: "short",
+												timeStyle: "short",
+											}).replace(",", "")}</td>
+											<td>{item.produto}</td>
+											<td>{item.quantidade}</td>
+											<td>{item.area}</td>
+											<td>{item.usuario_nome}</td>
+
+											<td>
+												<span className="badge bg-secondary">{item.status}</span>
+											</td>
+
+
+											<td className="text-center">
+												<div className="d-flex flex-column flex-md-row justify-content-center gap-2">
+
+
+													<button
+														className="btn btn-success btn-sm"
+														onClick={() => atualizarStatus(item.id, "aprovado")}
+													>
+														<i className="bi bi-check-lg"></i>
+													</button>
+
+
+													<button
+														className="btn btn-danger btn-sm"
+														onClick={() => abrirModal(item)}
+													>
+														<i className="bi bi-x-lg"></i>
+													</button>
+
+
+													<button
+														className="btn btn-info btn-sm"
+														onClick={() => verDetalhes(item)}
+													>
+														<i className="bi bi-eye"></i>
+													</button>
+
+												</div>
+											</td>
+										</tr>
+									))}
+								</tbody>
+
+							</table>
+						</div>
+					)}
+				</div>
+			)}
 
 			{modalAberto && (
 				<div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
