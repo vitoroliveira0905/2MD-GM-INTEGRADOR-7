@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import dynamic from "next/dynamic";
+import ModalDetalhes from "@/components/ModalDetalhes";
 const ChatWidget = dynamic(() => import("@/components/ChatWidget/page"), { ssr: false });
 
 
@@ -226,12 +227,12 @@ export default function DashboardCliente() {
                             </button>
                           )}
 
-                          {s.status === "negado" && (
+                          
                             <button className="btn btn-info btn-sm"
                               onClick={() => verDetalhes(s)}>
                               <i className="bi bi-eye"></i>
                             </button>
-                          )}
+                          
                         </td>
                       </tr>
                     ))}
@@ -283,32 +284,10 @@ export default function DashboardCliente() {
       </div>
 
 
-      {modalDetalhes && (
-        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-
-              <div className="modal-header">
-                <h5 className="modal-title">Detalhes</h5>
-                <button className="btn-close" onClick={() => setModalDetalhes(null)}></button>
-              </div>
-
-              <div className="modal-body">
-                <p><strong>Material:</strong> {modalDetalhes.produto_nome}</p>
-                <p><strong>Motivo:</strong> {modalDetalhes.motivo || "Sem descrição"}</p>
-                <p className="text-danger"><strong>Status:</strong> {modalDetalhes.status}</p>
-              </div>
-
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setModalDetalhes(null)}>
-                  Fechar
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalDetalhes 
+        solicitacao={modalDetalhes} 
+        onClose={() => setModalDetalhes(null)} 
+      />
 
 
       {modalCancelar && (
