@@ -1,5 +1,5 @@
 :root {
-  --background: #ffffff;
+  --background: #ebf0fa;
   --foreground: #171717;
   --primary-color: #247add;
   --secondary-color: #0033a0; /* Azul GM */
@@ -8,13 +8,6 @@
   --bot-bubble: var(--primary-color);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-
-  }
-}
 
 html,
 body {
