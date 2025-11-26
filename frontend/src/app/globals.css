@@ -3,7 +3,7 @@
   --foreground: #171717;
   --primary-color: #247add;
   --secondary-color: #0033a0; /* Azul GM */
-  --background-color: #f4f6fa;
+  --background-color: rgb(244, 249, 255);
   --user-bubble: #e8e8e8;
   --bot-bubble: var(--primary-color);
 }

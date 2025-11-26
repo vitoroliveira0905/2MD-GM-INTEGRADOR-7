@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import dynamic from "next/dynamic";
 import ModalDetalhes from "@/components/ModalDetalhes";
+import ModalCancelar from "@/components/ModalCancelar";
 const ChatWidget = dynamic(() => import("@/components/ChatWidget/page"), { ssr: false });
 
 
@@ -290,36 +291,11 @@ export default function DashboardCliente() {
       />
 
 
-      {modalCancelar && (
-        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-
-              <div className="modal-header">
-                <h5 className="modal-title">Cancelar Solicitação</h5>
-                <button className="btn-close" onClick={() => setModalCancelar(null)}></button>
-              </div>
-
-              <div className="modal-body">
-                Tem certeza que deseja cancelar:
-                <br /><br />
-                <strong>{modalCancelar.produto_nome}</strong>?
-              </div>
-
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setModalCancelar(null)}>
-                  Fechar
-                </button>
-
-                <button className="btn btn-danger" onClick={confirmarCancelamento}>
-                  Cancelar Solicitação
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalCancelar 
+        solicitacao={modalCancelar}
+        onClose={() => setModalCancelar(null)}
+        onConfirm={confirmarCancelamento}
+      />
 
       {/* 🔵 Bolha flutuante */}
       <button
