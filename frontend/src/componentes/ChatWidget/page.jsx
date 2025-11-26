@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import "../app/globals.css";
+import "@/app/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
@@ -82,7 +82,7 @@ export default function ChatWidget() {
                 className="text-white d-flex align-items-center px-3"
                 style={{
                     backgroundColor: "var(--secondary-color)",
-                    height: "55px",
+                    minHeight: "55px",
                     fontSize: "15px",
                     gap: "10px",
                     boxShadow: "0 1px 4px rgba(0,0,0,0.2)"

@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import dynamic from "next/dynamic";
-
-const ChatWidget = dynamic(() => import("@/components/ChatWidget"), { ssr: false });
+const ChatWidget = dynamic(() => import("@/componentes/ChatWidget/page"), { ssr: false });
 
 
 
