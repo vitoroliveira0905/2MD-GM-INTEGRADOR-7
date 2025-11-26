@@ -11,7 +11,8 @@ export default function PainelSolicitacao() {
 	const [abaAtiva, setAbaAtiva] = useState("pendentes");
 	const [solicitacoes, setSolicitacoes] = useState([]); // array normalizado para exibição
 	const [selecionada, setSelecionada] = useState(null);
-	const [mensagem, setMensagem] = useState("");
+	const [mensagemSucesso, setMensagemSucesso] = useState("");
+	const [mensagemErro, setMensagemErro] = useState("");
 	const [modalAberto, setModalAberto] = useState(false);
 	const [observacao, setObservacao] = useState("");
 	const [busca, setBusca] = useState("");
@@ -79,19 +80,19 @@ export default function PainelSolicitacao() {
 	
 	const atualizarStatus = async (id, novoStatus, obs = "") => {
 		const backup = solicitacoes;
-		
+	
 		setSolicitacoes((prev) =>
 			prev.map((item) =>
 				item.id === id ? { ...item, status: novoStatus, observacao: obs } : item
 			)
 		);
-
+	
 		if (!dadosUsuario?.token) {
-			setMensagem("Usuário não autenticado.");
-			setTimeout(() => setMensagem(""), 3000);
+			setMensagemSucesso("Usuário não autenticado.");
+			setTimeout(() => setMensagemSucesso(""), 3000);
 			return;
 		}
-
+	
 		try {
 			const res = await fetch(`http://localhost:3001/api/solicitacoes/${id}`, {
 				method: "PUT",
@@ -101,22 +102,25 @@ export default function PainelSolicitacao() {
 				},
 				body: JSON.stringify({ status: novoStatus, observacao: obs }),
 			});
-
+	
 			if (!res.ok) {
 				const errorText = await res.text();
+				if (res.status === 400 && errorText.includes("estoque insuficiente")) {
+					throw new Error("Estoque insuficiente para atender a solicitação.");
+				}
 				throw new Error(errorText || "Erro ao atualizar solicitação.");
 			}
-
-			setMensagem(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
-			setTimeout(() => setMensagem(""), 3000);
+	
+			setMensagemSucesso(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
+			setTimeout(() => setMensagemSucesso(""), 3000);
 		} catch (error) {
 			console.error("Falha ao atualizar status:", error);
-			// reverte para o estado anterior em caso de erro
+			// Reverte para o estado anterior em caso de erro
 			setSolicitacoes(backup);
-			setMensagem("Erro ao atualizar solicitação.");
-			setTimeout(() => setMensagem(""), 3000);
+			setMensagemErro(error.message || "Erro ao atualizar solicitação.");
+			setTimeout(() => setMensagemErro(""), 3000);
 		}
-	}
+	};
 
 	const verDetalhes = (item) => {
 		setSelecionada(item);
@@ -181,8 +185,11 @@ export default function PainelSolicitacao() {
 				<i className="bi bi-list-check me-2"></i> Painel de Solicitações
 			</h1>
 
-			{mensagem && (
-				<div className="alert alert-success text-center">{mensagem}</div>
+			{mensagemSucesso && (
+				<div className="alert alert-success text-center">{mensagemSucesso}</div>
+			)}
+			{mensagemErro && (
+				<div className="alert alert-danger text-center">{mensagemErro}</div>
 			)}
 
 			<ul className="nav nav-tabs mb-4 justify-content-center">
