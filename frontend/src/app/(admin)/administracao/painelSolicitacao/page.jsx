@@ -8,6 +8,7 @@ import ModalDetalhes from "@/components/ModalDetalhes";
 import ModalRecusar from "@/components/ModalRecusar";
 import ModalAprovar from "@/components/ModalAprovar";
 import ModalFinalizar from "@/components/ModalFinalizar";
+import "./styles.css";
 
 
 export default function PainelSolicitacao() {
@@ -229,85 +230,83 @@ export default function PainelSolicitacao() {
 	});
 
 	return (
-		<div className="container my-5">
-
-
-			<div className="mb-4">
-				<button
-					className="btn btn-outline-dark fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
-					style={{ borderRadius: "12px" }}
-					onClick={() => router.back()}
-				>
-					<i className="bi bi-arrow-left"></i> Voltar
-				</button>
-			</div>
-
-			<h1 className="text-center mb-4 fw-bold" style={{ color: "var(--primary-color)" }}>
-				<i className="bi bi-list-check me-2"></i> Painel de Solicitações
-			</h1>
-
-			{mensagemSucesso && (
-				<div className="alert alert-success text-center">{mensagemSucesso}</div>
-			)}
-			{mensagemErro && (
-				<div className="alert alert-danger text-center">{mensagemErro}</div>
-			)}
-
-			<ul className="nav nav-tabs mb-4 justify-content-center">
-				<li className="nav-item">
-					<button
-						className={`nav-link ${abaAtiva === "pendentes" ? "active fw-bold" : ""}`}
-						onClick={() => setAbaAtiva("pendentes")}
-					>
-						Pendentes
-					</button>
-				</li>
-				<li className="nav-item">
-					<button
-						className={`nav-link ${abaAtiva === "aprovados" ? "active fw-bold" : ""}`}
-						onClick={() => setAbaAtiva("aprovados")}
-					>
-						Aprovados
-					</button>
-				</li>
-				<li className="nav-item">
-					<button
-						className={`nav-link ${abaAtiva === "historico" ? "active fw-bold" : ""}`}
-						onClick={() => setAbaAtiva("historico")}
-					>
-						Histórico
-					</button>
-				</li>
-			</ul>
-
-
-			<div className="row g-3 mb-4">
-				<div className="col-md-6">
-					<input
-						type="text"
-						className="form-control"
-						placeholder="Buscar por produto ou solicitante..."
-						value={busca}
-						onChange={(e) => setBusca(e.target.value)}
-					/>
-				</div>
-
-
-				{abaAtiva === "historico" && (
-					<div className="col-md-4">
-						<select
-							className="form-select"
-							value={filtroStatus}
-							onChange={(e) => setFiltroStatus(e.target.value)}
-						>
-							<option value="todos">Todos os Status</option>
-							<option value="recusado">Recusados</option>
-							<option value="finalizado">Finalizados</option>
-							<option value="cancelado">Cancelados</option>
-						</select>
+		<main style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+				<div className="container py-5">
+					<div className="d-flex align-items-center justify-content-between mb-4">
+						<div>
+							<h1 className="fw-bold mb-1" style={{ color: "var(--primary-color)" }}>
+								<i className="bi bi-list-check me-2"></i> Painel de Solicitações
+							</h1>
+							<p className="text-muted mb-0">Gerencie solicitações pendentes, aprovadas e histórico.</p>
+						</div>
+						<div className="d-none d-md-flex align-items-center gap-2">
+							<span className="badge rounded-pill bg-primary-subtle text-primary">
+								<i className="bi bi-clock-history me-2"></i>
+								{solicitacoes.length} registro(s)
+							</span>
+						</div>
 					</div>
-				)}
-			</div>
+
+					{mensagemSucesso && (
+						<div className="alert alert-success text-center">{mensagemSucesso}</div>
+					)}
+					{mensagemErro && (
+						<div className="alert alert-danger text-center">{mensagemErro}</div>
+					)}
+
+					<ul className="nav nav-tabs mb-4 justify-content-center">
+						<li className="nav-item">
+							<button
+								className={`nav-link ${abaAtiva === "pendentes" ? "active fw-bold" : ""}`}
+								onClick={() => setAbaAtiva("pendentes")}
+							>
+								Pendentes
+							</button>
+						</li>
+						<li className="nav-item">
+							<button
+								className={`nav-link ${abaAtiva === "aprovados" ? "active fw-bold" : ""}`}
+								onClick={() => setAbaAtiva("aprovados")}
+							>
+								Aprovados
+							</button>
+						</li>
+						<li className="nav-item">
+							<button
+								className={`nav-link ${abaAtiva === "historico" ? "active fw-bold" : ""}`}
+								onClick={() => setAbaAtiva("historico")}
+							>
+								Histórico
+							</button>
+						</li>
+					</ul>
+
+					<div className="row mb-4">
+						<div className="col-md-6">
+							<input
+								type="text"
+								className="form-control form-control-lg modern-input"
+								placeholder="Buscar por produto ou solicitante..."
+								value={busca}
+								onChange={(e) => setBusca(e.target.value)}
+							/>
+						</div>
+
+						{abaAtiva === "historico" && (
+							<div className="col-md-4">
+								<select
+									className="form-select form-select-lg modern-input"
+									value={filtroStatus}
+									onChange={(e) => setFiltroStatus(e.target.value)}
+								>
+									<option value="todos">Todos os Status</option>
+									<option value="recusado">Recusados</option>
+									<option value="finalizado">Finalizados</option>
+									<option value="cancelado">Cancelados</option>
+								</select>
+							</div>
+						)}
+					</div>
 
 
 			{abaAtiva === "pendentes" && (
@@ -317,73 +316,76 @@ export default function PainelSolicitacao() {
 							Nenhuma solicitação pendente.
 						</div>
 					) : (
-						<div className="table-responsive shadow-sm rounded">
-							<table className="table table-hover align-middle">
-								<thead className="table-dark">
+						<div className="card border-0 shadow rounded-4 overflow-hidden">
+							<div className="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+								<div className="d-flex align-items-center gap-2">
+									<i className="bi bi-table text-primary"></i>
+									<span className="fw-semibold">Solicitações Pendentes</span>
+								</div>
+								<div className="text-muted small">
+									Última atualização em {new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }).replace(",", "")}
+								</div>
+							</div>
+							<div className="table-responsive">
+								<table className="table table-hover align-middle mb-0">
+								<thead className="table-gradient">
 									<tr>
-										<th>Data</th>
-										<th>Material</th>
-										<th>Qtd</th>
-										<th>Área</th>
-										<th>Solicitante</th>
-
-										<th>Status</th>
-										<th className="text-center">Ações</th>
+										<th scope="col" className="fw-semibold table-gradient">Data</th>
+										<th scope="col" className="fw-semibold table-gradient">Material</th>
+										<th scope="col" className="fw-semibold table-gradient">Qtd</th>
+										<th scope="col" className="fw-semibold table-gradient">Área</th>
+										<th scope="col" className="fw-semibold table-gradient">Solicitante</th>
+										<th scope="col" className="text-center fw-semibold table-gradient">Status</th>
+										<th scope="col" className="text-end fw-semibold table-gradient">Ações</th>
 									</tr>
 								</thead>
 
 								<tbody>
 									{pendentes.map((item) => (
 										<tr key={item.id}>
-											<td>{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
+											<td className="p-3">{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
 												dateStyle: "short",
 												timeStyle: "short",
 											}).replace(",", "")}</td>
-											<td>{item.produto}</td>
-											<td>{item.quantidade}</td>
-											<td>{item.area}</td>
-											<td>{item.usuario_nome}</td>
+											<td className="p-3">{item.produto}</td>
+											<td className="p-3">{item.quantidade}</td>
+											<td className="p-3">{item.area}</td>
+											<td className="p-3">{item.usuario_nome}</td>
 
-											<td>
-												<span className="badge bg-secondary">{item.status}</span>
+											<td className="text-center p-3">
+												<span className={`badge-status badge-warning`}>{item.status.toUpperCase()}</span>
 											</td>
 
-
-											<td className="text-center">
-												<div className="d-flex flex-column flex-md-row justify-content-center gap-2">
-
-
+											<td className="text-end p-3">
+												<div className="d-inline-flex gap-2 align-items-center">
 													<button
 														className="btn btn-success btn-sm"
+														title="Aprovar"
 														onClick={() => abrirModalAprovar(item)}
 													>
 														<i className="bi bi-check-lg"></i>
 													</button>
-
-
 													<button
-														className="btn btn-danger btn-sm"
+														className="btn btn-outline-danger btn-sm"
+														title="Recusar"
 														onClick={() => abrirModal(item)}
 													>
 														<i className="bi bi-x-lg"></i>
 													</button>
-													
-
-
 													<button
-														className="btn btn-info btn-sm"
+														className="btn btn-primary btn-sm"
+														title="Ver detalhes"
 														onClick={() => verDetalhes(item)}
 													>
 														<i className="bi bi-eye"></i>
 													</button>
-
 												</div>
 											</td>
 										</tr>
 									))}
 								</tbody>
-
-							</table>
+								</table>
+							</div>
 						</div>
 					)}
 				</div>
@@ -396,41 +398,48 @@ export default function PainelSolicitacao() {
 							Nenhuma solicitação pendente.
 						</div>
 					) : (
-						<div className="table-responsive shadow-sm rounded">
-							<table className="table table-hover align-middle">
-								<thead className="table-dark">
+						<div className="card border-0 shadow rounded-4 overflow-hidden">
+							<div className="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+								<div className="d-flex align-items-center gap-2">
+									<i className="bi bi-table text-primary"></i>
+									<span className="fw-semibold">Solicitações Aprovadas</span>
+								</div>
+								<div className="text-muted small">
+									Última atualização em {new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }).replace(",", "")}
+								</div>
+							</div>
+							<div className="table-responsive">
+								<table className="table table-hover align-middle mb-0">
+								<thead className="table-gradient">
 									<tr>
-										<th>Data</th>
-										<th>Material</th>
-										<th>Qtd</th>
-										<th>Área</th>
-										<th>Solicitante</th>
-
-										<th>Status</th>
-										<th className="text-center">Ações</th>
+										<th scope="col" className="fw-semibold table-gradient">Data</th>
+										<th scope="col" className="fw-semibold table-gradient">Material</th>
+										<th scope="col" className="fw-semibold table-gradient">Qtd</th>
+										<th scope="col" className="fw-semibold table-gradient">Área</th>
+										<th scope="col" className="fw-semibold table-gradient">Solicitante</th>
+										<th scope="col" className="text-center fw-semibold table-gradient">Status</th>
+										<th scope="col" className="text-end fw-semibold table-gradient">Ações</th>
 									</tr>
 								</thead>
 
 								<tbody>
 									{aprovados.map((item) => (
 										<tr key={item.id}>
-											<td>{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
+											<td className="p-3">{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
 												dateStyle: "short",
 												timeStyle: "short",
 											}).replace(",", "")}</td>
-											<td>{item.produto}</td>
-											<td>{item.quantidade}</td>
-											<td>{item.area}</td>
-											<td>{item.usuario_nome}</td>
+											<td className="p-3">{item.produto}</td>
+											<td className="p-3">{item.quantidade}</td>
+											<td className="p-3">{item.area}</td>
+											<td className="p-3">{item.usuario_nome}</td>
 
-											<td>
-												<span className="badge bg-secondary">{item.status}</span>
+											<td className="text-center p-3">
+												<span className={`badge-status badge-success`}>{item.status.toUpperCase()}</span>
 											</td>
 
-
-											<td className="text-center">
-												<div className="d-flex flex-column flex-md-row justify-content-center gap-2">
-
+											<td className="text-end p-3">
+												<div className="d-inline-flex gap-2 align-items-center">
 													<button
 														className="btn btn-secondary btn-sm"
 														onClick={() => abrirModalFinalizar(item)}
@@ -438,22 +447,20 @@ export default function PainelSolicitacao() {
 													>
 														<i className="bi bi-box-seam"></i>
 													</button>
-
-
 													<button
-														className="btn btn-info btn-sm"
+														className="btn btn-primary btn-sm"
+														title="Ver detalhes"
 														onClick={() => verDetalhes(item)}
 													>
 														<i className="bi bi-eye"></i>
 													</button>
-
 												</div>
 											</td>
 										</tr>
 									))}
 								</tbody>
-
-							</table>
+								</table>
+							</div>
 						</div>
 					)}
 				</div>
@@ -466,49 +473,60 @@ export default function PainelSolicitacao() {
 							Nenhum histórico encontrado com os filtros.
 						</div>
 					) : (
-						<div className="table-responsive shadow-sm rounded">
-							<table className="table table-hover align-middle">
-								<thead className="table-dark">
+						<div className="card border-0 shadow rounded-4 overflow-hidden">
+							<div className="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+								<div className="d-flex align-items-center gap-2">
+									<i className="bi bi-table text-primary"></i>
+									<span className="fw-semibold">Histórico</span>
+								</div>
+								<div className="text-muted small">
+									Última atualização em {new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }).replace(",", "")}
+								</div>
+							</div>
+							<div className="table-responsive">
+								<table className="table table-hover align-middle mb-0">
+								<thead className="table-gradient">
 									<tr>
-										<th>Data</th>
-										<th>Material</th>
-										<th>Qtd</th>
-										<th>Solicitante</th>
-										<th>Status</th>
-										<th className="text-center">Ações</th>
+										<th scope="col" className="fw-semibold table-gradient">Data</th>
+										<th scope="col" className="fw-semibold table-gradient">Material</th>
+										<th scope="col" className="fw-semibold table-gradient">Qtd</th>
+										<th scope="col" className="fw-semibold table-gradient">Solicitante</th>
+										<th scope="col" className="text-center fw-semibold table-gradient">Status</th>
+										<th scope="col" className="text-end fw-semibold table-gradient">Ações</th>
 									</tr>
 								</thead>
 
 								<tbody>
 									{historico.map((item) => (
 										<tr key={item.id}>
-											<td>{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
+											<td className="p-3">{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
 												dateStyle: "short",
 												timeStyle: "short",
 											}).replace(",", "")}</td>
-											<td>{item.produto}</td>
-											<td>{item.quantidade}</td>
-											<td>{item.usuario_nome}</td>
-											<td>
+											<td className="p-3">{item.produto}</td>
+											<td className="p-3">{item.quantidade}</td>
+											<td className="p-3">{item.usuario_nome}</td>
+											<td className="text-center p-3">
 												<span
-													className={`badge ${item.status === "aprovado"
-														? "bg-success"
+													className={`badge-status ${item.status === "aprovado"
+														? "badge-success"
 														: item.status === "recusado"
-															? "bg-danger"
+															? "badge-danger"
 															: item.status === "finalizado"
-																? "bg-primary"
+																? "badge-success"
 																: item.status === "cancelado"
-																	? "bg-secondary"
-																	: "bg-warning text-dark"}`}
+																	? "badge-secondary"
+																	: "badge-warning"}`}
 												>
-													{item.status}
+													{item.status.toUpperCase()}
 												</span>
 											</td>
 
-											<td className="text-center">
-												<div className="d-flex gap-2 justify-content-center">
+											<td className="text-end p-3">
+												<div className="d-inline-flex gap-2 align-items-center">
 													<button
-														className="btn btn-info btn-sm"
+														className="btn btn-primary btn-sm"
+														title="Ver detalhes"
 														onClick={() => verDetalhes(item)}
 													>
 														<i className="bi bi-eye"></i>
@@ -518,8 +536,8 @@ export default function PainelSolicitacao() {
 										</tr>
 									))}
 								</tbody>
-
-							</table>
+								</table>
+							</div>
 						</div>
 					)}
 				</div>
@@ -559,7 +577,7 @@ export default function PainelSolicitacao() {
 				onClose={() => setSelecionada(null)}
 				isAdmin={true}
 			/>
-
-		</div>
+			</div>
+		</main>
 	);
 }
