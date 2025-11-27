@@ -289,52 +289,51 @@ export default function DashboardCliente() {
 
 
         <div className="card border-0 shadow-lg rounded-4">
-          <div className="card-header bg-white border-0 p-4">
-            <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)" }}>
+          <div className="card-header bg-white border-0 p-4 d-flex align-items-center gap-2">
+            <i className="bi bi-lightning-charge-fill" style={{ color: "var(--primary-color)", fontSize: 22 }}></i>
+            <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)", letterSpacing: 0.5 }}>
               Ações Rápidas
             </h5>
           </div>
 
-          <div className="card-body d-flex flex-column gap-3 p-3" style={{ maxWidth: "360px" }}>
-
-            <Link href="/solicitacao">
-              <button className="btn text-white fw-bold btn-lg rounded-pill"
-                style={{ backgroundColor: "var(--primary-color)" }}>
+          <div className="card-body d-flex flex-column gap-3 p-4" style={{ maxWidth: "360px" }}>
+            <Link href="/solicitacao" className="text-decoration-none">
+              <button className="btn btn-lg fw-bold rounded-pill d-flex align-items-center justify-content-center shadow-sm quick-action-btn"
+                style={{ background: "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)", color: "#fff", letterSpacing: 0.5 }}>
                 <i className="bi bi-plus-circle me-2"></i> Fazer Nova Solicitação
               </button>
             </Link>
 
-            <Link href="/historico">
-              <button className="btn btn-outline-dark btn-lg rounded-pill">
+            <Link href="/historico" className="text-decoration-none">
+              <button className="btn btn-outline-dark btn-lg rounded-pill d-flex align-items-center justify-content-center shadow-sm quick-action-btn"
+                style={{ fontWeight: 500, letterSpacing: 0.5 }}>
                 <i className="bi bi-clock-history me-2"></i> Ver Histórico Completo
               </button>
             </Link>
 
-   
-
-
-<Link href="/login">
-            <button className="btn btn-danger fw-bold btn-lg rounded-pill"
-              onClick={() => {
-                localStorage.removeItem("dadosUsuario");
-                router.push("/login");
-              }}>
-              <i className="bi bi-arrow-left me-2"></i> Sair
-            </button></Link>
-
+            <Link href="/login" className="text-decoration-none">
+              <button className="btn btn-danger btn-lg fw-bold rounded-pill d-flex align-items-center justify-content-center shadow-sm quick-action-btn"
+                style={{ letterSpacing: 0.5 }}
+                onClick={() => {
+                  localStorage.removeItem("dadosUsuario");
+                  router.push("/login");
+                }}>
+                <i className="bi bi-arrow-left me-2"></i> Sair
+              </button>
+            </Link>
           </div>
         </div>
 
       </div>
 
 
-      <ModalDetalhes 
-        solicitacao={modalDetalhes} 
-        onClose={() => setModalDetalhes(null)} 
+      <ModalDetalhes
+        solicitacao={modalDetalhes}
+        onClose={() => setModalDetalhes(null)}
       />
 
 
-      <ModalCancelar 
+      <ModalCancelar
         solicitacao={modalCancelar}
         onClose={() => setModalCancelar(null)}
         onConfirm={confirmarCancelamento}
