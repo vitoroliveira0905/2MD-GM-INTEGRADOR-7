@@ -2,7 +2,7 @@
 
 import "./styles.css"
 
-export default function ModalDetalhes({ solicitacao, onClose }) {
+export default function ModalDetalhes({ solicitacao, onClose, isAdmin = false }) {
     if (!solicitacao) return null;
 
     const formatarData = (data) => {
@@ -94,6 +94,22 @@ export default function ModalDetalhes({ solicitacao, onClose }) {
                             </div>
                         </div>
                     </div>
+
+                    {/* Solicitante (apenas para admin) */}
+                    {isAdmin && solicitacao.usuario_nome && (
+                        <div className="info-section">
+                            <h6 className="section-title">
+                                <i className="bi bi-person-fill me-2"></i>
+                                Solicitante
+                            </h6>
+                            <div className="info-grid">
+                                <div className="info-item">
+                                    <label>Nome</label>
+                                    <p>{solicitacao.usuario_nome}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Descrição */}
                     {solicitacao.descricao && (

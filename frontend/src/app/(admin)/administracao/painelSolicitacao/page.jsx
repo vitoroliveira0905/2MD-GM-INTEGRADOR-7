@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import ModalDetalhes from "@/components/ModalDetalhes";
+import ModalRecusar from "@/components/ModalRecusar";
+
 
 export default function PainelSolicitacao() {
 	const router = useRouter();
@@ -56,12 +59,15 @@ export default function PainelSolicitacao() {
 						return {
 							id: s.id,
 							produto: s.produto_nome || s.produto || "-",
+							produto_nome: s.produto_nome || s.produto || "-", // Para o ModalDetalhes
 							quantidade: s.quantidade ?? s.qtd ?? "-",
 							area: s.area || s.shop || "-",
+							shop: s.shop || s.area || "-", // Para o ModalDetalhes
 							usuario_nome: s.usuario_nome || s.usuario?.nome || "-",
 							descricao: s.descricao || "",
 							status: statusMap[statusOriginal] || s.status || "-",
 							data_solicitacao: s.data_solicitacao,
+							data_atualizacao: s.data_atualizacao || s.data_solicitacao,
 							observacao: s.motivo || s.observacao || undefined,
 						};
 					});
@@ -75,24 +81,24 @@ export default function PainelSolicitacao() {
 	}, []);
 
 	if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "admin" || solicitacoes === null) {
-        return <p>Carregando...</p>
-    }
-	
+		return <p>Carregando...</p>
+	}
+
 	const atualizarStatus = async (id, novoStatus, obs = "") => {
 		const backup = solicitacoes;
-	
+
 		setSolicitacoes((prev) =>
 			prev.map((item) =>
 				item.id === id ? { ...item, status: novoStatus, observacao: obs } : item
 			)
 		);
-	
+
 		if (!dadosUsuario?.token) {
 			setMensagemSucesso("Usuário não autenticado.");
 			setTimeout(() => setMensagemSucesso(""), 3000);
 			return;
 		}
-	
+
 		try {
 			const res = await fetch(`http://localhost:3001/api/solicitacoes/${id}`, {
 				method: "PUT",
@@ -102,7 +108,7 @@ export default function PainelSolicitacao() {
 				},
 				body: JSON.stringify({ status: novoStatus, observacao: obs }),
 			});
-	
+
 			if (!res.ok) {
 				const errorText = await res.text();
 				if (res.status === 400 && errorText.includes("estoque insuficiente")) {
@@ -110,14 +116,14 @@ export default function PainelSolicitacao() {
 				}
 				throw new Error(errorText || "Erro ao atualizar solicitação.");
 			}
-	
+
 			setMensagemSucesso(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
 			setTimeout(() => setMensagemSucesso(""), 3000);
 		} catch (error) {
 			console.error("Falha ao atualizar status:", error);
 			// Reverte para o estado anterior em caso de erro
 			setSolicitacoes(backup);
-			
+
 			// Trata mensagens de erro que vêm como JSON stringificado
 			let mensagemAmigavel = "Erro ao atualizar solicitação.";
 			try {
@@ -126,7 +132,7 @@ export default function PainelSolicitacao() {
 			} catch {
 				mensagemAmigavel = error.message || mensagemAmigavel;
 			}
-			
+
 			setMensagemErro(mensagemAmigavel);
 			setTimeout(() => setMensagemErro(""), 3000);
 		}
@@ -134,18 +140,16 @@ export default function PainelSolicitacao() {
 
 	const verDetalhes = (item) => {
 		setSelecionada(item);
-		setAbaAtiva("detalhes");
-	};
-
-	const voltar = () => {
-		setSelecionada(null);
-		setAbaAtiva("pendentes");
+		setModalAberto(false);
 	};
 
 	const abrirModal = (item) => {
-		setSelecionada(item);
+		setSelecionada(null); // Limpa a selecionada do modal de detalhes
 		setObservacao("");
-		setModalAberto(true);
+		setTimeout(() => {
+			setSelecionada(item);
+			setModalAberto(true);
+		}, 0);
 	};
 
 	const confirmarRecusa = () => {
@@ -153,6 +157,7 @@ export default function PainelSolicitacao() {
 			atualizarStatus(selecionada.id, "recusado", observacao);
 		}
 		setModalAberto(false);
+		setSelecionada(null); // Limpa a seleção ao confirmar
 	};
 
 
@@ -424,49 +429,6 @@ export default function PainelSolicitacao() {
 				</div>
 			)}
 
-			{modalAberto && (
-				<div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
-					<div className="modal-dialog modal-dialog-centered">
-						<div className="modal-content">
-
-							<div className="modal-header bg-danger text-white">
-								<h5 className="modal-title">
-									Recusar Solicitação #{selecionada?.id}
-								</h5>
-								<button className="btn-close" onClick={() => setModalAberto(false)}></button>
-							</div>
-
-							<div className="modal-body">
-								<p>
-									Tem certeza que deseja recusar{" "}
-									<strong>{selecionada?.produto}</strong>?
-								</p>
-
-								<textarea
-									className="form-control"
-									rows="3"
-									placeholder="Justificativa..."
-									value={observacao}
-									onChange={(e) => setObservacao(e.target.value)}
-								/>
-							</div>
-
-							<div className="modal-footer">
-								<button className="btn btn-secondary" onClick={() => setModalAberto(false)}>
-									Cancelar
-								</button>
-
-								<button className="btn btn-danger" onClick={confirmarRecusa}>
-									Confirmar Recusa
-								</button>
-							</div>
-
-						</div>
-					</div>
-				</div>
-			)}
-
-
 			{abaAtiva === "historico" && (
 				<div>
 					{historico.length === 0 ? (
@@ -551,30 +513,22 @@ export default function PainelSolicitacao() {
 				</div>
 			)}
 
+			<ModalRecusar
+				solicitacao={modalAberto ? selecionada : null}
+				onClose={() => {
+					setModalAberto(false);
+					setSelecionada(null); // Limpa a seleção ao fechar
+				}}
+				onConfirm={confirmarRecusa}
+				observacao={observacao}
+				setObservacao={setObservacao}
+			/>
 
-			{abaAtiva === "detalhes" && selecionada && (
-				<div className="card shadow-sm p-4">
-					<h4 className="mb-3 text-primary fw-bold">
-						Detalhes da Solicitação #{selecionada.id}
-					</h4>
-
-					<p><strong>Produto:</strong> {selecionada.produto}</p>
-					<p><strong>Quantidade:</strong> {selecionada.quantidade}</p>
-					<p><strong>Área:</strong> {selecionada.area}</p>
-					<p><strong>Solicitante:</strong> {selecionada.usuario_nome}</p>
-					<p><strong>Data:</strong> {selecionada.data_solicitacao}</p>
-					<p><strong>Descrição:</strong> {selecionada.descricao}</p>
-					<p><strong>Status:</strong> {selecionada.status}</p>
-
-					{selecionada.observacao && (
-						<p><strong>Observação:</strong> {selecionada.observacao}</p>
-					)}
-
-					<button className="btn btn-secondary mt-3" onClick={voltar}>
-						<i className="bi bi-arrow-left"></i> Voltar
-					</button>
-				</div>
-			)}
+			<ModalDetalhes
+				solicitacao={!modalAberto && selecionada ? selecionada : null}
+				onClose={() => setSelecionada(null)}
+				isAdmin={true}
+			/>
 
 		</div>
 	);
