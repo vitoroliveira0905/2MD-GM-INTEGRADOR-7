@@ -17,8 +17,8 @@ export default function PainelSolicitacao() {
 	const [abaAtiva, setAbaAtiva] = useState("pendentes");
 	const [solicitacoes, setSolicitacoes] = useState([]); // array normalizado para exibição
 	const [selecionada, setSelecionada] = useState(null);
-	const [mensagemSucesso, setMensagemSucesso] = useState("");
-	const [mensagemErro, setMensagemErro] = useState("");
+	// Sistema novo de notificações flutuantes
+	const [notificacoes, setNotificacoes] = useState([]); // {id, tipo: 'success'|'error'|'info'|'warn', texto}
 	const [modalAberto, setModalAberto] = useState(false);
 	const [modalAprovarAberto, setModalAprovarAberto] = useState(false);
 	const [modalFinalizarAberto, setModalFinalizarAberto] = useState(false);
@@ -89,6 +89,16 @@ export default function PainelSolicitacao() {
 		return <p>Carregando...</p>
 	}
 
+	const pushNotificacao = (tipo, texto, tempo = 3000) => {
+		const id = Date.now() + Math.random();
+		setNotificacoes((prev) => [...prev, { id, tipo, texto }]);
+		if (tempo > 0) {
+			setTimeout(() => {
+				setNotificacoes((prev) => prev.filter((n) => n.id !== id));
+			}, tempo);
+		}
+	};
+
 	const atualizarStatus = async (id, novoStatus, obs = "") => {
 		const backup = solicitacoes;
 
@@ -99,8 +109,7 @@ export default function PainelSolicitacao() {
 		);
 
 		if (!dadosUsuario?.token) {
-			setMensagemSucesso("Usuário não autenticado.");
-			setTimeout(() => setMensagemSucesso(""), 3000);
+			pushNotificacao("error", "Sessão expirada. Faça login novamente.");
 			return;
 		}
 
@@ -122,8 +131,15 @@ export default function PainelSolicitacao() {
 				throw new Error(errorText || "Erro ao atualizar solicitação.");
 			}
 
-			setMensagemSucesso(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
-			setTimeout(() => setMensagemSucesso(""), 3000);
+			// Mensagens aprimoradas
+			const mapaTexto = {
+				aprovado: "Solicitação aprovada com sucesso.",
+				recusado: "Solicitação recusada. Justificativa registrada.",
+				finalizado: "Solicitação finalizada. Estoque atualizado.",
+				cancelado: "Solicitação cancelada.",
+				pendente: "Status alterado para pendente.",
+			};
+			pushNotificacao("success", mapaTexto[novoStatus] || "Status atualizado.");
 		} catch (error) {
 			console.error("Falha ao atualizar status:", error);
 			// Reverte para o estado anterior em caso de erro
@@ -138,8 +154,11 @@ export default function PainelSolicitacao() {
 				mensagemAmigavel = error.message || mensagemAmigavel;
 			}
 
-			setMensagemErro(mensagemAmigavel);
-			setTimeout(() => setMensagemErro(""), 3000);
+			// Ajuste especial para estoque insuficiente
+			if (/estoque insuficiente/i.test(mensagemAmigavel)) {
+				mensagemAmigavel = "Não foi possível aprovar: estoque insuficiente.";
+			}
+			pushNotificacao("error", mensagemAmigavel);
 		}
 	};
 
@@ -247,12 +266,28 @@ export default function PainelSolicitacao() {
 						</div>
 					</div>
 
-					{mensagemSucesso && (
-						<div className="alert alert-success text-center">{mensagemSucesso}</div>
-					)}
-					{mensagemErro && (
-						<div className="alert alert-danger text-center">{mensagemErro}</div>
-					)}
+					{/* Notificações flutuantes modernas */}
+					<div className="toast-stack">
+						{notificacoes.map((n) => (
+							<div
+								key={n.id}
+								className={`toast-notificacao toast-${n.tipo}`}
+								role="alert"
+							>
+								<span className="icon-wrapper">
+									{iIconeTipo(n.tipo)}
+								</span>
+								<span className="texto">{n.texto}</span>
+								<button
+									onClick={() => setNotificacoes((prev) => prev.filter((x) => x.id !== n.id))}
+									className="btn-close-toast"
+									aria-label="Fechar"
+								>
+									<i className="bi bi-x"></i>
+								</button>
+							</div>
+						))}
+					</div>
 
 					<ul className="nav nav-tabs mb-4 justify-content-center">
 						<li className="nav-item">
@@ -580,4 +615,18 @@ export default function PainelSolicitacao() {
 			</div>
 		</main>
 	);
+}
+
+// Ícones dinâmicos para notificações
+function iIconeTipo(tipo) {
+	switch (tipo) {
+		case 'success':
+			return <i className="bi bi-check-circle"></i>;
+		case 'error':
+			return <i className="bi bi-exclamation-octagon"></i>;
+		case 'warn':
+			return <i className="bi bi-exclamation-triangle"></i>;
+		default:
+			return <i className="bi bi-info-circle"></i>;
+	}
 }
