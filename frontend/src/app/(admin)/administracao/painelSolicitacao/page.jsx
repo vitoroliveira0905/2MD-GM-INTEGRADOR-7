@@ -124,11 +124,42 @@ export default function PainelSolicitacao() {
 			});
 
 			if (!res.ok) {
-				const errorText = await res.text();
-				if (res.status === 400 && errorText.includes("estoque insuficiente")) {
-					throw new Error("Estoque insuficiente para atender a solicitação.");
+				// Tenta parsear como JSON primeiro
+				let errorData;
+				const contentType = res.headers.get("content-type");
+				
+				if (contentType && contentType.includes("application/json")) {
+					errorData = await res.json();
+				} else {
+					const errorText = await res.text();
+					// Tenta parsear o texto como JSON
+					try {
+						errorData = JSON.parse(errorText);
+					} catch {
+						errorData = { erro: errorText };
+					}
 				}
-				throw new Error(errorText || "Erro ao atualizar solicitação.");
+
+				// Reverte o estado antes de lançar o erro
+				setSolicitacoes(backup);
+
+				// Tratamento específico para estoque insuficiente
+				if (errorData.erro === "Estoque insuficiente" || /estoque insuficiente/i.test(errorData.erro)) {
+					const quantidade = errorData.mensagem?.match(/\((\d+)\)/g);
+					let msg = "Não foi possível aprovar: estoque insuficiente.";
+					if (quantidade && quantidade.length === 2) {
+						const estoqueAtual = quantidade[0].replace(/[()]/g, "");
+						const qtdSolicitada = quantidade[1].replace(/[()]/g, "");
+						msg = `Estoque insuficiente. Disponível: ${estoqueAtual}, Solicitado: ${qtdSolicitada}.`;
+					}
+					pushNotificacao("error", msg);
+					return;
+				}
+
+				// Outros erros
+				const mensagemErro = errorData.mensagem || errorData.erro || "Erro ao atualizar solicitação.";
+				pushNotificacao("error", mensagemErro);
+				return;
 			}
 
 			// Mensagens aprimoradas
@@ -145,19 +176,8 @@ export default function PainelSolicitacao() {
 			// Reverte para o estado anterior em caso de erro
 			setSolicitacoes(backup);
 
-			// Trata mensagens de erro que vêm como JSON stringificado
-			let mensagemAmigavel = "Erro ao atualizar solicitação.";
-			try {
-				const errorObj = JSON.parse(error.message);
-				mensagemAmigavel = errorObj.mensagem || errorObj.erro || mensagemAmigavel;
-			} catch {
-				mensagemAmigavel = error.message || mensagemAmigavel;
-			}
-
-			// Ajuste especial para estoque insuficiente
-			if (/estoque insuficiente/i.test(mensagemAmigavel)) {
-				mensagemAmigavel = "Não foi possível aprovar: estoque insuficiente.";
-			}
+			// Tratamento para erros de rede ou outros erros inesperados
+			const mensagemAmigavel = error.message || "Erro ao conectar com o servidor.";
 			pushNotificacao("error", mensagemAmigavel);
 		}
 	};
