@@ -16,12 +16,15 @@ USE produtos_api;
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    gmin VARCHAR(255) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     tipo ENUM('admin', 'comum') NOT NULL DEFAULT 'comum',
+    imagem VARCHAR(255) DEFAULT 'default.jpg', -- ✅ nova coluna para a foto
     data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 
 -- Migration: Criar tabela produtos
 -- Data: 2025-01-15
@@ -111,10 +114,13 @@ USE produtos_api;
 
 -- Inserir usuários iniciais (senha: 123456)
 -- Hash gerado com bcrypt para a senha "123456" (validado)
-INSERT INTO usuarios (nome, email, senha, tipo) VALUES
-('Administrador', 'admin@produtos.com', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'admin'),
-('João Silva', 'joao@email.com', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum'),
-('Maria Souza', 'maria@email.com', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum');
+-- Inserir usuários iniciais com hash de senha e imagem
+INSERT INTO usuarios (nome, email, gmin, senha, tipo, imagem) VALUES
+('Administrador', 'admin@empresa.com', '123456', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'admin', 'admin.jpg'),
+('João Silva', 'joao@empresa.com', '111111', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'joao.jpg'),
+('Maria Souza', 'maria@empresa.com', '000000', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'maria.jpg');
+
+
 
 -- Inserir produtos iniciais
 INSERT INTO produtos (nome, descricao, preco, categoria, imagem, quantidade, minimo_estoque) VALUES

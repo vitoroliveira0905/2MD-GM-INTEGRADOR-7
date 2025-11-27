@@ -6,10 +6,10 @@ USE produtos_api;
 
 -- Inserir usuários iniciais (senha: 123456)
 -- Hash gerado com bcrypt para a senha "123456" (validado)
-INSERT INTO usuarios (nome, email, senha, tipo) VALUES
-('Administrador', 'admin@produtos.com', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'admin'),
-('João Silva', 'joao@email.com', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum'),
-('Maria Souza', 'maria@email.com', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum');
+INSERT INTO usuarios (nome, email, gmin, senha, tipo, imagem) VALUES
+('Administrador', 'admin@empresa.com', '123456', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'admin', 'admin.jpg'),
+('João Silva', 'joao@empresa.com', '111111', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'joao.jpg'),
+('Maria Souza', 'maria@empresa.com', '000000', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'maria.jpg');
 
 -- Inserir produtos iniciais
 INSERT INTO produtos (nome, descricao, preco, categoria, imagem, quantidade, minimo_estoque) VALUES

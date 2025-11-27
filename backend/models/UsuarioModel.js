@@ -45,15 +45,16 @@ class UsuarioModel {
     }
 
     // Buscar usuário por email
-    static async buscarPorEmail(email) {
+    static async buscarPorGmin(gmin) {
         try {
-            const rows = await read('usuarios', `email = '${email}'`);
+            const rows = await read('usuarios', `gmin = '${gmin}'`);
             return rows[0] || null;
         } catch (error) {
-            console.error('Erro ao buscar usuário por email:', error);
+            console.error('Erro ao buscar usuário por gmin:', error);
             throw error;
         }
     }
+    
 
     // Criar novo usuário
     static async criar(dadosUsuario) {

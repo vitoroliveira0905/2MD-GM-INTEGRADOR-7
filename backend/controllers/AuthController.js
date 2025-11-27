@@ -485,6 +485,45 @@ class AuthController {
         }
     }
 
+   
+
+  // Login pelo GMIN
+  static async loginGmin(req, res) {
+    const { gmin } = req.body;
+
+    if (!gmin) return res.status(400).json({ erro: "GMIN é obrigatório" });
+
+    try {
+      const usuario = await UsuarioModel.buscarPorGmin(gmin);
+      if (!usuario) return res.status(404).json({ erro: "Usuário não encontrado" });
+
+      // Gerar JWT
+      const token = jwt.sign(
+        { id: usuario.id, tipo: usuario.tipo },
+        process.env.JWT_SECRET,
+        { expiresIn: '8h' }
+      );
+
+      res.json({
+        usuario: {
+          id: usuario.id,
+          nome: usuario.nome,
+          email: usuario.email,
+          tipo: usuario.tipo,
+          imagem: usuario.imagem
+        },
+        token
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ erro: "Erro no servidor" });
+    }
+  }
+
+
+
+
+
     // DELETE /usuarios/:id - Excluir usuário (apenas admin)
     static async excluirUsuario(req, res) {
         try {

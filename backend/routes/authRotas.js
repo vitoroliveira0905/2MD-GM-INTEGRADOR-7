@@ -10,6 +10,8 @@ router.post('/registrar', AuthController.registrar);
 
 // Rotas protegidas (precisam de autenticação)
 router.get('/perfil', authMiddleware, AuthController.obterPerfil);
+router.post('/login-gmin', AuthController.loginGmin);
+
 
 // Rotas OPTIONS para CORS (preflight requests)
 router.options('/login', (req, res) => {
