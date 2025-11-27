@@ -7,6 +7,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import ModalDetalhes from "@/components/ModalDetalhes";
 import ModalRecusar from "@/components/ModalRecusar";
 import ModalAprovar from "@/components/ModalAprovar";
+import ModalFinalizar from "@/components/ModalFinalizar";
 
 
 export default function PainelSolicitacao() {
@@ -19,6 +20,7 @@ export default function PainelSolicitacao() {
 	const [mensagemErro, setMensagemErro] = useState("");
 	const [modalAberto, setModalAberto] = useState(false);
 	const [modalAprovarAberto, setModalAprovarAberto] = useState(false);
+	const [modalFinalizarAberto, setModalFinalizarAberto] = useState(false);
 	const [observacao, setObservacao] = useState("");
 	const [busca, setBusca] = useState("");
 	const [filtroStatus, setFiltroStatus] = useState("todos");
@@ -178,6 +180,22 @@ export default function PainelSolicitacao() {
 		setSelecionada(null); // Limpa a seleção ao confirmar
 	};
 
+	const abrirModalFinalizar = (item) => {
+		setSelecionada(null);
+		setTimeout(() => {
+			setSelecionada(item);
+			setModalFinalizarAberto(true);
+		}, 0);
+	};
+
+	const confirmarFinalizacao = () => {
+		if (selecionada) {
+			atualizarStatus(selecionada.id, "finalizado");
+		}
+		setModalFinalizarAberto(false);
+		setSelecionada(null);
+	};
+
 
 	const pendentes = solicitacoes.filter((s) => {
 		const txt = busca.toLowerCase();
@@ -203,10 +221,11 @@ export default function PainelSolicitacao() {
 		const matchBusca =
 			s.produto.toLowerCase().includes(txt) ||
 			s.usuario_nome.toLowerCase().includes(txt);
-		const statusLower = s.status.toLowerCase(); // Pendente, Aprovado, Recusado, Finalizado, Cancelado
+		const statusLower = (s.status || "").toLowerCase();
 		const matchStatus =
 			filtroStatus === "todos" || filtroStatus === statusLower;
-		return statusLower !== "pendente" && statusLower !== "aprovado" && matchBusca && matchStatus;
+		// Inclui no histórico tudo que não for pendente nem aprovado
+		return ["recusado", "finalizado", "cancelado"].includes(statusLower) && matchBusca && matchStatus;
 	});
 
 	return (
@@ -348,6 +367,7 @@ export default function PainelSolicitacao() {
 													>
 														<i className="bi bi-x-lg"></i>
 													</button>
+													
 
 
 													<button
@@ -411,12 +431,12 @@ export default function PainelSolicitacao() {
 											<td className="text-center">
 												<div className="d-flex flex-column flex-md-row justify-content-center gap-2">
 
-
 													<button
-														className="btn btn-danger btn-sm"
-														onClick={() => abrirModal(item)}
+														className="btn btn-secondary btn-sm"
+														onClick={() => atualizarStatus(item.id, "finalizado")}
+														title="Finalizar"
 													>
-														<i className="bi bi-x-lg"></i>
+														<i className="bi bi-box-seam"></i>
 													</button>
 
 
@@ -454,7 +474,6 @@ export default function PainelSolicitacao() {
 										<th>Material</th>
 										<th>Qtd</th>
 										<th>Solicitante</th>
-										<th>Data</th>
 										<th>Status</th>
 										<th className="text-center">Ações</th>
 									</tr>
@@ -470,10 +489,6 @@ export default function PainelSolicitacao() {
 											<td>{item.produto}</td>
 											<td>{item.quantidade}</td>
 											<td>{item.usuario_nome}</td>
-											<td>{new Date(item.data_solicitacao).toLocaleString("pt-BR", {
-												dateStyle: "short",
-												timeStyle: "short",
-											}).replace(",", "")}</td>
 											<td>
 												<span
 													className={`badge ${item.status === "aprovado"
@@ -492,25 +507,12 @@ export default function PainelSolicitacao() {
 
 											<td className="text-center">
 												<div className="d-flex gap-2 justify-content-center">
-
-
-													{item.status === "aprovado" && (
-														<button
-															className="btn btn-secondary btn-sm"
-															onClick={() => atualizarStatus(item.id, "finalizado")}
-														>
-															<i className="bi bi-box-seam"></i>
-														</button>
-													)}
-
-
 													<button
 														className="btn btn-info btn-sm"
 														onClick={() => verDetalhes(item)}
 													>
 														<i className="bi bi-eye"></i>
 													</button>
-
 												</div>
 											</td>
 										</tr>
@@ -543,8 +545,17 @@ export default function PainelSolicitacao() {
 				setObservacao={setObservacao}
 			/>
 
+			<ModalFinalizar
+				solicitacao={modalFinalizarAberto ? selecionada : null}
+				onClose={() => {
+					setModalFinalizarAberto(false);
+					setSelecionada(null);
+				}}
+				onConfirm={confirmarFinalizacao}
+			/>
+
 			<ModalDetalhes
-				solicitacao={!modalAberto && !modalAprovarAberto && selecionada ? selecionada : null}
+				solicitacao={!modalAberto && !modalAprovarAberto && !modalFinalizarAberto && selecionada ? selecionada : null}
 				onClose={() => setSelecionada(null)}
 				isAdmin={true}
 			/>
