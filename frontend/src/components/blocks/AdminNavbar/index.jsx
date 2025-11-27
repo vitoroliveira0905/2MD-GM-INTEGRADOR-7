@@ -30,7 +30,7 @@ export default function AdminNavbar() {
     };
 
     return (
-        <header className="shadow-sm" style={{height: "8.7vh"}}> 
+        <header className="shadow-sm" style={{minHeight: "8.7vh"}}> 
             <div className="container">
                 <div className="d-flex flex-wrap align-items-center justify-content-between">
                     {/* Logo e Título */}
