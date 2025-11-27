@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import ModalDetalhes from "@/components/ModalDetalhes";
 import ModalRecusar from "@/components/ModalRecusar";
+import ModalAprovar from "@/components/ModalAprovar";
 
 
 export default function PainelSolicitacao() {
@@ -17,6 +18,7 @@ export default function PainelSolicitacao() {
 	const [mensagemSucesso, setMensagemSucesso] = useState("");
 	const [mensagemErro, setMensagemErro] = useState("");
 	const [modalAberto, setModalAberto] = useState(false);
+	const [modalAprovarAberto, setModalAprovarAberto] = useState(false);
 	const [observacao, setObservacao] = useState("");
 	const [busca, setBusca] = useState("");
 	const [filtroStatus, setFiltroStatus] = useState("todos");
@@ -150,6 +152,22 @@ export default function PainelSolicitacao() {
 			setSelecionada(item);
 			setModalAberto(true);
 		}, 0);
+	};
+
+	const abrirModalAprovar = (item) => {
+		setSelecionada(null);
+		setTimeout(() => {
+			setSelecionada(item);
+			setModalAprovarAberto(true);
+		}, 0);
+	};
+
+	const confirmarAprovacao = () => {
+		if (selecionada) {
+			atualizarStatus(selecionada.id, "aprovado");
+		}
+		setModalAprovarAberto(false);
+		setSelecionada(null);
 	};
 
 	const confirmarRecusa = () => {
@@ -318,7 +336,7 @@ export default function PainelSolicitacao() {
 
 													<button
 														className="btn btn-success btn-sm"
-														onClick={() => atualizarStatus(item.id, "aprovado")}
+														onClick={() => abrirModalAprovar(item)}
 													>
 														<i className="bi bi-check-lg"></i>
 													</button>
@@ -392,14 +410,6 @@ export default function PainelSolicitacao() {
 
 											<td className="text-center">
 												<div className="d-flex flex-column flex-md-row justify-content-center gap-2">
-
-
-													<button
-														className="btn btn-success btn-sm"
-														onClick={() => atualizarStatus(item.id, "aprovado")}
-													>
-														<i className="bi bi-check-lg"></i>
-													</button>
 
 
 													<button
@@ -513,6 +523,15 @@ export default function PainelSolicitacao() {
 				</div>
 			)}
 
+			<ModalAprovar
+				solicitacao={modalAprovarAberto ? selecionada : null}
+				onClose={() => {
+					setModalAprovarAberto(false);
+					setSelecionada(null);
+				}}
+				onConfirm={confirmarAprovacao}
+			/>
+
 			<ModalRecusar
 				solicitacao={modalAberto ? selecionada : null}
 				onClose={() => {
@@ -525,7 +544,7 @@ export default function PainelSolicitacao() {
 			/>
 
 			<ModalDetalhes
-				solicitacao={!modalAberto && selecionada ? selecionada : null}
+				solicitacao={!modalAberto && !modalAprovarAberto && selecionada ? selecionada : null}
 				onClose={() => setSelecionada(null)}
 				isAdmin={true}
 			/>
