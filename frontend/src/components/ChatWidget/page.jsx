@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import "@/app/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
 
 
 export default function ChatWidget() {
@@ -81,7 +82,7 @@ export default function ChatWidget() {
             <div
                 className="text-white d-flex align-items-center px-3"
                 style={{
-                    backgroundColor: "var(--secondary-color)",
+                    background: "linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%)",
                     minHeight: "55px",
                     fontSize: "15px",
                     gap: "10px",
@@ -95,7 +96,7 @@ export default function ChatWidget() {
             {/* 🔥 Perguntas rápidas */}
             <div
                 className="d-flex gap-2 flex-wrap p-2 border-bottom"
-                style={{ background: "#f8f9fa" }}
+                style={{ background: "var(--background-color)" }}
             >
                 {perguntasRapidas.map((p, i) => (
                     <button
@@ -103,9 +104,9 @@ export default function ChatWidget() {
                         onClick={() => enviarMensagem(p)}
                         className="btn btn-sm text-dark"
                         style={{
-                            background: "#e9ecef",
+                            background: "var(--user-bubble)",
                             borderRadius: "20px",
-                            padding: "5px 12px",
+                            padding: "6px 14px",
                             border: "1px solid #d1d1d1"
                         }}
                     >
@@ -116,7 +117,7 @@ export default function ChatWidget() {
 
             {/* 🗨 Área das mensagens */}
             <div
-                className="overflow-auto p-3 d-flex flex-column"
+                className="overflow-auto p-3 d-flex flex-column chat-messages"
                 style={{ flexGrow: 1, background: "#fff" }}
             >
                 {mensagens.length === 0 && (
@@ -176,11 +177,12 @@ export default function ChatWidget() {
                     disabled={carregando}
                 />
                 <button
-                    className="btn btn-primary"
+                    className="btn text-white fw-semibold rounded-pill"
                     onClick={() => enviarMensagem()}
                     disabled={carregando}
+                    style={{ backgroundColor: "var(--primary-color)" }}
                 >
-                    {carregando ? "..." : "Enviar"}
+                    {carregando ? "Enviando..." : "Enviar"}
                 </button>
             </div>
         </div>

@@ -307,7 +307,7 @@ export default function DashboardCliente() {
           width: "65px",
           height: "65px",
           borderRadius: "50%",
-          backgroundColor: "var(--primary-color)",
+          background: "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)",
           color: "white",
           fontSize: "28px",
           border: "none",
@@ -315,9 +315,9 @@ export default function DashboardCliente() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+          boxShadow: "0 6px 18px rgba(0,0,0,0.30)",
           zIndex: 9999,
-          animation: openChat ? "none" : "floatButton 2.4s ease-in-out infinite" // anima o BOTÃO
+          animation: openChat ? "none" : "floatButton 2.4s ease-in-out infinite"
         }}
       >
         {openChat ? (
@@ -325,50 +325,7 @@ export default function DashboardCliente() {
             <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
           </svg>
         ) : (
-          <svg
-            width="34"
-            height="34"
-            viewBox="0 0 24 24"
-            fill="white"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <style>{`
-          @keyframes blink { 
-            0%, 20%, 60%, 100% { transform: scaleY(1); }
-            40% { transform: scaleY(0.12); } 
-          }
-          @keyframes floatButton {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-          }
-        `}</style>
-            </defs>
-
-            {/* Corpo do robô */}
-            <path d="M12 2C7.031 2 3 5.589 3 10c0 1.863.709 3.581 1.887 4.938-.223 1.042-.72 2.547-1.782 3.867a.75.75 0 0 0 .79 1.187c2.18-.52 4.042-1.348 5.21-2.013A11.98 11.98 0 0 0 12 18c4.969 0 9-3.589 9-8s-4.031-8-9-8Z" />
-
-            {/* Olho esquerdo */}
-            <ellipse
-              cx="9"
-              cy="10"
-              rx="1"
-              ry="1.2"
-              style={{ transformOrigin: "9px 10px", animation: "blink 3s infinite" }}
-            />
-
-            {/* Olho direito */}
-            <ellipse
-              cx="15"
-              cy="10"
-              rx="1"
-              ry="1.2"
-              style={{ transformOrigin: "15px 10px", animation: "blink 3s infinite 0.12s" }}
-            />
-
-            {/* Boca */}
-            <path d="M8.692 13.5c1.87.25 3.746.25 5.616 0a.75.75 0 1 1 .184 1.487 14.68 14.68 0 0 1-5.984 0 .75.75 0 0 1 .184-1.487Z" />
-          </svg>
+          <i className="bi bi-chat-dots-fill" style={{ fontSize: "30px" }}></i>
         )}
       </button>
 
@@ -377,13 +334,14 @@ export default function DashboardCliente() {
       <div
         style={{
           position: "fixed",
-          bottom: openChat ? "100px" : "-520px", // -520 garante escondimento em telas menores/maiores
+          bottom: openChat ? "100px" : "-520px",
           right: "20px",
           width: "360px",
           height: "500px",
           background: "white",
           borderRadius: "15px",
-          boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.30)",
+          border: "1px solid #e9ecef",
           overflow: "hidden",
           zIndex: 9999,
           transition: "bottom 0.3s ease"
