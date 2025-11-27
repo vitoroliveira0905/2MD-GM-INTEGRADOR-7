@@ -57,24 +57,27 @@ export default function DashboardCliente() {
   }
 
 
+  // Gradiente igual ao ModalDetalhes
   const getBadgeClass = (status) => {
     const s = status.toLowerCase();
     switch (s) {
-      case "atendido":
+      case "finalizado":
       case "aprovado":
-        return "bg-success";
-      case "negado":
+        return "badge-status badge-success";
+      case "recusado":
       case "cancelado":
-        return "bg-danger";
+        return "badge-status badge-danger";
+      case "pendente":
+        return "badge-status badge-warning";
       default:
-        return "bg-warning text-dark";
+        return "badge-status badge-secondary";
     }
   };
 
 
   const totalPendentes = dadosSolicitacoes.solicitacoes.filter(s => s.status === "pendente").length;
   const totalAprovadas = dadosSolicitacoes.solicitacoes.filter(s => s.status === "aprovado").length;
-  const totalNegadas = dadosSolicitacoes.solicitacoes.filter(s => s.status === "negado").length;
+  const totalRecusadas = dadosSolicitacoes.solicitacoes.filter(s => s.status === "recusado").length;
 
 
   function verDetalhes(item) {
@@ -163,7 +166,7 @@ export default function DashboardCliente() {
           {[
             { titulo: "Pendentes", valor: totalPendentes, icone: "bi-hourglass-split" },
             { titulo: "Aprovadas", valor: totalAprovadas, icone: "bi-check-circle" },
-            { titulo: "Negadas", valor: totalNegadas, icone: "bi-x-circle" }
+            { titulo: "Recusadas", valor: totalRecusadas, icone: "bi-x-circle" }
           ].map((card, i) => (
             <div key={i} className="col-12 col-md-4">
               <div className="status-card rounded-4">
@@ -188,66 +191,98 @@ export default function DashboardCliente() {
               Solicitações em andamento
             </h5>
           </div>
-
           <div className="card-body p-4">
-            <div className="table-responsive">
-              <table className="table align-middle">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Material</th>
-                    <th className="text-center">Status</th>
-                    <th>Descrição</th>
-                    <th></th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {(dadosSolicitacoes?.solicitacoes || [])
-                    .filter((material) => material.status === "pendente" || material.status === "aprovado")
-                    .sort((a, b) => {
-                      return ["aprovado", "pendente"].indexOf(a.status) - ["aprovado", "pendente"].indexOf(b.status);
-                    })
-                    .map((s, i) => (
-                      <tr key={i}>
-                        <td>
-                          {new Date(s.data_solicitacao).toLocaleString("pt-BR", {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          }).replace(",", "")}
-                        </td>
-
-                        <td>{s.produto_nome}</td>
-
-                        <td className="text-center">
-                          <span className={`badge px-3 py-2 fs-6 fw-semibold ${getBadgeClass(s.status)}`}
-                            style={{ minWidth: "120px" }}>
-                            {s.status}
-                          </span>
-                        </td>
-
-                        <td>{s.descricao}</td>
-
-                        <td>
+            <div className="row g-4">
+              {(dadosSolicitacoes?.solicitacoes || [])
+                .filter((material) => material.status === "pendente" || material.status === "aprovado")
+                .sort((a, b) => {
+                  return ["aprovado", "pendente"].indexOf(a.status) - ["aprovado", "pendente"].indexOf(b.status);
+                })
+                .map((s, i) => (
+                  <div key={i} className="col-12 col-md-6 col-lg-4">
+                    <div className="solicitacao-card shadow rounded-4 h-100 d-flex flex-column">
+                      {/* Header do Card */}
+                      <div
+                        className="solicitacao-card-header d-flex align-items-center justify-content-between p-3"
+                        style={{
+                          background: "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)",
+                          borderTopLeftRadius: "1rem",
+                          borderTopRightRadius: "1rem",
+                          minHeight: "60px"
+                        }}
+                      >
+                        <div className="d-flex align-items-center gap-2">
+                          <i className="bi bi-box-seam-fill text-white" style={{ fontSize: 22 }}></i>
+                          <span className="fw-bold text-white" style={{ fontSize: 18 }}>{s.produto_nome}</span>
+                        </div>
+                        {/* Badge removido do header */}
+                      </div>
+                      {/* Badge de status abaixo do header */}
+                      <div className="w-100 d-flex justify-content-start" style={{ backgroundColor: "#f8f9fa" }}>
+                        <span className={`${getBadgeClass(s.status)} px-3 py-1 fs-7 fw-semibold m-3`}
+                          style={{ minWidth: "100px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 15, letterSpacing: 0.5 }}>
+                          {s.status.toUpperCase()}
+                        </span>
+                      </div>
+                      {/* Corpo do Card */}
+                      <div className="solicitacao-card-body flex-grow-1 d-flex flex-column justify-content-between p-3" style={{ background: "#f8f9fa" }}>
+                        <div>
+                          <div className="mb-2 d-flex align-items-center gap-2">
+                            <i className="bi bi-calendar-event text-primary"></i>
+                            <span className="text-secondary small">{new Date(s.data_solicitacao).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }).replace(",", "")}</span>
+                          </div>
+                          <div className="mb-2 d-flex align-items-center gap-2">
+                            <i className="bi bi-geo-alt text-danger"></i>
+                            <span className="text-secondary small">{s.shop} - {s.area}</span>
+                          </div>
+                          <div className="mb-2 d-flex align-items-center gap-2">
+                            <i className="bi bi-archive text-success"></i>
+                            <span className="text-secondary small">Qtd: <b>{s.quantidade}</b></span>
+                          </div>
+                          {s.descricao && (
+                            <div className="mb-2">
+                              <span className="text-dark fw-semibold">Descrição:</span>
+                              <div className="bg-white rounded-3 p-2 mt-1 text-secondary small border" style={{ minHeight: 36 }}>{s.descricao}</div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="d-flex gap-2 mt-3">
                           {s.status === "pendente" && (
-                            <button className="btn btn-danger btn-sm"
-                              onClick={() => cancelarSolicitacao(s)}>
-                              <i className="bi bi-trash"></i>
+                            <button
+                              className="btn btn-outline-danger flex-fill btn-cancelar-solicitacao"
+                              style={{
+                                fontWeight: 400,
+                                borderRadius: 10,
+                                borderWidth: 1
+                              }}
+                              onClick={() => cancelarSolicitacao(s)}
+                            >
+                              <i className="bi bi-trash me-2"></i> Cancelar
                             </button>
                           )}
-
-                          
-                            <button className="btn btn-info btn-sm"
-                              onClick={() => verDetalhes(s)}>
-                              <i className="bi bi-eye"></i>
-                            </button>
-                          
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-
-              </table>
+                          <button
+                            className="btn btn-outline-primary flex-fill btn-ver-detalhes"
+                            style={{
+                              fontWeight: 400,
+                              borderRadius: 10,
+                              borderWidth: 1
+                            }}
+                            onClick={() => verDetalhes(s)}
+                          >
+                            <i className="bi bi-eye me-2"></i> Detalhes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              {((dadosSolicitacoes?.solicitacoes || []).filter((material) => material.status === "pendente" || material.status === "aprovado").length === 0) && (
+                <div className="col-12">
+                  <div className="alert alert-info text-center rounded-4 py-4">
+                    Nenhuma solicitação em andamento encontrada.
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
