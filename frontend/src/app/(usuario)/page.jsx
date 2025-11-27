@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "./styles.css";
 import dynamic from "next/dynamic";
 import ModalDetalhes from "@/components/ModalDetalhes";
 import ModalCancelar from "@/components/ModalCancelar";
@@ -127,24 +128,33 @@ export default function DashboardCliente() {
     <main style={{ flex: "1", backgroundColor: "#f8f9fa" }}>
       <div className="container py-5">
 
+        {/* Hero Section */}
+        <div className="hero-section rounded-4 p-4 p-md-5 mb-5">
+          <div className="row align-items-center">
+            <div className="col-md-8">
+              <div className="d-flex align-items-center mb-3">
+                <div className="hero-icon me-3">
+                  <i className="bi bi-box-seam-fill"></i>
+                </div>
+                <div>
+                  <h1 className="fw-bold mb-1" style={{ fontSize: "clamp(24px, 5vw, 42px)", color: "var(--primary-color)" }}>
+                    Olá, {dadosUsuario?.usuario?.nome?.split(' ')[0]}!
+                  </h1>
+                  <p className="text-muted mb-0">Bem-vindo ao seu painel de controle</p>
+                </div>
+              </div>
+              <p className="fs-5 mb-0 text-secondary">
+                Acompanhe suas solicitações, faça novos pedidos e mantenha tudo organizado em um só lugar.
+              </p>
+            </div>
 
-        <div className="row align-items-center mb-5">
-          <div className="col-md-8">
-            <h1 className="fw-bold display-5" style={{ color: "var(--primary-color)" }}>
-              Requisições de Materiais
-            </h1>
-            <p className="text-muted fs-5 mb-0">
-              Acompanhe o status de suas solicitações e faça novos pedidos quando precisar.
-            </p>
-          </div>
-
-          <div className="col-md-4 text-md-end mt-4 mt-md-0">
-            <Link href="/solicitacao">
-              <button className="btn btn-lg fw-bold text-white rounded-pill shadow-sm"
-                style={{ backgroundColor: "var(--primary-color)" }}>
-                <i className="bi bi-plus-circle me-2"></i> Nova Solicitação
-              </button>
-            </Link>
+            <div className="col-md-4 text-md-end mt-4 mt-md-0">
+              <Link href="/solicitacao">
+                <button className="btn btn-lg fw-bold text-white rounded-pill shadow-lg hero-button">
+                  <i className="bi bi-plus-circle me-2"></i> Nova Solicitação
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -156,17 +166,15 @@ export default function DashboardCliente() {
             { titulo: "Negadas", valor: totalNegadas, icone: "bi-x-circle" }
           ].map((card, i) => (
             <div key={i} className="col-12 col-md-4">
-              <div className="card shadow-lg border-0 rounded-4">
-                <div className="card-body d-flex justify-content-between align-items-center p-4">
+              <div className="status-card rounded-4">
+                <div className="status-card-body d-flex justify-content-between align-items-center">
                   <div>
-                    <h6 className="text-muted mb-2 fs-5">{card.titulo}</h6>
-                    <h2 className="fw-bold">{card.valor}</h2>
+                    <h6 className="status-card-title mb-2">{card.titulo}</h6>
+                    <h2 className="status-card-value fw-bold">{card.valor}</h2>
                   </div>
 
-                  <div className="p-4 rounded-circle"
-                    style={{ backgroundColor: "var(--primary-color)20" }}>
-                    <i className={`bi ${card.icone}`}
-                      style={{ color: "var(--primary-color)", fontSize: "28px" }}></i>
+                  <div className="status-card-icon">
+                    <i className={`bi ${card.icone}`}></i>
                   </div>
                 </div>
               </div>

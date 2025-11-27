@@ -1,0 +1,80 @@
+/* Hero Section */
+.hero-section {
+  background: white;
+  border: 3px solid transparent;
+  background-image: 
+    linear-gradient(white, white),
+    linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.hero-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+}
+
+.hero-button {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  color: white !important;
+  padding: 12px 32px;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.hero-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
+}
+
+/* Status Cards */
+.status-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.status-card-body {
+  padding: 24px;
+}
+
+.status-card-title {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.status-card-value {
+  color: var(--foreground);
+  font-size: 32px;
+}
+
+.status-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.status-card-icon i {
+  font-size: 26px;
+}
+
+.status-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+  transition: all 0.2s ease;
+}
