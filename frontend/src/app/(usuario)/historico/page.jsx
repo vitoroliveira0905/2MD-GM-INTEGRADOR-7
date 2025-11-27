@@ -5,6 +5,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import ModalDetalhes from "@/components/ModalDetalhes";
+import ModalCancelar from "@/components/ModalCancelar";
+import "./styles.css";
 
 export default function Historico() {
   const router = useRouter();
@@ -23,13 +26,13 @@ export default function Historico() {
   }
 
   function confirmarCancelamento() {
-    setDadosSolicitacoes(prev => {
+    setDadosSolicitacoes((prev) => {
       if (!prev) return null;
       return {
         ...prev,
-        solicitacoes: prev.solicitacoes.map(s =>
+        solicitacoes: prev.solicitacoes.map((s) =>
           s.id === modalCancelar.id ? { ...s, status: "cancelado" } : s
-        )
+        ),
       };
     });
     setModalCancelar(null);
@@ -52,39 +55,35 @@ export default function Historico() {
       fetch("http://localhost:3001/api/solicitacoes", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${dados.token}`,
-        }
+          Authorization: `Bearer ${dados.token}`,
+        },
       })
-        .then(response => response.json())
-        .then(data => setDadosSolicitacoes(data))
-        .catch(error => console.error("Erro ao buscar solicitações:", error));
+        .then((response) => response.json())
+        .then((data) => setDadosSolicitacoes(data))
+        .catch((error) => console.error("Erro ao buscar solicitações:", error));
     } catch (e) {
       console.error("Erro ao parsear dadosUsuario do localStorage:", e);
       router.push("/login");
     }
-  }, [])
+  }, [router]);
 
   const getBadgeClass = (status) => {
     const lowerStatus = status.toLowerCase();
     switch (lowerStatus) {
       case "atendido":
       case "aprovado":
-        return "bg-success";
+        return "badge-success";
       case "recusado":
-        return "bg-danger";
+        return "badge-danger";
       case "cancelado":
-        return "bg-secondary";
+        return "badge-secondary";
       default:
-        return "bg-warning text-dark";
+        return "badge-warning";
     }
   };
 
-
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
-
-
-
 
   const solicitacoesFiltradas =
     dadosSolicitacoes?.solicitacoes.filter((s) => {
@@ -96,47 +95,44 @@ export default function Historico() {
         s.status.toLowerCase().includes(txt);
 
       const matchStatus =
-        filtroStatus === "todos" ||
-        filtroStatus === s.status.toLowerCase();
+        filtroStatus === "todos" || filtroStatus === s.status.toLowerCase();
 
       return matchBusca && matchStatus;
     }) || [];
 
-
-  if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "comum" || dadosSolicitacoes === null) {
-    return <p>Carregando...</p>
+  if (
+    dadosUsuario === null ||
+    dadosUsuario.usuario.tipo !== "comum" ||
+    dadosSolicitacoes === null
+  ) {
+    return <p>Carregando...</p>;
   }
 
   return (
     <main style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
       <div className="container py-5">
-
-        <div className="mb-4">
-          <button
-            className="btn btn-outline-dark fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
-            style={{ borderRadius: "12px" }}
-            onClick={() => router.back()}
-          >
-            <i className="bi bi-arrow-left"></i> Voltar
-          </button>
+        <div className="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h1 className="fw-bold mb-1" style={{ color: "var(--primary-color)" }}>
+              Histórico de Solicitações
+            </h1>
+            <p className="text-muted mb-0">
+              Acompanhe suas solicitações e seus status.
+            </p>
+          </div>
+          <div className="d-none d-md-flex align-items-center gap-2">
+            <span className="badge rounded-pill bg-primary-subtle text-primary">
+              <i className="bi bi-clock-history me-2"></i>
+              {solicitacoesFiltradas.length} registro(s)
+            </span>
+          </div>
         </div>
-
-        <div className="text-center mb-4">
-          <h1 className="fw-bold display-6 mb-2" style={{ color: "var(--primary-color)" }}>
-            Histórico de Solicitações
-          </h1>
-          <p className="text-muted fs-5 mb-0">
-            Consulte todas as solicitações feitas e seus respectivos status.
-          </p>
-        </div>
-
-
 
         <div className="row mb-4">
           <div className="col-md-6">
             <input
               type="text"
-              className="form-control"
+              className="form-control form-control-lg modern-input"
               placeholder="Buscar por material, descrição ou status..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
@@ -145,7 +141,7 @@ export default function Historico() {
 
           <div className="col-md-4">
             <select
-              className="form-select"
+              className="form-select form-select-lg modern-input"
               value={filtroStatus}
               onChange={(e) => setFiltroStatus(e.target.value.toLowerCase())}
             >
@@ -159,75 +155,70 @@ export default function Historico() {
           </div>
         </div>
 
-
-
-        <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
-          <div className="card-body p-4">
-
+        <div className="card border-0 shadow rounded-4 overflow-hidden">
+          <div className="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center gap-2">
+              <i className="bi bi-table text-primary"></i>
+              <span className="fw-semibold">Solicitações</span>
+            </div>
+            <div className="text-muted small">
+              Última atualização em {new Date()
+                .toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+                .replace(",", "")}
+            </div>
+          </div>
+          <div className="card-body p-0">
             {solicitacoesFiltradas.length > 0 ? (
               <div className="table-responsive">
                 <table className="table table-hover align-middle mb-0">
-                  <thead className="table-light">
+                  <thead className="table-gradient">
                     <tr>
-                      <th>Data</th>
-                      <th>Material</th>
-                      <th className="text-center">Status</th>
-                      <th>Descrição</th>
-                      <th></th>
+                      <th scope="col" className="fw-semibold table-gradient">Data</th>
+                      <th scope="col" className="fw-semibold table-gradient">Material</th>
+                      <th scope="col" className="text-center fw-semibold table-gradient">Status</th>
+                      <th scope="col" className="fw-semibold table-gradient">Descrição</th>
+                      <th scope="col" className="text-end fw-semibold table-gradient">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-
-
                     {solicitacoesFiltradas.map((s) => (
-
-
                       <tr key={s.id}>
-                        <td>
-                          {new Date(s.data_solicitacao).toLocaleString("pt-BR", {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          }).replace(",", "")}
+                        <td className="p-3">
+                          {new Date(s.data_solicitacao)
+                            .toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+                            .replace(",", "")}
                         </td>
-
-                        <td>{s.produto_nome}</td>
-
-                        <td className="text-center">
-                          <span
-                            className={`badge px-3 py-2 fs-6 fw-semibold ${getBadgeClass(s.status)}`}
-                            style={{ minWidth: "120px" }}
-                          >
-                            {s.status}
+                        <td className="p-3">{s.produto_nome}</td>
+                        <td className="text-center p-3">
+                          <span className={`badge-status ${getBadgeClass(s.status)}`}>
+                            {s.status.toUpperCase()}
                           </span>
                         </td>
-
-                        <td>{s.descricao}</td>
-
-                        <td>
-                          {s.status.toLowerCase() === "pendente" && (
+                        <td className="p-3">
+                          <div className="desc-cell narrow-desc">{s.descricao}</div>
+                        </td>
+                        <td className="text-end p-3">
+                          <div className="d-inline-flex gap-2 align-items-center">
+                            {s.status.toLowerCase() === "pendente" && (
+                              <button
+                                className="btn btn-outline-danger btn-sm"
+                                title="Cancelar solicitação"
+                                onClick={() => cancelarSolicitacao(s)}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            )}
                             <button
-                              className="btn btn-danger btn-sm"
-                              title="Cancelar solicitação"
-                              onClick={() => cancelarSolicitacao(s)}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          )}
-
-                          {s.status.toLowerCase() === "recusado" && (
-                            <button
-                              className="btn btn-info btn-sm"
-                              title="Ver motivo"
+                              className="btn btn-primary btn-sm"
+                              title="Ver detalhes"
                               onClick={() => verDetalhes(s)}
                             >
                               <i className="bi bi-eye"></i>
                             </button>
-                          )}
+                          </div>
                         </td>
-
                       </tr>
                     ))}
-
                   </tbody>
                 </table>
               </div>
@@ -241,66 +232,17 @@ export default function Historico() {
         </div>
       </div>
 
-
       {modalDetalhes && (
-        <div className="modal fade show d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-
-              <div className="modal-header">
-                <h5 className="modal-title">Detalhes da Solicitação</h5>
-                <button className="btn-close" onClick={() => setModalDetalhes(null)}></button>
-              </div>
-
-              <div className="modal-body">
-                <p><strong>Material:</strong> {modalDetalhes.produto_nome}</p>
-                <p><strong>Descrição:</strong> {modalDetalhes.descricao}</p>
-                {modalDetalhes.motivo && <p><strong>Motivo da Negação:</strong> {modalDetalhes.motivo}</p>}
-                <p className="text-danger"><strong>Status:</strong> {modalDetalhes.status}</p>
-              </div>
-
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setModalDetalhes(null)}>
-                  Fechar
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
+        <ModalDetalhes solicitacao={modalDetalhes} onClose={() => setModalDetalhes(null)} />
       )}
 
       {modalCancelar && (
-        <div className="modal fade show d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-
-              <div className="modal-header">
-                <h5 className="modal-title">Cancelar Solicitação</h5>
-                <button className="btn-close" onClick={() => setModalCancelar(null)}></button>
-              </div>
-
-              <div className="modal-body">
-                Tem certeza que deseja cancelar a solicitação do material:
-                <br /><br />
-                <strong className="text-danger">{modalCancelar.produto_nome}</strong>?
-              </div>
-
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setModalCancelar(null)}>
-                  Fechar
-                </button>
-
-                <button className="btn btn-danger" onClick={confirmarCancelamento}>
-                  <i className="bi bi-trash me-2"></i> Cancelar Solicitação
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
+        <ModalCancelar
+          solicitacao={modalCancelar}
+          onClose={() => setModalCancelar(null)}
+          onConfirm={confirmarCancelamento}
+        />
       )}
-
     </main>
   );
 }
