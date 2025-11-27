@@ -163,7 +163,7 @@ export default function PainelSolicitacao() {
 			setModalAprovarAberto(true);
 		}, 0);
 	};
-
+	
 	const confirmarAprovacao = () => {
 		if (selecionada) {
 			atualizarStatus(selecionada.id, "aprovado");
@@ -433,7 +433,7 @@ export default function PainelSolicitacao() {
 
 													<button
 														className="btn btn-secondary btn-sm"
-														onClick={() => atualizarStatus(item.id, "finalizado")}
+														onClick={() => abrirModalFinalizar(item)}
 														title="Finalizar"
 													>
 														<i className="bi bi-box-seam"></i>

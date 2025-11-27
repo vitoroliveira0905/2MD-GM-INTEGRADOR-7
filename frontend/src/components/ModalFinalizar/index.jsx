@@ -62,7 +62,7 @@ export default function ModalFinalizar({ solicitacao, onClose, onConfirm }) {
 					</button>
 					<button className="btn-confirmar-finalizar" onClick={onConfirm}>
 						<i className="bi bi-check-circle me-2"></i>
-						Confirmar Finalização
+						Confirmar Retirada
 					</button>
 				</div>
 			</div>
