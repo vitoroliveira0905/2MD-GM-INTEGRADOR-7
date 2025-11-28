@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
+import ModalMaterial from "@/components/ModalMaterial";
 
 
 export default function PainelEstoque() {
@@ -19,16 +20,9 @@ export default function PainelEstoque() {
     const [busca, setBusca] = useState("");
     const [filtroCategoria, setFiltroCategoria] = useState("todos");
 
-    const [editando, setEditando] = useState(null);
-    const [novoNome, setNovoNome] = useState("");
-    const [novoQtd, setNovoQtd] = useState("");
-    const [novoMin, setNovoMin] = useState("");
-
-
-    const [criando, setCriando] = useState(false);
-    const [nomeNovoItem, setNomeNovoItem] = useState("");
-    const [qtdNovoItem, setQtdNovoItem] = useState("");
-    const [minNovoItem, setMinNovoItem] = useState("");
+    const [modalAberto, setModalAberto] = useState(false);
+    const [materialEditando, setMaterialEditando] = useState(null);
+    const [isEdit, setIsEdit] = useState(false);
 
     const [dadosUsuario, setDadosUsuario] = useState(null);
     // garantir que produtos tenha a forma { dados: [] } para evitar erros ao acessar produtos.dados
@@ -67,56 +61,106 @@ export default function PainelEstoque() {
         return <p>Carregando...</p>
     }
 
-    const abrirEdicao = (item) => {
-        setEditando(item.id);
-        setNovoNome(item.nome);
-        setNovoQtd(item.quantidade);
-        setNovoMin(item.minimo_estoque);
+    const abrirModalEdicao = (item) => {
+        setMaterialEditando(item);
+        setIsEdit(true);
+        setModalAberto(true);
     };
 
+    const abrirModalCriacao = () => {
+        setMaterialEditando(null);
+        setIsEdit(false);
+        setModalAberto(true);
+    };
 
-    const salvarEdicao = async () => {
-        if (!editando) return;
-        const payload = {
-            nome: novoNome,
-            quantidade: Number(novoQtd),
-            minimo_estoque: Number(novoMin),
-        };
+    const fecharModal = () => {
+        setModalAberto(false);
+        setMaterialEditando(null);
+    };
 
-        try {
-            const resp = await fetch(`http://localhost:3001/api/produtos/${editando}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${dadosUsuario?.token}`,
-                },
-                body: JSON.stringify(payload),
-            });
+    const salvarMaterial = async (dadosMaterial) => {
+        if (isEdit && materialEditando) {
+            // Editar material existente
+            const payload = {
+                ...dadosMaterial,
+            };
 
-            if (!resp.ok) {
-                console.error("Falha ao atualizar produto", await resp.text());
-                return;
+            try {
+                const resp = await fetch(`http://localhost:3001/api/produtos/${materialEditando.id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${dadosUsuario?.token}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!resp.ok) {
+                    console.error("Falha ao atualizar produto", await resp.text());
+                    return;
+                }
+
+                const atualizado = await resp.json();
+                const prod = atualizado?.produto || atualizado;
+
+                setProdutos((prev) => ({
+                    ...prev,
+                    dados: prev.dados.map((m) =>
+                        m.id === materialEditando.id
+                            ? {
+                                ...m,
+                                nome: prod.nome ?? payload.nome,
+                                quantidade: prod.quantidade ?? payload.quantidade,
+                                minimo_estoque: prod.minimo_estoque ?? payload.minimo_estoque,
+                                categoria: prod.categoria ?? payload.categoria,
+                            }
+                            : m
+                    ),
+                }));
+                fecharModal();
+            } catch (e) {
+                console.error("Erro ao enviar atualização de produto:", e);
             }
+        } else {
+            // Criar novo material
+            const payload = {
+                ...dadosMaterial,
+                preco: 1,
+            };
 
-            const atualizado = await resp.json();
-            const prod = atualizado?.produto || atualizado;
+            try {
+                const resp = await fetch('http://localhost:3001/api/produtos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${dadosUsuario?.token}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
 
-            setProdutos((prev) => ({
-                ...prev,
-                dados: prev.dados.map((m) =>
-                    m.id === editando
-                        ? {
-                            ...m,
-                            nome: prod.nome ?? payload.nome,
-                            quantidade: prod.quantidade ?? payload.quantidade,
-                            minimo_estoque: prod.minimo_estoque ?? payload.minimo_estoque,
-                        }
-                        : m
-                ),
-            }));
-            setEditando(null);
-        } catch (e) {
-            console.error("Erro ao enviar atualização de produto:", e);
+                if (!resp.ok) {
+                    const texto = await resp.text();
+                    console.error('Falha ao criar produto:', texto);
+                    alert('Não foi possível criar o produto. Verifique os dados.');
+                    return;
+                }
+
+                const resultado = await resp.json();
+                const criado = resultado?.dados || resultado;
+                const novo = {
+                    id: criado.id,
+                    nome: payload.nome,
+                    quantidade: payload.quantidade,
+                    minimo_estoque: payload.minimo_estoque,
+                    categoria: payload.categoria,
+                };
+
+                setProdutos((prev) => ({ ...prev, dados: [...prev.dados, novo] }));
+                fecharModal();
+            } catch (e) {
+                console.error('Erro na requisição de criação:', e);
+                alert('Erro ao conectar com a API.');
+            }
         }
     };
 
@@ -144,53 +188,6 @@ export default function PainelEstoque() {
             setProdutos((prev) => ({ ...prev, dados: prev.dados.filter((m) => m.id !== id) }));
         } catch (e) {
             console.error("Erro na requisição de exclusão:", e);
-        }
-    };
-
-    const criarMaterial = async () => {
-        const payload = {
-            nome: nomeNovoItem,
-            quantidade: Number(qtdNovoItem),
-            minimo_estoque: Number(minNovoItem),
-            preco: 1,
-            categoria: 'Geral',
-        };
-
-        try {
-            const resp = await fetch('http://localhost:3001/api/produtos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${dadosUsuario?.token}`,
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (!resp.ok) {
-                const texto = await resp.text();
-                console.error('Falha ao criar produto:', texto);
-                alert('Não foi possível criar o produto. Verifique os dados.');
-                return;
-            }
-
-            const resultado = await resp.json();
-            const criado = resultado?.dados || resultado;
-            const novo = {
-                id: criado.id,
-                nome: payload.nome,
-                quantidade: payload.quantidade,
-                minimo_estoque: payload.minimo_estoque,
-            };
-
-            setProdutos((prev) => ({ ...prev, dados: [...prev.dados, novo] }));
-
-            setCriando(false);
-            setNomeNovoItem('');
-            setQtdNovoItem('');
-            setMinNovoItem('');
-        } catch (e) {
-            console.error('Erro na requisição de criação:', e);
-            alert('Erro ao conectar com a API.');
         }
     };
 
@@ -296,7 +293,7 @@ export default function PainelEstoque() {
                     <div className="col-md-5 text-end">
                         <button
                             className="btn btn-success d-flex align-items-center gap-2 ms-auto"
-                            onClick={() => setCriando(true)}
+                            onClick={abrirModalCriacao}
                         >
                             <i className="bi bi-plus-circle"></i>
                             Adicionar Material
@@ -356,7 +353,7 @@ export default function PainelEstoque() {
                                                 <div className="d-inline-flex gap-2 align-items-center">
                                                     <button
                                                         className="btn btn-primary btn-sm"
-                                                        onClick={() => abrirEdicao(item)}
+                                                        onClick={() => abrirModalEdicao(item)}
                                                         title="Editar"
                                                     >
                                                         <i className="bi bi-pencil"></i>
@@ -379,110 +376,14 @@ export default function PainelEstoque() {
                     </div>
                 </div>
 
-
-            {editando && (
-                <div
-                    className="modal fade show d-block"
-                    style={{ background: "rgba(0,0,0,0.5)" }}
-                >
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Editar Material</h5>
-                            </div>
-
-                            <div className="modal-body">
-                                <label className="form-label">Nome</label>
-                                <input
-                                    type="text"
-                                    className="form-control mb-2"
-                                    value={novoNome}
-                                    onChange={(e) => setNovoNome(e.target.value)}
-                                />
-
-                                <label className="form-label">Quantidade</label>
-                                <input
-                                    type="number"
-                                    className="form-control mb-2"
-                                    value={novoQtd}
-                                    onChange={(e) => setNovoQtd(e.target.value)}
-                                />
-
-                                <label className="form-label">Mínimo</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    value={novoMin}
-                                    onChange={(e) => setNovoMin(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="modal-footer">
-                                <button className="btn btn-secondary" onClick={() => setEditando(null)}>
-                                    Cancelar
-                                </button>
-
-                                <button className="btn btn-primary" onClick={salvarEdicao}>
-                                    Salvar Alterações
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {criando && (
-                <div
-                    className="modal fade show d-block"
-                    style={{ background: "rgba(0,0,0,0.5)" }}
-                >
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-
-                            <div className="modal-header">
-                                <h5 className="modal-title">Adicionar Material</h5>
-                            </div>
-
-                            <div className="modal-body">
-                                <label className="form-label">Nome</label>
-                                <input
-                                    type="text"
-                                    className="form-control mb-2"
-                                    value={nomeNovoItem}
-                                    onChange={(e) => setNomeNovoItem(e.target.value)}
-                                />
-
-                                <label className="form-label">Quantidade</label>
-                                <input
-                                    type="number"
-                                    className="form-control mb-2"
-                                    value={qtdNovoItem}
-                                    onChange={(e) => setQtdNovoItem(e.target.value)}
-                                />
-
-                                <label className="form-label">Mínimo</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    value={minNovoItem}
-                                    onChange={(e) => setMinNovoItem(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="modal-footer">
-                                <button className="btn btn-secondary" onClick={() => setCriando(false)}>
-                                    Cancelar
-                                </button>
-
-                                <button className="btn btn-success" onClick={criarMaterial}>
-                                    Adicionar
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            )}
+                {modalAberto && (
+                    <ModalMaterial
+                        material={materialEditando}
+                        onClose={fecharModal}
+                        onConfirm={salvarMaterial}
+                        isEdit={isEdit}
+                    />
+                )}
             </div>
         </main>
     );
