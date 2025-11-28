@@ -33,9 +33,12 @@ export default function Relatorios() {
                 const estoqueResp = await estRes.json();
                 const estoque = estoqueResp.dados || [];
                 setMovimentacoes(estoque.length);
-                setCriticos(estoque.filter((item) => item.quantidade < item.minimo).length);
+                // Criticos: quantidade <= minimo_estoque e > 0
+                setCriticos(estoque.filter((item) => item.quantidade <= (item.minimo_estoque ?? item.minimo) && item.quantidade > 0).length);
+                // Esgotados: quantidade === 0
                 setEsgotados(estoque.filter((item) => item.quantidade === 0).length);
-                setEstoques(estoque.filter((item) => item.quantidade > item.minimo).length);
+                // Em estoque: quantidade > minimo_estoque
+                setEstoques(estoque.filter((item) => item.quantidade > (item.minimo_estoque ?? item.minimo)).length);
 
                 const solRes = await fetch("http://localhost:3001/api/solicitacoes", {
                     method: "GET",
@@ -70,47 +73,7 @@ export default function Relatorios() {
                     </div>
                 </div>
 
-                <div className="row g-3 mb-4">
-                    <div className="col-md-6 col-lg-4">
-                        <div className="card border-0 shadow-sm h-100 stats-card">
-                            <div className="card-body d-flex align-items-center">
-                                <div className="icon-wrapper bg-primary-subtle rounded-3 p-3 me-3">
-                                    <i className="bi bi-box-seam fs-2 text-primary"></i>
-                                </div>
-                                <div>
-                                    <p className="text-muted mb-1 small">Movimentações Estoque</p>
-                                    <h3 className="mb-0 fw-bold">{movimentacoes}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                        <div className="card border-0 shadow-sm h-100 stats-card">
-                            <div className="card-body d-flex align-items-center">
-                                <div className="icon-wrapper bg-warning-subtle rounded-3 p-3 me-3">
-                                    <i className="bi bi-exclamation-triangle fs-2 text-warning"></i>
-                                </div>
-                                <div>
-                                    <p className="text-muted mb-1 small">Itens Críticos</p>
-                                    <h3 className="mb-0 fw-bold">{criticos}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                        <div className="card border-0 shadow-sm h-100 stats-card">
-                            <div className="card-body d-flex align-items-center">
-                                <div className="icon-wrapper bg-danger-subtle rounded-3 p-3 me-3">
-                                    <i className="bi bi-x-circle fs-2 text-danger"></i>
-                                </div>
-                                <div>
-                                    <p className="text-muted mb-1 small">Esgotados</p>
-                                    <h3 className="mb-0 fw-bold">{esgotados}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <div className="row mb-4">
                     <div className="col-md-5 col-lg-4">
@@ -195,13 +158,18 @@ export default function Relatorios() {
                         const config = {
                             estoque: {
                                 titulo: "Situação do Estoque",
-                                labels: ["Movimentações", "Críticos", "Esgotados", "Estoque OK"],
-                                valores: [movimentacoes, criticos, esgotados, estoques],
+                                labels: ["Movimentações", "Estoque OK", "Baixo Estoque", "Esgotados"],
+                                valores: [
+                                    movimentacoes,
+                                    estoques, // Em estoque
+                                    criticos, // Baixo estoque
+                                    esgotados // Esgotados
+                                ],
                                 cores: [
-                                    "rgba(54, 162, 235, 0.65)",
-                                    "rgba(255, 206, 86, 0.65)",
-                                    "rgba(255, 99, 132, 0.65)",
-                                    "rgba(46, 204, 113, 0.65)"
+                                    "rgba(54, 162, 235, 0.65)", // Movimentações
+                                    "rgba(46, 204, 113, 0.65)", // OK
+                                    "rgba(255, 206, 86, 0.65)", // Baixo
+                                    "rgba(255, 99, 132, 0.65)"  // Esgotados
                                 ]
                             },
                             solicitacoes: {
