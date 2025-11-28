@@ -40,7 +40,7 @@ export default function AdminNavbar() {
                     >
                         <i className="bi bi-box-seam-fill me-2 me-md-3" style={{ fontSize: "28px" }}></i>
                         <div>
-                            <h4 className="mb-0 fw-bold" style={{ fontSize: "clamp(16px, 4vw, 24px)" }}>Sistema de Materiais</h4>
+                            <h4 className="mb-0 fw-bold" style={{ fontSize: "clamp(16px, 4vw, 24px)" }}>Gerenciamento da tenda</h4>
                             <small className="opacity-75 d-none d-sm-block">Gestão de Requisições</small>
                         </div>
                     </Link>

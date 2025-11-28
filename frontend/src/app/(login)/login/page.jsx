@@ -169,11 +169,11 @@ export default function Login() {
 
         <div
           className="col-md-6 order-md-1 px-0 d-none d-md-flex align-items-center justify-content-center"
-          style={{ backgroundColor: "var(--primary-color)" }}
+          style={{  background: "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)"}}
         >
           <div style={{ width: "85%", maxWidth: "600px" }}>
             <Image
-              src="/img/imagem-login.png"
+              src="/img/img-tenda.png"
               alt="Imagem de login"
               width={20000}
               height={20000}
