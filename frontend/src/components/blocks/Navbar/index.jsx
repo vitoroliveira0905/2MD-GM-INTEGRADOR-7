@@ -11,8 +11,7 @@ export default function Navbar() {
 
     useEffect(() => {
         require("bootstrap/dist/js/bootstrap.bundle.min.js");
-        
-        // Carrega dados do usuário do localStorage
+
         const dadosString = localStorage.getItem("dadosUsuario");
         if (dadosString) {
             try {
@@ -33,7 +32,7 @@ export default function Navbar() {
         <header className="shadow-sm">
             <div className="container">
                 <div className="d-flex flex-wrap align-items-center justify-content-between">
-                    {/* Logo e Título */}
+
                     <Link
                         href="/"
                         className="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"
@@ -45,7 +44,6 @@ export default function Navbar() {
                         </div>
                     </Link>
 
-                    {/* Menu de navegação - Desktop */}
                     <nav className="d-none d-lg-flex gap-4 me-auto ms-5">
                         <Link href="/" className="text-white text-decoration-none d-flex align-items-center gap-2 hover-link">
                             <i className="bi bi-house-door-fill"></i>
@@ -61,8 +59,8 @@ export default function Navbar() {
                         </Link>
                     </nav>
 
-                    {/* Dropdown de Navegação - Mobile */}
                     <div className="d-flex align-items-center gap-3">
+
                         <div className="dropdown d-lg-none">
                             <button
                                 className="btn btn-outline-light fw-semibold dropdown-toggle d-flex align-items-center gap-2"
@@ -75,8 +73,8 @@ export default function Navbar() {
                                 <i className="bi bi-list"></i>
                                 <span className="d-none d-sm-inline">Menu</span>
                             </button>
-                            <ul 
-                                className="dropdown-menu dropdown-menu-gradient shadow-lg border-0" 
+                            <ul
+                                className="dropdown-menu dropdown-menu-gradient shadow-lg border-0"
                                 aria-labelledby="dropdownNavegacao"
                             >
                                 <li>
@@ -97,11 +95,9 @@ export default function Navbar() {
                                         Histórico
                                     </Link>
                                 </li>
-                               
                             </ul>
                         </div>
 
-                        {/* Perfil do usuário */}
                         {dadosUsuario && (
                             <div className="dropdown">
                                 <a
@@ -117,17 +113,38 @@ export default function Navbar() {
                                             {dadosUsuario.usuario.tipo === "admin" ? "Administrador" : "Usuário"}
                                         </small>
                                     </div>
-                                    <div 
-                                        className="rounded-circle bg-white d-flex align-items-center justify-content-center user-avatar"
+
+                                    <div
+                                        className="rounded-circle overflow-hidden"
+                                        style={{ width: 40, height: 40 }}
                                     >
-                                        <i className="bi bi-person-fill" style={{ fontSize: "24px" }}></i>
+                                        <div className="rounded-circle overflow-hidden d-flex align-items-center justify-content-center bg-light"
+                                            style={{ width: 40, height: 40 }}>
+
+                                            {dadosUsuario?.usuario?.imagem ? (
+                                                <Image
+                                                    src={`/img/usuarios/${dadosUsuario.usuario.imagem}`}
+                                                    alt="Foto do usuário"
+                                                    width={40}
+                                                    height={40}
+                                                    style={{ objectFit: "cover" }}
+                                                />
+                                            ) : (
+                                                <i class="bi bi-person-circle" style={{ fontSize: "32px" }}></i>
+                                            )}
+
+                                        </div>
                                     </div>
+
+
                                 </a>
+
                                 <ul
                                     className="dropdown-menu dropdown-menu-end shadow user-dropdown-menu"
                                     aria-labelledby="dropdownUser1"
                                 >
-                                    <li className="px-3 py-2 border-bottom">
+                                    <li className="px-3 py-2 border-bottom d-flex">
+                                        <div>
                                         <div className="text-muted small mb-1">Informações do Usuário</div>
                                         <div className="fw-bold">{dadosUsuario.usuario.nome}</div>
                                         <div className="text-muted small">{dadosUsuario.usuario.email}</div>
@@ -135,7 +152,21 @@ export default function Navbar() {
                                             <span className="badge bg-primary">
                                                 {dadosUsuario.usuario.tipo === "admin" ? "Administrador" : "Usuário"}
                                             </span>
-                                        </div>
+                                        </div></div>
+                                        <div className="ms-auto rounded-circle ">
+    {dadosUsuario?.usuario?.imagem ? (
+        <Image
+            src={`/img/usuarios/${dadosUsuario.usuario.imagem}`}
+            alt="Foto do usuário"
+            width={40}
+            height={40}
+            style={{ objectFit: "cover", borderRadius: "50%" }}
+        />
+    ) : (
+        <i className="bi bi-person-circle" style={{ fontSize: "40px" }}></i>
+    )}
+</div>
+
                                     </li>
                                     <li>
                                         <a className="dropdown-item text-danger mt-2" href="#" onClick={handleLogout}>

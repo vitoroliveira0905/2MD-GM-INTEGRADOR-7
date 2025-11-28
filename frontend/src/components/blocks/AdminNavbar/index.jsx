@@ -171,26 +171,50 @@ export default function AdminNavbar() {
                                             {dadosUsuario.usuario.tipo === "admin" ? "Administrador" : "Usuário"}
                                         </small>
                                     </div>
-                                    <div
-                                        className="rounded-circle bg-white d-flex align-items-center justify-content-center user-avatar"
-                                    >
-                                        <i className="bi bi-person-fill" style={{ fontSize: "24px" }}></i>
-                                    </div>
+                                  <div className="rounded-circle overflow-hidden d-flex align-items-center justify-content-center bg-light"
+                                                                             style={{ width: 40, height: 40 }}>
+                                 
+                                                                             {dadosUsuario?.usuario?.imagem ? (
+                                                                                 <Image
+                                                                                     src={`/img/usuarios/${dadosUsuario.usuario.imagem}`}
+                                                                                     alt="Foto do usuário"
+                                                                                     width={40}
+                                                                                     height={40}
+                                                                                     style={{ objectFit: "cover" }}
+                                                                                 />
+                                                                             ) : (
+                                                                                 <i class="bi bi-person-circle" style={{ fontSize: "32px" }}></i>
+                                                                             )}
+                                 
+                                                                         </div>
                                 </a>
-                                <ul
-                                    className="dropdown-menu dropdown-menu-end shadow user-dropdown-menu"
-                                    aria-labelledby="dropdownUser1"
-                                >
-                                    <li className="px-3 py-2 border-bottom">
-                                        <div className="text-muted small mb-1">Informações do Usuário</div>
-                                        <div className="fw-bold">{dadosUsuario.usuario.nome}</div>
-                                        <div className="text-muted small">{dadosUsuario.usuario.email}</div>
-                                        <div className="mt-1">
-                                            <span className="badge bg-primary">
-                                                {dadosUsuario.usuario.tipo === "admin" ? "Administrador" : "Usuário"}
-                                            </span>
-                                        </div>
-                                    </li>
+                                          <ul
+                                                               className="dropdown-menu dropdown-menu-end shadow user-dropdown-menu"
+                                                               aria-labelledby="dropdownUser1"
+                                                           >
+                                                               <li className="px-3 py-2 border-bottom d-flex">
+                                                                   <div>
+                                                                   <div className="text-muted small mb-1">Informações do Usuário</div>
+                                                                   <div className="fw-bold">{dadosUsuario.usuario.nome}</div>
+                                                                   <div className="text-muted small">{dadosUsuario.usuario.email}</div>
+                                                                   <div className="mt-1">
+                                                                       <span className="badge bg-primary">
+                                                                           {dadosUsuario.usuario.tipo === "admin" ? "Administrador" : "Usuário"}
+                                                                       </span>
+                                                                   </div></div>
+                                                                   <div className="ms-auto rounded-circle ">
+                               {dadosUsuario?.usuario?.imagem ? (
+                                   <Image
+                                       src={`/img/usuarios/${dadosUsuario.usuario.imagem}`}
+                                       alt="Foto do usuário"
+                                       width={40}
+                                       height={40}
+                                       style={{ objectFit: "cover", borderRadius: "50%" }}
+                                   />
+                               ) : (
+                                   <i className="bi bi-person-circle" style={{ fontSize: "40px" }}></i>
+                               )}
+                           </div> </li>
                                     <li>
                                         <a className="dropdown-item text-danger mt-2" href="#" onClick={handleLogout}>
                                             <i className="bi bi-box-arrow-right me-2"></i>

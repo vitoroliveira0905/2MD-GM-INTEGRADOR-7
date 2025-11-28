@@ -11,7 +11,6 @@ export default function Login() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  
   useEffect(() => {
     if (!gmin) {
       setUsuario(null);
@@ -24,27 +23,26 @@ export default function Login() {
         const resp = await fetch("http://localhost:3001/api/auth/login-gmin", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ gmin })
+          body: JSON.stringify({ gmin }),
         });
         const data = await resp.json();
 
         if (resp.ok) {
-          setUsuario(data.usuario); 
+          setUsuario(data.usuario);
           setErro("");
         } else {
           setUsuario(null);
-          setErro(""); 
+          setErro("");
         }
       } catch {
         setUsuario(null);
-        setErro(""); 
+        setErro("");
       }
     };
 
     fetchUsuario();
   }, [gmin]);
 
-  
   async function realizarLogin() {
     if (!gmin) {
       setErro("Digite seu GMIN");
@@ -60,11 +58,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      
       const respLogin = await fetch("http://localhost:3001/api/auth/login-gmin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gmin })
+        body: JSON.stringify({ gmin }),
       });
 
       const loginData = await respLogin.json();
@@ -75,13 +72,11 @@ export default function Login() {
         return;
       }
 
-      
       localStorage.setItem(
         "dadosUsuario",
         JSON.stringify({ usuario: loginData.usuario, token: loginData.token })
       );
 
-      
       router.push(
         loginData.usuario.tipo === "admin"
           ? "/administracao/dashboard"
@@ -107,7 +102,14 @@ export default function Login() {
             <p className="text-muted">Acesso exclusivo</p>
           </div>
 
-          <div className="shadow-sm p-4 rounded bg-white" style={{ width: "25rem", borderRadius: "20px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
+          <div
+            className="shadow-sm p-4 rounded bg-white"
+            style={{
+              width: "25rem",
+              borderRadius: "20px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+            }}
+          >
             <h4 className="fw-bold mb-3 text-center">Identifique-se</h4>
 
             <div className="form-outline mb-4">
@@ -126,7 +128,8 @@ export default function Login() {
             {loading && <p className="text-center">Carregando...</p>}
 
             {usuario && (
-              <div className="text-center mb-3">
+              <div className="text-center mb-3 user-anim">
+
                 <Image
                   src={`/img/usuarios/${usuario.imagem}`}
                   alt="Foto do usuário"
@@ -136,7 +139,9 @@ export default function Login() {
                   style={{ objectFit: "cover" }}
                 />
                 <h5 className="fw-bold">{usuario.nome}</h5>
-                <span className="badge text-bg-primary px-3 py-2">{usuario.tipo.toUpperCase()}</span>
+                <span className="badge text-bg-primary px-3 py-2">
+                  {usuario.tipo.toUpperCase()}
+                </span>
               </div>
             )}
 
@@ -162,7 +167,10 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="col-md-6 order-md-1 px-0 d-none d-md-flex align-items-center justify-content-center" style={{ backgroundColor: "var(--primary-color)" }}>
+        <div
+          className="col-md-6 order-md-1 px-0 d-none d-md-flex align-items-center justify-content-center"
+          style={{ backgroundColor: "var(--primary-color)" }}
+        >
           <div style={{ width: "85%", maxWidth: "600px" }}>
             <Image
               src="/img/imagem-login.png"
