@@ -6,17 +6,30 @@ USE produtos_api;
 
 -- Inserir usuários iniciais (senha: 123456)
 -- Hash gerado com bcrypt para a senha "123456" (validado)
+-- Inserir usuários iniciais com hash de senha e imagem
 INSERT INTO usuarios (nome, email, gmin, senha, tipo, imagem) VALUES
-('Administrador', 'admin@empresa.com', '123456', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'admin', 'admin.jpg'),
-('João Silva', 'joao@empresa.com', '111111', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'joao.jpg'),
-('Maria Souza', 'maria@empresa.com', '000000', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'maria.jpg');
+('Administrador', 'admin@empresa.com', '123456', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'admin', 'admFoto.jpg'),
+('João Silva', 'joao@empresa.com', '111111', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'joaoFoto.jpg'),
+('Maria Souza', 'maria@empresa.com', '000000', '$2a$10$BLAcJu1irAzg06WbtoLoPe0RA.hkfZ0oJ25KYARPkHWRweJuWBALy', 'comum', 'mariaFoto.jpg');
 
 -- Inserir produtos iniciais
 INSERT INTO produtos (nome, descricao, preco, categoria, imagem, quantidade, minimo_estoque) VALUES
-('Smartphone Galaxy', 'Celular Samsung Galaxy com 128GB', 1299.99, 'Eletrônicos', 'smartphone.jpg', 10, 5),
-('Notebook Dell', 'Notebook Dell Inspiron 15 polegadas', 2499.99, 'Eletrônicos', 'notebook.jpg', 20, 10),
-('Camiseta Polo', 'Camiseta polo masculina azul', 89.90, 'Roupas', 'camiseta.jpg', 5, 2),
-('Livro JavaScript', 'Livro sobre programação JavaScript', 79.90, 'Livros', 'livro.jpg', 0, 1);
+('Capacete', 'Capacete de proteção para segurança', 49.99, 'EPI', 'capacete.jpg', 5, 10),
+('Óculos de Segurança', 'Óculos de proteção para olhos', 19.99, 'EPI', 'oculos.jpg', 100, 20),
+('Parafuso M6', 'Parafuso de aço M6', 0.50, 'Ferramentas', 'parafuso_m6.jpg', 1000, 200),
+('Porca M6', 'Porca de aço M6', 0.30, 'Ferramentas', 'porca_m6.jpg', 1000, 200),
+('Chave de Fenda', 'Chave de fenda simples', 12.00, 'Ferramentas', 'chave_fenda.jpg', 50, 10),
+('Martelo', 'Martelo de aço com cabo de madeira', 25.00, 'Ferramentas', 'martelo.jpg', 30, 5),
+('Luva de Proteção', 'Luva de segurança para mãos', 15.00, 'EPI', 'luva.jpg', 200, 50),
+('Máscara Respiratória', 'Máscara de proteção respiratória', 29.99, 'EPI', 'mascara.jpg', 100, 20),
+('Fita Isolante', 'Fita isolante elétrica', 5.00, 'Consumíveis', 'fita_isolante.jpg', 150, 30),
+('Chave Combinada 10mm', 'Chave para aperto e desaperto', 15.00, 'Ferramentas', 'chave_combinada_10.jpg', 40, 10),
+('Lanterna de Mão', 'Lanterna para inspeção e manutenção', 35.00, 'Ferramentas', 'lanterna.jpg', 4, 5),
+('Óleo Lubrificante', 'Óleo para manutenção de máquinas', 50.00, 'Consumíveis', 'oleo_lubrificante.jpg', 15, 20),
+('Parafuso M8', 'Parafuso de aço M8', 0.75, 'Ferramentas', 'parafuso_m8.jpg', 0, 150),
+('Porca M8', 'Porca de aço M8', 0.50, 'Ferramentas', 'porca_m8.jpg', 800, 150),
+('Chave Inglesa 12"', 'Chave ajustável de 12 polegadas', 55.00, 'Ferramentas', 'chave_inglesa.jpg', 20, 5),
+('Lixa 120', 'Lixa para acabamento de madeira e metal', 2.50, 'Consumíveis', 'lixa_120.jpg', 0, 50);
 
 -- Inserir solicitações iniciais
 INSERT INTO solicitacoes (

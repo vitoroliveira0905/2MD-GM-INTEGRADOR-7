@@ -3,7 +3,6 @@
 -- Descrição: Tabela para armazenar usuários do sistema
 
 USE produtos_api;
-
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
