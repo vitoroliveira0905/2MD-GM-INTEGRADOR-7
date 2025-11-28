@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
 import ModalMaterial from "@/components/ModalMaterial";
+import ModalExcluir from "@/components/ModalExcluir";
 
 
 export default function PainelEstoque() {
@@ -23,6 +24,9 @@ export default function PainelEstoque() {
     const [modalAberto, setModalAberto] = useState(false);
     const [materialEditando, setMaterialEditando] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
+
+    const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+    const [materialExcluindo, setMaterialExcluindo] = useState(null);
 
     const [dadosUsuario, setDadosUsuario] = useState(null);
     // garantir que produtos tenha a forma { dados: [] } para evitar erros ao acessar produtos.dados
@@ -165,10 +169,21 @@ export default function PainelEstoque() {
     };
 
 
-    const excluirMaterial = async (id) => {
-        if (!confirm("Tem certeza que deseja excluir?")) return;
+    const abrirModalExclusao = (material) => {
+        setMaterialExcluindo(material);
+        setModalExcluirAberto(true);
+    };
+
+    const fecharModalExclusao = () => {
+        setModalExcluirAberto(false);
+        setMaterialExcluindo(null);
+    };
+
+    const confirmarExclusao = async () => {
+        if (!materialExcluindo) return;
+        
         try {
-            const resp = await fetch(`http://localhost:3001/api/produtos/${id}`, {
+            const resp = await fetch(`http://localhost:3001/api/produtos/${materialExcluindo.id}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${dadosUsuario?.token}`,
@@ -179,13 +194,16 @@ export default function PainelEstoque() {
                 if (resp.status === 409) {
                     const msg = await resp.json().catch(() => null);
                     alert(msg?.mensagem || "Não é possível excluir: produto possui solicitações vinculadas.");
+                    fecharModalExclusao();
                     return;
                 }
                 console.error("Falha ao excluir produto:", await resp.text());
+                fecharModalExclusao();
                 return;
             }
 
-            setProdutos((prev) => ({ ...prev, dados: prev.dados.filter((m) => m.id !== id) }));
+            setProdutos((prev) => ({ ...prev, dados: prev.dados.filter((m) => m.id !== materialExcluindo.id) }));
+            fecharModalExclusao();
         } catch (e) {
             console.error("Erro na requisição de exclusão:", e);
         }
@@ -361,7 +379,7 @@ export default function PainelEstoque() {
 
                                                     <button
                                                         className="btn btn-outline-danger btn-sm"
-                                                        onClick={() => excluirMaterial(item.id)}
+                                                        onClick={() => abrirModalExclusao(item)}
                                                         title="Excluir"
                                                     >
                                                         <i className="bi bi-trash"></i>
@@ -382,6 +400,14 @@ export default function PainelEstoque() {
                         onClose={fecharModal}
                         onConfirm={salvarMaterial}
                         isEdit={isEdit}
+                    />
+                )}
+
+                {modalExcluirAberto && (
+                    <ModalExcluir
+                        material={materialExcluindo}
+                        onClose={fecharModalExclusao}
+                        onConfirm={confirmarExclusao}
                     />
                 )}
             </div>
