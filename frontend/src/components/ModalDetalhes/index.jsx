@@ -15,11 +15,10 @@ export default function ModalDetalhes({ solicitacao, onClose, isAdmin = false })
     const getBadgeClass = (status) => {
         const s = status.toLowerCase();
         switch (s) {
-            case "atendido":
+            case "finalizado":
             case "aprovado":
                 return "badge-success";
-            case "negado":
-            case "cancelado":
+            case "recusado":
                 return "badge-danger";
             case "pendente":
                 return "badge-warning";
