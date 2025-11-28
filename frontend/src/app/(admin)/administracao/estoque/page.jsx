@@ -7,6 +7,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
 import ModalMaterial from "@/components/ModalMaterial";
 import ModalExcluir from "@/components/ModalExcluir";
+import ToastNotification from "@/components/ToastNotification";
+import "@/components/ToastNotification/styles.css";
 
 
 export default function PainelEstoque() {
@@ -31,6 +33,17 @@ export default function PainelEstoque() {
     const [dadosUsuario, setDadosUsuario] = useState(null);
     // garantir que produtos tenha a forma { dados: [] } para evitar erros ao acessar produtos.dados
     const [produtos, setProdutos] = useState({ dados: [] });
+    const [notificacoes, setNotificacoes] = useState([]);
+
+    const pushNotificacao = (tipo, texto, tempo = 3000) => {
+        const id = Date.now() + Math.random();
+        setNotificacoes((prev) => [...prev, { id, tipo, texto }]);
+        if (tempo > 0) {
+            setTimeout(() => {
+                setNotificacoes((prev) => prev.filter((n) => n.id !== id));
+            }, tempo);
+        }
+    };
 
     useEffect(() => {
         const dadosString = localStorage.getItem("dadosUsuario");
@@ -53,8 +66,14 @@ export default function PainelEstoque() {
                 }
             })
                 .then(response => response.json())
-                .then(data => setProdutos(data))
-                .catch(error => console.error("Erro ao buscar produtos:", error));
+                .then(data => {
+                    setProdutos(data);
+                    
+                })
+                .catch(error => {
+                    console.error("Erro ao buscar produtos:", error);
+                    pushNotificacao('error', 'Erro ao carregar produtos.');
+                });
         } catch (e) {
             console.error("Erro ao parsear dadosUsuario do localStorage:", e);
             router.push("/login");
@@ -101,6 +120,7 @@ export default function PainelEstoque() {
 
                 if (!resp.ok) {
                     console.error("Falha ao atualizar produto", await resp.text());
+                    pushNotificacao('error', 'Falha ao atualizar material. Verifique os dados.');
                     return;
                 }
 
@@ -122,8 +142,10 @@ export default function PainelEstoque() {
                     ),
                 }));
                 fecharModal();
+                pushNotificacao('success', `Material "${prod.nome || payload.nome}" atualizado com sucesso.`);
             } catch (e) {
                 console.error("Erro ao enviar atualização de produto:", e);
+                pushNotificacao('error', 'Erro ao atualizar material. Tente novamente.');
             }
         } else {
             // Criar novo material
@@ -145,7 +167,7 @@ export default function PainelEstoque() {
                 if (!resp.ok) {
                     const texto = await resp.text();
                     console.error('Falha ao criar produto:', texto);
-                    alert('Não foi possível criar o produto. Verifique os dados.');
+                    pushNotificacao('error', 'Não foi possível criar o produto. Verifique os dados.');
                     return;
                 }
 
@@ -161,9 +183,10 @@ export default function PainelEstoque() {
 
                 setProdutos((prev) => ({ ...prev, dados: [...prev.dados, novo] }));
                 fecharModal();
+                pushNotificacao('success', `Material "${payload.nome}" criado com sucesso.`);
             } catch (e) {
                 console.error('Erro na requisição de criação:', e);
-                alert('Erro ao conectar com a API.');
+                pushNotificacao('error', 'Erro ao conectar com o servidor.');
             }
         }
     };
@@ -193,19 +216,22 @@ export default function PainelEstoque() {
             if (!resp.ok) {
                 if (resp.status === 409) {
                     const msg = await resp.json().catch(() => null);
-                    alert(msg?.mensagem || "Não é possível excluir: produto possui solicitações vinculadas.");
+                    pushNotificacao('warn', msg?.mensagem || "Não é possível excluir: existem solicitações vinculadas a este material.", 5000);
                     fecharModalExclusao();
                     return;
                 }
                 console.error("Falha ao excluir produto:", await resp.text());
+                pushNotificacao('error', 'Falha ao excluir material. Tente novamente.');
                 fecharModalExclusao();
                 return;
             }
 
             setProdutos((prev) => ({ ...prev, dados: prev.dados.filter((m) => m.id !== materialExcluindo.id) }));
             fecharModalExclusao();
+            pushNotificacao('success', `Material "${materialExcluindo.nome}" excluído com sucesso.`);
         } catch (e) {
             console.error("Erro na requisição de exclusão:", e);
+            pushNotificacao('error', 'Erro ao excluir material. Tente novamente.');
         }
     };
 
@@ -410,6 +436,11 @@ export default function PainelEstoque() {
                         onConfirm={confirmarExclusao}
                     />
                 )}
+
+                <ToastNotification
+                    notificacoes={notificacoes}
+                    onClose={(id) => setNotificacoes((prev) => prev.filter((n) => n.id !== id))}
+                />
             </div>
         </main>
     );
