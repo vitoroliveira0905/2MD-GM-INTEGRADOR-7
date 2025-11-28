@@ -1,0 +1,59 @@
+/* Cabeçalho da tabela com gradiente */
+.table-gradient {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+.table-gradient th {
+  color: white !important;
+  border-color: transparent !important;
+  padding: 16px !important;
+}
+
+/* Inputs modernos */
+.modern-input {
+  border: none !important;
+  border-bottom: 2px solid #dee2e6 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+.modern-input:focus {
+  outline: none;
+  border-bottom-color: var(--primary-color) !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Badges de status com gradiente */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+}
+.badge-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+}
+.badge-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+}
+.badge-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: #333;
+}
+.badge-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  color: white;
+}
+
+.stats-card {
+  transition: all 0.3s ease;
+  border-radius: 12px !important;
+}
+
