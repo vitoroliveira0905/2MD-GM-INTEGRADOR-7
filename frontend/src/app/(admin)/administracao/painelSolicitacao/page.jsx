@@ -8,6 +8,8 @@ import ModalDetalhes from "@/components/ModalDetalhes";
 import ModalRecusar from "@/components/ModalRecusar";
 import ModalAprovar from "@/components/ModalAprovar";
 import ModalFinalizar from "@/components/ModalFinalizar";
+import ToastNotification from "@/components/ToastNotification";
+import "@/components/ToastNotification/styles.css";
 import "./styles.css";
 
 
@@ -283,33 +285,14 @@ export default function PainelSolicitacao() {
 								<i className="bi bi-clock-history me-2"></i>
 								{solicitacoes.length} registro(s)
 							</span>
-						</div>
 					</div>
+				</div>
 
-					{/* Notificações flutuantes modernas */}
-					<div className="toast-stack">
-						{notificacoes.map((n) => (
-							<div
-								key={n.id}
-								className={`toast-notificacao toast-${n.tipo}`}
-								role="alert"
-							>
-								<span className="icon-wrapper">
-									{iIconeTipo(n.tipo)}
-								</span>
-								<span className="texto">{n.texto}</span>
-								<button
-									onClick={() => setNotificacoes((prev) => prev.filter((x) => x.id !== n.id))}
-									className="btn-close-toast"
-									aria-label="Fechar"
-								>
-									<i className="bi bi-x"></i>
-								</button>
-							</div>
-						))}
-					</div>
-
-					<ul className="nav nav-tabs mb-4 justify-content-center">
+				{/* Notificações flutuantes modernas */}
+				<ToastNotification
+					notificacoes={notificacoes}
+					onClose={(id) => setNotificacoes((prev) => prev.filter((n) => n.id !== id))}
+				/>					<ul className="nav nav-tabs mb-4 justify-content-center">
 						<li className="nav-item">
 							<button
 								className={`nav-link ${abaAtiva === "pendentes" ? "active fw-bold" : ""}`}
@@ -635,18 +618,4 @@ export default function PainelSolicitacao() {
 			</div>
 		</main>
 	);
-}
-
-// Ícones dinâmicos para notificações
-function iIconeTipo(tipo) {
-	switch (tipo) {
-		case 'success':
-			return <i className="bi bi-check-circle"></i>;
-		case 'error':
-			return <i className="bi bi-exclamation-octagon"></i>;
-		case 'warn':
-			return <i className="bi bi-exclamation-triangle"></i>;
-		default:
-			return <i className="bi bi-info-circle"></i>;
-	}
 }
