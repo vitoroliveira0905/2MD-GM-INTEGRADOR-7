@@ -70,11 +70,11 @@ export const logMiddleware = async (req, res, next) => {
         
         // Capturar dados da resposta (limitado para evitar logs muito grandes)
         if (res.statusCode >= 400) {
-            finalLogData.dados_resposta = {
+            finalLogData.dados_resposta = JSON.stringify({
                 error: true,
                 status: res.statusCode,
                 message: typeof data === 'object' ? JSON.stringify(data).substring(0, 500) : data
-            };
+            });
         }
         
         // Salvar log de forma assíncrona (não bloquear a resposta)
