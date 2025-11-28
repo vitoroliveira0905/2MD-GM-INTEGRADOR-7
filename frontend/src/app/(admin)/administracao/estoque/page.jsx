@@ -22,6 +22,7 @@ export default function PainelEstoque() {
     const router = useRouter()
     const [busca, setBusca] = useState("");
     const [filtroCategoria, setFiltroCategoria] = useState("todos");
+    const [filtroStatus, setFiltroStatus] = useState("todos");
 
     const [modalAberto, setModalAberto] = useState(false);
     const [materialEditando, setMaterialEditando] = useState(null);
@@ -239,7 +240,20 @@ export default function PainelEstoque() {
         const matchBusca = m.nome.toLowerCase().includes(busca.toLowerCase()) || 
                           m.id.toString().includes(busca);
         const matchCategoria = filtroCategoria === "todos" || m.categoria === filtroCategoria;
-        return matchBusca && matchCategoria;
+        
+        // Determinar status do material
+        let status = "";
+        if (m.quantidade === 0) status = "Zerado";
+        else if (m.quantidade <= m.minimo_estoque) status = "Baixo";
+        else status = "OK";
+        
+        // Filtro de status
+        let matchStatus = true;
+        if (filtroStatus === "esgotado") matchStatus = (status === "Zerado");
+        else if (filtroStatus === "baixo") matchStatus = (status === "Baixo");
+        else if (filtroStatus === "ok") matchStatus = (status === "OK");
+        
+        return matchBusca && matchCategoria && matchStatus;
     });
 
     // Obter categorias únicas para o filtro
@@ -313,7 +327,7 @@ export default function PainelEstoque() {
 
 
                 <div className="row mb-4">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <input
                             type="text"
                             placeholder="Buscar por nome ou ID..."
@@ -334,7 +348,19 @@ export default function PainelEstoque() {
                             ))}
                         </select>
                     </div>
-                    <div className="col-md-5 text-end">
+                    <div className="col-md-2">
+                        <select
+                            className="form-select form-select-lg modern-input"
+                            value={filtroStatus}
+                            onChange={(e) => setFiltroStatus(e.target.value)}
+                        >
+                            <option value="todos">Todos os Status</option>
+                            <option value="ok">Em Estoque</option>
+                            <option value="baixo">Baixo</option>
+                            <option value="esgotado">Esgotado</option>
+                        </select>
+                    </div>
+                    <div className="col-md-4 text-end">
                         <button
                             className="btn btn-success d-flex align-items-center gap-2 ms-auto"
                             onClick={abrirModalCriacao}
