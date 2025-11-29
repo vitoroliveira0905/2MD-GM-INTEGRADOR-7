@@ -5,10 +5,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useRouter } from "next/navigation";
 import GraficoPro from "@/components/GraficoPro/page";
+
 export default function Relatorios() {
     const router = useRouter();
     const [tipo, setTipo] = useState("estoque");
-    const [movimentacoes, setMovimentacoes] = useState(0);
+    const [totalMateriais, settotalMateriais] = useState(0);
     const [criticos, setCriticos] = useState(0);
     const [esgotados, setEsgotados] = useState(0);
     const [estoques, setEstoques] = useState(0);
@@ -32,7 +33,7 @@ export default function Relatorios() {
                 });
                 const estoqueResp = await estRes.json();
                 const estoque = estoqueResp.dados || [];
-                setMovimentacoes(estoque.length);
+                settotalMateriais(estoque.length);
                 // Criticos: quantidade <= minimo_estoque e > 0
                 setCriticos(estoque.filter((item) => item.quantidade <= (item.minimo_estoque ?? item.minimo) && item.quantidade > 0).length);
                 // Esgotados: quantidade === 0
@@ -86,8 +87,8 @@ export default function Relatorios() {
                             value={tipo}
                             onChange={(e) => setTipo(e.target.value)}
                         >
-                            <option value="estoque">Movimentações do Estoque</option>
-                            <option value="solicitacoes">Solicitações (Aprovadas / Recusadas)</option>
+                            <option value="estoque">Situação do Estoque</option>
+                            <option value="solicitacoes">Status das Solicitações</option>
                         </select>
                     </div>
                 </div>
@@ -102,8 +103,8 @@ export default function Relatorios() {
                             {tipo === "estoque" && (
                                 <>
                                     <li className="list-group-item d-flex justify-content-between">
-                                        <span>Total de movimentações:</span>
-                                        <strong>{movimentacoes}</strong>
+                                        <span>Total de itens:</span>
+                                        <strong>{totalMateriais}</strong>
                                     </li>
                                     <li className="list-group-item d-flex justify-content-between">
                                         <span>Itens em nível crítico:</span>
@@ -158,15 +159,15 @@ export default function Relatorios() {
                         const config = {
                             estoque: {
                                 titulo: "Situação do Estoque",
-                                labels: ["Movimentações", "Estoque OK", "Baixo Estoque", "Esgotados"],
+                                labels: ["Total de Itens", "Estoque OK", "Baixo Estoque", "Esgotados"],
                                 valores: [
-                                    movimentacoes,
+                                    totalMateriais,
                                     estoques, // Em estoque
                                     criticos, // Baixo estoque
                                     esgotados // Esgotados
                                 ],
                                 cores: [
-                                    "rgba(54, 162, 235, 0.65)", // Movimentações
+                                    "rgba(54, 162, 235, 0.65)", // Total de Itens
                                     "rgba(46, 204, 113, 0.65)", // OK
                                     "rgba(255, 206, 86, 0.65)", // Baixo
                                     "rgba(255, 99, 132, 0.65)"  // Esgotados
