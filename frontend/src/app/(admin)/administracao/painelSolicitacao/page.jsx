@@ -44,7 +44,7 @@ export default function PainelSolicitacao() {
 			}
 			setDadosUsuario(dados);
 
-			fetch("http://localhost:3001/api/solicitacoes", {
+			fetch("http://localhost:3001/api/solicitacoes?pagina=1&limite=100", {
 				method: "GET",
 				headers: {
 					"Authorization": `Bearer ${dados.token}`,

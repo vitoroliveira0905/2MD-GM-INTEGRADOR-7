@@ -6,7 +6,7 @@ class SolicitacaoController {
     // [GET] /solicitacoes
     static async listarTodos(req, res) {
         try {
-            const limite = 100;
+            const limite = parseInt(req.query.limite) || 10;
             const pagina = parseInt(req.query.pagina) || 1;
             const offset = (pagina - 1) * limite;
 

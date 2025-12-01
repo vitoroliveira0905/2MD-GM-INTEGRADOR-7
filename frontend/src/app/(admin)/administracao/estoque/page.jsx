@@ -60,7 +60,7 @@ export default function PainelEstoque() {
             }
             setDadosUsuario(dados);
 
-            fetch("http://localhost:3001/api/produtos", {
+            fetch("http://localhost:3001/api/produtos?pagina=1&limite=100", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${dados.token}`,

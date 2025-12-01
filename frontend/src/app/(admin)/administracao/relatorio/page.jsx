@@ -27,7 +27,7 @@ export default function Relatorios() {
         setDadosUsuario(user);
         async function carregarDados() {
             try {
-                const estRes = await fetch("http://localhost:3001/api/produtos", {
+                const estRes = await fetch("http://localhost:3001/api/produtos?pagina=1&limite=100", {
                     method: "GET",
                     headers: { Authorization: `Bearer ${user.token}` },
                 });
@@ -41,7 +41,7 @@ export default function Relatorios() {
                 // Em estoque: quantidade > minimo_estoque
                 setEstoques(estoque.filter((item) => item.quantidade > (item.minimo_estoque ?? item.minimo)).length);
 
-                const solRes = await fetch("http://localhost:3001/api/solicitacoes", {
+                const solRes = await fetch("http://localhost:3001/api/solicitacoes?pagina=1&limite=100", {
                     method: "GET",
                     headers: { Authorization: `Bearer ${user.token}` },
                 });
