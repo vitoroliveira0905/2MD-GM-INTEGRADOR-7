@@ -180,6 +180,10 @@
     line-height: 1.6;
     color: #495057;
     border-left: 4px solid var(--primary-color);
+    max-height: 100px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    word-wrap: break-word;
 }
 
 .info-description.alert-danger {

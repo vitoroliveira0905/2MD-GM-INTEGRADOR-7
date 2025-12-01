@@ -242,7 +242,7 @@ export default function DashboardCliente() {
                           {s.descricao && (
                             <div className="mb-2">
                               <span className="text-dark fw-semibold">Descrição:</span>
-                              <div className="bg-white rounded-3 p-2 mt-1 text-secondary small border" style={{ minHeight: 36 }}>{s.descricao}</div>
+                              <div className="bg-white rounded-3 p-2 mt-1 text-secondary small border" style={{ minHeight: 36 , maxHeight: 100, overflowX: "hidden", overflowY: "auto", wordWrap: "break-word" }}>{s.descricao}</div>
                             </div>
                           )}
                         </div>
