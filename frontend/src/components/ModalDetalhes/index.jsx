@@ -130,7 +130,7 @@ export default function ModalDetalhes({ solicitacao, onClose, isAdmin = false })
                                 <i className="bi bi-exclamation-triangle me-2"></i>
                                 {solicitacao.status === "negado" ? "Motivo da Negação" : "Observação"}
                             </h6>
-                            <div className="info-description alert-danger">
+                            <div className="info-description alert-danger" style={{maxHeight: "100px", overflowY: "auto", overflowX: "hidden", wordWrap: "break-word"}}>
                                 {solicitacao.observacao}
                             </div>
                         </div>
