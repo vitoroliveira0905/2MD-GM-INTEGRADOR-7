@@ -70,7 +70,7 @@ export default function Historico() {
   const getBadgeClass = (status) => {
     const lowerStatus = status.toLowerCase();
     switch (lowerStatus) {
-      case "atendido":
+      case "finalizado":
       case "aprovado":
         return "badge-success";
       case "recusado":
