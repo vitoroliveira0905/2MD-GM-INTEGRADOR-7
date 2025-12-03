@@ -24,7 +24,10 @@ export default function Relatorios() {
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("dadosUsuario"));
         if (!user) return router.push("/login");
+        if (user.usuario.tipo !== "admin") return router.push("/");
+
         setDadosUsuario(user);
+
         async function carregarDados() {
             try {
                 const estRes = await fetch("http://localhost:3001/api/produtos?pagina=1&limite=100", {
@@ -60,7 +63,9 @@ export default function Relatorios() {
         carregarDados();
     }, []);
 
-    if (!dadosUsuario) return <p>Carregando...</p>;
+    if (dadosUsuario === null || dadosUsuario.usuario.tipo !== "admin") {
+        return <p>Carregando...</p>
+    }
 
     return (
         <main style={{ background: "#f8f9fa", minHeight: "100vh" }}>
@@ -74,7 +79,7 @@ export default function Relatorios() {
                     </div>
                 </div>
 
-                
+
 
                 <div className="row mb-4">
                     <div className="col-md-5 col-lg-4">
