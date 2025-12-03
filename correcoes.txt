@@ -1,0 +1,30 @@
+USUÁRIO COMUM
+
+Página de histórico:
+	• Ao cancelar o pedido de capacetes, o site exibiu o status Cancelado, mas ao recarregar a página, o pedido voltou com o status Pendente;
+
+	• O usuário comum consegue acessar a página '/administracao/relatorio'
+
+
+
+ADMINISTRADOR
+	• É possível aprovar uma solicitação mesmo que não haja quantidades suficientes no estoque;
+	Ex: Aprovar um pedido de 2147483647 porcas M6 mesmo com apenas 1000 em estoque
+
+	• Erro ao criar produto:
+		• o Next exibe erro ao tentar colocar um número não positivo no input de Estoque mínimo;
+		• o Next exibe erro ao tentar colocar um número não positivo no input de Quantidade;
+
+	• Após criar um produto, os produtos adicionado são exibidos no final da tabela, ficando fora de ordem numérica;
+
+
+Sugestão: O texto do filtro de status está sendo cortado ao diminuir a tela (Falta de responsividade)
+
+Sugestão: Aumentar o espaçamento no alerta de atenção ao excluir um item do estoque
+
+Sugestão: Ao criar um produto, quando o usuário estiver digitando no input de categoria, poderia exibir as categorias já existentes, para evitar erros de digitação. 
+Ex: Consumíveis e Consumíveis
+
+
+Sugestão: Ao aprovar um pedido, a quantidade de itens em estoque podia ser atualizada
+Ex: Ao aprovar um pedido de 6 Porcas M6, extrair 6 Porcas da quantidade em estoque
