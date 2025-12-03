@@ -25,17 +25,42 @@ export default function Historico() {
     setModalCancelar(item);
   }
 
-  function confirmarCancelamento() {
-    setDadosSolicitacoes((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        solicitacoes: prev.solicitacoes.map((s) =>
-          s.id === modalCancelar.id ? { ...s, status: "cancelado" } : s
-        ),
-      };
-    });
-    setModalCancelar(null);
+   async function confirmarCancelamento() {
+    try {
+      const dados = JSON.parse(localStorage.getItem("dadosUsuario"));
+
+      const response = await fetch(
+        `http://localhost:3001/api/solicitacoes/${modalCancelar.id}/cancelar`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${dados.token}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json();
+        alert("Erro ao cancelar: " + (err?.mensagem || err?.erro));
+        return;
+      }
+
+
+      setDadosSolicitacoes(prev => {
+        const lista = prev.solicitacoes || [];
+        return {
+          solicitacoes: lista.map(s =>
+            s.id === modalCancelar.id ? { ...s, status: "cancelado" } : s
+          )
+        };
+      });
+
+      setModalCancelar(null);
+
+    } catch (error) {
+      console.error("Erro ao cancelar:", error);
+    }
   }
 
   useEffect(() => {
