@@ -68,7 +68,7 @@ export default function Relatorios() {
     }
 
     return (
-        <main style={{ background: "#f8f9fa", minHeight: "100vh" }}>
+        <main style={{ background: "var(--background-color)", minHeight: "100vh" }}>
             <div className="container py-5">
                 <div className="d-flex align-items-center justify-content-between mb-4">
                     <div>
@@ -98,7 +98,7 @@ export default function Relatorios() {
                     </div>
                 </div>
 
-                <div className="card border-0 shadow rounded-4 overflow-hidden mb-4">
+                <div className="card border-0 rounded-4 overflow-hidden mb-4" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
                     <div className="card-header bg-white py-3 px-4 d-flex align-items-center gap-2">
                         <i className="bi bi-file-earmark-bar-graph text-primary"></i>
                         <span className="fw-semibold">Resumo Rápido</span>
@@ -193,7 +193,7 @@ export default function Relatorios() {
                             },
                         };
                         return (
-                            <div key={graficoTipo} className="mb-4" style={{ transition: "all 0.5s ease" }}>
+                            <div key={graficoTipo} className="mb-4" style={{ transition: "all 0.5s ease", boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)" }}>
                                 <GraficoPro
                                     titulo={config[graficoTipo].titulo}
                                     tipo="bar"

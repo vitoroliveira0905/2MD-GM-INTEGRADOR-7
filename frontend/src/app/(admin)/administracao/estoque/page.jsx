@@ -260,7 +260,7 @@ export default function PainelEstoque() {
     const categorias = [...new Set(produtos.dados.map(p => p.categoria).filter(Boolean))];
 
     return (
-        <main style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+        <main style={{ backgroundColor: "var(--background-color)", minHeight: "100vh" }}>
             <div className="container py-5">
                 <div className="d-flex align-items-center justify-content-between mb-4">
                     <div>
@@ -279,7 +279,7 @@ export default function PainelEstoque() {
 
                 <div className="row g-3 mb-4">
                     <div className="col-md-4">
-                        <div className="card border-0 shadow-sm h-100 stats-card">
+                        <div className="card border-0 h-100 stats-card" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
                             <div className="card-body d-flex align-items-center">
                                 <div className="icon-wrapper bg-primary-subtle rounded-3 p-3 me-3">
                                     <i className="bi bi-box-seam fs-2 text-primary"></i>
@@ -293,7 +293,7 @@ export default function PainelEstoque() {
                     </div>
 
                     <div className="col-md-4">
-                        <div className="card border-0 shadow-sm h-100 stats-card">
+                        <div className="card border-0 h-100 stats-card" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
                             <div className="card-body d-flex align-items-center">
                                 <div className="icon-wrapper bg-warning-subtle rounded-3 p-3 me-3">
                                     <i className="bi bi-exclamation-triangle fs-2 text-warning"></i>
@@ -309,7 +309,7 @@ export default function PainelEstoque() {
                     </div>
 
                     <div className="col-md-4">
-                        <div className="card border-0 shadow-sm h-100 stats-card">
+                        <div className="card border-0 h-100 stats-card" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
                             <div className="card-body d-flex align-items-center">
                                 <div className="icon-wrapper bg-danger-subtle rounded-3 p-3 me-3">
                                     <i className="bi bi-x-circle fs-2 text-danger"></i>
@@ -371,7 +371,7 @@ export default function PainelEstoque() {
                     </div>
                 </div>
 
-                <div className="card border-0 shadow rounded-4 overflow-hidden">
+                <div className="card border-0 rounded-4 overflow-hidden" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
                     <div className="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center gap-2">
                             <i className="bi bi-table text-primary"></i>

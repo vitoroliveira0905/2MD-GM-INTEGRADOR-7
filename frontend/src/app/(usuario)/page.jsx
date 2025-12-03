@@ -128,7 +128,7 @@ export default function DashboardCliente() {
   }
 
   return (
-    <main style={{ flex: "1", backgroundColor: "#f8f9fa" }}>
+    <main style={{ flex: "1"}}>
       <div className="container py-5">
 
         {/* Hero Section */}
@@ -185,7 +185,7 @@ export default function DashboardCliente() {
           ))}
         </div>
 
-        <div className="card border-0 shadow-lg rounded-4 mb-5">
+        <div className="card border-0 rounded-4 mb-5" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
           <div className="card-header bg-white border-0 p-4">
             <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)" }}>
               Solicitações em andamento
@@ -200,7 +200,7 @@ export default function DashboardCliente() {
                 })
                 .map((s, i) => (
                   <div key={i} className="col-12 col-md-6 col-lg-4">
-                    <div className="solicitacao-card shadow rounded-4 h-100 d-flex flex-column">
+                    <div className="solicitacao-card rounded-4 h-100 d-flex flex-column" style={{boxShadow: "-2px 2px 35px rgba(0, 0, 0, 0.25)"}}>
                       {/* Header do Card */}
                       <div
                         className="solicitacao-card-header d-flex align-items-center justify-content-between p-3"
@@ -288,7 +288,7 @@ export default function DashboardCliente() {
         </div>
 
 
-        <div className="card border-0 shadow-lg rounded-4">
+        <div className="card border-0 rounded-4" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
           <div className="card-header bg-white border-0 p-4 d-flex align-items-center gap-2">
             <i className="bi bi-lightning-charge-fill" style={{ color: "var(--primary-color)", fontSize: 22 }}></i>
             <h5 className="fw-bold mb-0" style={{ color: "var(--primary-color)", letterSpacing: 0.5 }}>

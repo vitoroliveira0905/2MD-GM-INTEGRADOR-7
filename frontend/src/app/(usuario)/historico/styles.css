@@ -1,4 +1,6 @@
-/* Estilos específicos da página de histórico */
+main{
+  background-color: var(--background-color);
+}
 
 /* Cabeçalho da tabela com gradiente */
 .table-gradient {

@@ -37,7 +37,7 @@ export default function DashboardAdmin() {
 	}
 
 	return (
-		<main style={{ flex: "1", backgroundColor: "#f8f9fa", minHeight: "91.3vh" }}>
+		<main style={{ flex: "1", backgroundColor: "var(--background-color)", minHeight: "91.3vh" }}>
 			<div className="container py-5">
 
 				{/* Hero Section */}

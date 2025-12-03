@@ -1,6 +1,6 @@
 .solicitacao-main {
     flex: 1;
-    background-color: #f8f9fa;
+    background-color: var(--background-color);
     min-height: 100vh;
     padding-top: 40px;
     padding-bottom: 40px;
@@ -60,7 +60,7 @@
 .form-card {
     background: white;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: -5 5 25px rgba(0, 0, 0, 0.2);
     padding: 48px;
     max-width: 1200px;
     margin: 0 auto;

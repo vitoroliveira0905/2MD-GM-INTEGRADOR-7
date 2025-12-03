@@ -134,7 +134,7 @@ export default function Historico() {
   }
 
   return (
-    <main style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+    <main style={{ minHeight: "100vh" }}>
       <div className="container py-5">
         <div className="d-flex align-items-center justify-content-between mb-4">
           <div>
@@ -180,7 +180,7 @@ export default function Historico() {
           </div>
         </div>
 
-        <div className="card border-0 shadow rounded-4 overflow-hidden">
+        <div className="card border-0 rounded-4 overflow-hidden" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
           <div className="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center gap-2">
               <i className="bi bi-table text-primary"></i>
