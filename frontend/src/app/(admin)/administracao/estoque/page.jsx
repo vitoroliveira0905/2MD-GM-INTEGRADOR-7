@@ -69,7 +69,7 @@ export default function PainelEstoque() {
                 .then(response => response.json())
                 .then(data => {
                     setProdutos(data);
-                    
+
                 })
                 .catch(error => {
                     console.error("Erro ao buscar produtos:", error);
@@ -107,6 +107,15 @@ export default function PainelEstoque() {
             // Editar material existente
             const payload = {
                 ...dadosMaterial,
+            };
+
+            if (payload.quantidade < 0) {
+                pushNotificacao('error', 'A quantidade deve ser um número positivo ou zero.');
+                return;
+            };
+            if (payload.minimo_estoque <= 0) {
+                pushNotificacao('error', 'A quantidade mínima em estoque deve ser um número positivo.');
+                return;
             };
 
             try {
@@ -153,6 +162,15 @@ export default function PainelEstoque() {
             const payload = {
                 ...dadosMaterial,
                 preco: 1,
+            };
+
+            if (payload.quantidade < 0) {
+                pushNotificacao('error', 'A quantidade deve ser um número positivo ou zero.');
+                return;
+            };
+            if (payload.minimo_estoque <= 0) {
+                pushNotificacao('error', 'A quantidade mínima em estoque deve ser um número positivo.');
+                return;
             };
 
             try {
@@ -205,7 +223,7 @@ export default function PainelEstoque() {
 
     const confirmarExclusao = async () => {
         if (!materialExcluindo) return;
-        
+
         try {
             const resp = await fetch(`http://localhost:3001/api/produtos/${materialExcluindo.id}`, {
                 method: "DELETE",
@@ -237,22 +255,22 @@ export default function PainelEstoque() {
     };
 
     const filtrar = produtos.dados.filter((m) => {
-        const matchBusca = m.nome.toLowerCase().includes(busca.toLowerCase()) || 
-                          m.id.toString().includes(busca);
+        const matchBusca = m.nome.toLowerCase().includes(busca.toLowerCase()) ||
+            m.id.toString().includes(busca);
         const matchCategoria = filtroCategoria === "todos" || m.categoria === filtroCategoria;
-        
+
         // Determinar status do material
         let status = "";
         if (m.quantidade === 0) status = "Zerado";
         else if (m.quantidade <= m.minimo_estoque) status = "Baixo";
         else status = "OK";
-        
+
         // Filtro de status
         let matchStatus = true;
         if (filtroStatus === "esgotado") matchStatus = (status === "Zerado");
         else if (filtroStatus === "baixo") matchStatus = (status === "Baixo");
         else if (filtroStatus === "ok") matchStatus = (status === "OK");
-        
+
         return matchBusca && matchCategoria && matchStatus;
     });
 
@@ -279,7 +297,7 @@ export default function PainelEstoque() {
 
                 <div className="row g-3 mb-4">
                     <div className="col-md-4">
-                        <div className="card border-0 h-100 stats-card" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
+                        <div className="card border-0 h-100 stats-card" style={{ boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)" }}>
                             <div className="card-body d-flex align-items-center">
                                 <div className="icon-wrapper bg-primary-subtle rounded-3 p-3 me-3">
                                     <i className="bi bi-box-seam fs-2 text-primary"></i>
@@ -293,7 +311,7 @@ export default function PainelEstoque() {
                     </div>
 
                     <div className="col-md-4">
-                        <div className="card border-0 h-100 stats-card" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
+                        <div className="card border-0 h-100 stats-card" style={{ boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)" }}>
                             <div className="card-body d-flex align-items-center">
                                 <div className="icon-wrapper bg-warning-subtle rounded-3 p-3 me-3">
                                     <i className="bi bi-exclamation-triangle fs-2 text-warning"></i>
@@ -309,7 +327,7 @@ export default function PainelEstoque() {
                     </div>
 
                     <div className="col-md-4">
-                        <div className="card border-0 h-100 stats-card" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
+                        <div className="card border-0 h-100 stats-card" style={{ boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)" }}>
                             <div className="card-body d-flex align-items-center">
                                 <div className="icon-wrapper bg-danger-subtle rounded-3 p-3 me-3">
                                     <i className="bi bi-x-circle fs-2 text-danger"></i>
@@ -371,7 +389,7 @@ export default function PainelEstoque() {
                     </div>
                 </div>
 
-                <div className="card border-0 rounded-4 overflow-hidden" style={{boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)"}}>
+                <div className="card border-0 rounded-4 overflow-hidden" style={{ boxShadow: "-5px 5px 25px rgba(0, 0, 0, 0.2)" }}>
                     <div className="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center gap-2">
                             <i className="bi bi-table text-primary"></i>
@@ -386,7 +404,7 @@ export default function PainelEstoque() {
                             <thead className="table-gradient">
                                 <tr>
                                     <th scope="col" className="fw-semibold table-gradient">ID</th>
-                                    <th scope="col" className="fw-semibold table-gradient">Material</th>    
+                                    <th scope="col" className="fw-semibold table-gradient">Material</th>
                                     <th scope="col" className="fw-semibold table-gradient">Categoria</th>
                                     <th scope="col" className="fw-semibold table-gradient">Quantidade</th>
                                     <th scope="col" className="fw-semibold table-gradient">Mínimo</th>
@@ -405,7 +423,7 @@ export default function PainelEstoque() {
                                         <tr key={item.id}>
                                             <td className="p-3">{item.id}</td>
                                             <td className="p-3">{item.nome}</td>
-                                          
+
                                             <td className="p-3">{item.categoria || '-'}</td>
                                             <td className="p-3">{item.quantidade}</td>
                                             <td className="p-3">{item.minimo_estoque}</td>
