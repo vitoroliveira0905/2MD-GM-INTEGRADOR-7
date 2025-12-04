@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
+import ToastNotification from "@/components/ToastNotification";
+import "@/components/ToastNotification/styles.css";
 
 export default function Solicitacao() {
     const router = useRouter();
@@ -19,12 +21,21 @@ export default function Solicitacao() {
         area: ""
     });
 
-    const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(false);
     const [redirecionando, setRedirecionando] = useState(false);
     const [dadosUsuario, setDadosUsuario] = useState(null);
     const [produtos, setProdutos] = useState([]);
+    const [notificacoes, setNotificacoes] = useState([]);
 
+    const pushNotificacao = (tipo, texto, tempo = 3000) => {
+        const id = Date.now() + Math.random();
+        setNotificacoes((prev) => [...prev, { id, tipo, texto }]);
+        if (tempo > 0) {
+            setTimeout(() => {
+                setNotificacoes((prev) => prev.filter((n) => n.id !== id));
+            }, tempo);
+        }
+    };
     // Carregar dados do usuário e produtos ao montar o componente
     useEffect(() => {
         const dadosString = localStorage.getItem("dadosUsuario");
@@ -60,7 +71,7 @@ export default function Solicitacao() {
         e.preventDefault();
 
         if (solicitacao.quantidade <= 0) {
-            setMensagem("A quantidade deve ser maior que zero.");
+            pushNotificacao('error', 'A quantidade deve ser maior que zero.');
             return;
         }
 
@@ -83,7 +94,6 @@ export default function Solicitacao() {
             });
 
             if (resposta.ok) {
-                setMensagem("Solicitação enviada com sucesso!");
                 setSolicitacao({
                     produto: "",
                     quantidade: "",
@@ -95,15 +105,14 @@ export default function Solicitacao() {
                 setRedirecionando(true);
                 // Dá um pequeno tempo para o usuário ver o feedback e a animação
                 setTimeout(() => {
-                    setMensagem("");
                     router.push("/");
                 }, 1200);
             } else {
-                setMensagem("Erro ao enviar solicitação. Tente novamente.");
+                pushNotificacao('error', "Erro ao enviar solicitação. Tente novamente.");
             }
         } catch (erro) {
             console.error("Erro:", erro);
-            setMensagem("Falha na conexão com o servidor.");
+            pushNotificacao('error', "Falha na conexão com o servidor.");
         } finally {
             setCarregando(false);
         }
@@ -118,15 +127,10 @@ export default function Solicitacao() {
             className={`solicitacao-main ${redirecionando ? "page-fade-out" : ""}`}
         >
             <div className="container">
-                {mensagem && (
-                    <div
-                        className={`position-fixed top-0 start-50 translate-middle-x mt-3 alert ${mensagem.includes("sucesso") ? "alert-success" : "alert-danger"} shadow-lg`}
-                        role="alert"
-                        style={{ zIndex: 1055, minWidth: "300px", borderRadius: "12px" }}
-                    >
-                        {mensagem}
-                    </div>
-                )}
+                <ToastNotification
+                    notificacoes={notificacoes}
+                    onClose={(id) => setNotificacoes((prev) => prev.filter((n) => n.id !== id))}
+                />
 
                 <div className="form-card">
                     <div className="text-center mb-5">
@@ -270,7 +274,7 @@ export default function Solicitacao() {
                                 <i className="bi bi-x-circle me-2"></i>
                                 Cancelar
                             </button>
-                            
+
                             <button
                                 type="submit"
                                 className="btn btn-lg px-5 fw-bold shadow-sm btn-enviar"
