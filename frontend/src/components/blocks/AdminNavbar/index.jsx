@@ -105,7 +105,7 @@ export default function AdminNavbar() {
                                 {dadosUsuario && dadosUsuario.usuario && dadosUsuario.usuario.tipo === "admin" ? (
                                     <>
                                         <li>
-                                            <Link href="/administracao" className="dropdown-item text-white menu-item-hover">
+                                            <Link href="/administracao/dashboard" className="dropdown-item text-white menu-item-hover">
                                                 <i className="bi bi-speedometer2 me-2"></i>
                                                 Painel
                                             </Link>
