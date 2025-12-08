@@ -2,7 +2,7 @@
 -- Data: 2025-01-15
 -- Descrição: Tabela para armazenar produtos do sistema
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 CREATE TABLE IF NOT EXISTS produtos (
     id INT PRIMARY KEY AUTO_INCREMENT,

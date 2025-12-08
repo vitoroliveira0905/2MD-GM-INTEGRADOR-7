@@ -1,17 +1,17 @@
--- Migration: Criar banco de dados produtos_api
+-- Migration: Criar banco de dados gerenciamento_tenda
 -- Data: 2025-01-15
 -- Descrição: Criação inicial do banco de dados
 
-CREATE DATABASE IF NOT EXISTS produtos_api;
+CREATE DATABASE IF NOT EXISTS gerenciamento_tenda;
 
 -- Usar o banco de dados criado
-USE produtos_api;
+USE gerenciamento_tenda;
 
 -- Migration: Criar tabela usuarios
 -- Data: 2025-01-15
 -- Descrição: Tabela para armazenar usuários do sistema
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 -- Data: 2025-01-15
 -- Descrição: Tabela para armazenar produtos do sistema
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 CREATE TABLE IF NOT EXISTS produtos (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS produtos (
 -- Data: 2025-10-28
 -- Descrição: Tabela para registrar logs de acesso às rotas da API
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 CREATE TABLE IF NOT EXISTS logs (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -77,7 +77,7 @@ CREATE INDEX idx_logs_status_code ON logs(status_code);
 -- Data: 2025-11-06
 -- Descrição: Tabela para registrar solicitações de itens
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 CREATE TABLE IF NOT EXISTS solicitacoes (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS solicitacoes (
 -- Data: 2025-01-15
 -- Descrição: Dados iniciais para teste do sistema
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 -- Inserir usuários iniciais (senha: 123456)
 -- Hash gerado com bcrypt para a senha "123456" (validado)

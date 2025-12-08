@@ -2,7 +2,7 @@
 -- Data: 2025-11-06
 -- Descrição: Tabela para registrar solicitações de itens
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 CREATE TABLE IF NOT EXISTS solicitacoes (
     id INT PRIMARY KEY AUTO_INCREMENT,

@@ -2,7 +2,7 @@
 -- Data: 2025-01-15
 -- Descrição: Dados iniciais para teste do sistema
 
-USE produtos_api;
+USE gerenciamento_tenda;
 
 -- Inserir usuários iniciais (senha: 123456)
 -- Hash gerado com bcrypt para a senha "123456" (validado)

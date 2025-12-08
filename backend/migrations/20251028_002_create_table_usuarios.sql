@@ -2,7 +2,7 @@
 -- Data: 2025-01-15
 -- Descrição: Tabela para armazenar usuários do sistema
 
-USE produtos_api;
+USE gerenciamento_tenda;
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
